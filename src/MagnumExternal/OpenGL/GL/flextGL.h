@@ -30,6 +30,7 @@
 
 #include "Magnum/configure.h"
 #include "Magnum/GL/GL.h"
+#include "Magnum/GL/visibility.h"
 #include "MagnumExternal/OpenGL/KHR/khrplatform.h"
 
 /* Defensive include guards */
@@ -69,16 +70,6 @@ extern "C" {
 void flextGLInit(Magnum::GL::Context& context);
 
 /* Function declaration macros */
-
-#ifndef MAGNUM_BUILD_STATIC
-    #ifdef FlextGL_EXPORTS
-        #define FLEXTGL_EXPORT CORRADE_VISIBILITY_EXPORT
-    #else
-        #define FLEXTGL_EXPORT CORRADE_VISIBILITY_IMPORT
-    #endif
-#else
-    #define FLEXTGL_EXPORT CORRADE_VISIBILITY_STATIC
-#endif
 
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__)
 #ifndef WINAPI
@@ -2732,7 +2723,7 @@ struct FlextGL {
     void(APIENTRY *SpecializeShader)(GLuint, const GLchar *, GLuint, const GLuint *, const GLuint *);
 };
 
-extern FLEXTGL_EXPORT FlextGL flextGL;
+extern MAGNUM_GL_EXPORT FlextGL flextGL;
 
 /* GL_AMD_sample_positions */
 

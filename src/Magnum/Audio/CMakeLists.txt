@@ -82,7 +82,7 @@ target_include_directories(MagnumAudioObjects PUBLIC
     $<TARGET_PROPERTY:OpenAL::OpenAL,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT MAGNUM_BUILD_STATIC)
-    target_compile_definitions(MagnumAudioObjects PRIVATE "MagnumAudioObjects_EXPORTS")
+    target_compile_definitions(MagnumAudioObjects PRIVATE "MagnumAudio_EXPORTS")
 endif()
 if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumAudioObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -179,9 +179,11 @@ if(MAGNUM_BUILD_TESTS)
     add_library(MagnumAudioTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         $<TARGET_OBJECTS:MagnumAudioObjects>
         ${MagnumAudio_GracefulAssert_SRCS})
-    target_compile_definitions(MagnumAudioTestLib PRIVATE
-        "CORRADE_GRACEFUL_ASSERT" "MagnumAudio_EXPORTS")
+    target_compile_definitions(MagnumAudioTestLib PRIVATE "CORRADE_GRACEFUL_ASSERT")
     set_target_properties(MagnumAudioTestLib PROPERTIES DEBUG_POSTFIX "-d")
+    if(NOT MAGNUM_BUILD_STATIC)
+        set_target_properties(MagnumAudioTestLib PROPERTIES DEFINE_SYMBOL "MagnumAudio_EXPORTS")
+    endif()
     if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumAudioTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()

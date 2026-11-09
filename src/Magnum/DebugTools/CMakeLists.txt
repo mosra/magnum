@@ -121,7 +121,7 @@ add_library(MagnumDebugToolsObjects OBJECT
     ${MagnumDebugTools_PRIVATE_HEADERS})
 target_include_directories(MagnumDebugToolsObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT MAGNUM_BUILD_STATIC)
-    target_compile_definitions(MagnumDebugToolsObjects PRIVATE "MagnumDebugToolsObjects_EXPORTS")
+    target_compile_definitions(MagnumDebugToolsObjects PRIVATE "MagnumDebugTools_EXPORTS")
 endif()
 if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumDebugToolsObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -173,9 +173,11 @@ if(MAGNUM_BUILD_TESTS)
     add_library(MagnumDebugToolsTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         $<TARGET_OBJECTS:MagnumDebugToolsObjects>
         ${MagnumDebugTools_GracefulAssert_SRCS})
+    target_compile_definitions(MagnumDebugToolsTestLib PRIVATE "CORRADE_GRACEFUL_ASSERT")
     set_target_properties(MagnumDebugToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
-    target_compile_definitions(MagnumDebugToolsTestLib PRIVATE
-        "CORRADE_GRACEFUL_ASSERT" "MagnumDebugTools_EXPORTS")
+    if(NOT MAGNUM_BUILD_STATIC)
+        set_target_properties(MagnumDebugToolsTestLib PROPERTIES DEFINE_SYMBOL "MagnumDebugTools_EXPORTS")
+    endif()
     if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumDebugToolsTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()

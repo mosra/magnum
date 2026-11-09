@@ -31,6 +31,7 @@
 
 #include "Magnum/configure.h"
 #include "Magnum/GL/GL.h"
+#include "Magnum/GL/visibility.h"
 #include "MagnumExternal/OpenGL/KHR/khrplatform.h"
 
 /* Defensive include guards */
@@ -62,16 +63,6 @@ extern "C" {
 void flextGLInit(Magnum::GL::Context& context);
 
 /* Function declaration macros */
-
-#ifndef MAGNUM_BUILD_STATIC
-    #ifdef FlextGL_EXPORTS
-        #define FLEXTGL_EXPORT CORRADE_VISIBILITY_EXPORT
-    #else
-        #define FLEXTGL_EXPORT CORRADE_VISIBILITY_IMPORT
-    #endif
-#else
-    #define FLEXTGL_EXPORT CORRADE_VISIBILITY_STATIC
-#endif
 
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__)
 #define WIN32_LEAN_AND_MEAN 1
@@ -106,7 +97,7 @@ void flextGLInit(Magnum::GL::Context& context);
 
 @for f in funcs:
 @if f.name in ['BlendFunc', 'Clear', 'ClearColor', 'ClearDepth', 'ClearStencil', 'ColorMask', 'CullFace', 'DepthFunc', 'DepthMask', 'DepthRange', 'Disable', 'DrawBuffer', 'Enable', 'Finish', 'Flush', 'FrontFace', 'GetBooleanv', 'GetDoublev', 'GetError', 'GetFloatv', 'GetIntegerv', 'GetString', 'GetTexImage', 'GetTexLevelParameterfv', 'GetTexLevelParameteriv', 'GetTexParameterfv', 'GetTexParameteriv', 'Hint', 'IsEnabled', 'LineWidth', 'LogicOp', 'PixelStoref', 'PixelStorei', 'PointSize', 'PolygonMode', 'ReadBuffer', 'ReadPixels', 'Scissor', 'StencilFunc', 'StencilMask', 'StencilOp', 'TexImage1D', 'TexImage2D', 'TexParameterf', 'TexParameterfv', 'TexParameteri', 'TexParameteriv', 'Viewport', 'BindTexture', 'CopyTexImage1D', 'CopyTexImage2D', 'CopyTexSubImage1D', 'CopyTexSubImage2D', 'DeleteTextures', 'DrawArrays', 'DrawElements', 'GenTextures', 'IsTexture', 'PolygonOffset', 'TexSubImage1D', 'TexSubImage2D']:
-GLAPI FLEXTGL_EXPORT @f.returntype APIENTRY gl@f.name\
+GLAPI MAGNUM_GL_EXPORT @f.returntype APIENTRY gl@f.name\
 (@f.param_type_list_string());
 @end
 @end
@@ -132,7 +123,7 @@ struct FlextGL {
     @end
 };
 
-extern FLEXTGL_EXPORT FlextGL flextGL;
+extern MAGNUM_GL_EXPORT FlextGL flextGL;
 @for cat,funcs in functions:
 @if funcs:
 

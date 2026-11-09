@@ -128,7 +128,7 @@ target_include_directories(MagnumTradeObjects PUBLIC
     # headers being preferred over the project-local ones
     $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT MAGNUM_BUILD_STATIC)
-    target_compile_definitions(MagnumTradeObjects PRIVATE "MagnumTradeObjects_EXPORTS")
+    target_compile_definitions(MagnumTradeObjects PRIVATE "MagnumTrade_EXPORTS")
 endif()
 if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumTradeObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -182,8 +182,11 @@ if(MAGNUM_BUILD_TESTS)
         $<TARGET_OBJECTS:MagnumTradeObjects>
         ${MagnumTrade_GracefulAssert_SRCS})
     target_compile_definitions(MagnumTradeTestLib PRIVATE
-        "CORRADE_GRACEFUL_ASSERT" "MagnumTrade_EXPORTS")
+        "CORRADE_GRACEFUL_ASSERT")
     set_target_properties(MagnumTradeTestLib PROPERTIES DEBUG_POSTFIX "-d")
+    if(NOT MAGNUM_BUILD_STATIC)
+        set_target_properties(MagnumTradeTestLib PROPERTIES DEFINE_SYMBOL "MagnumTrade_EXPORTS")
+    endif()
     if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumTradeTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()

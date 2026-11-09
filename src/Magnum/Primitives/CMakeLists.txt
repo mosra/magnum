@@ -81,7 +81,7 @@ add_library(MagnumPrimitivesObjects OBJECT
     ${MagnumPrimitives_PRIVATE_HEADERS})
 target_include_directories(MagnumPrimitivesObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT MAGNUM_BUILD_STATIC)
-    target_compile_definitions(MagnumPrimitivesObjects PRIVATE "MagnumPrimitivesObjects_EXPORTS")
+    target_compile_definitions(MagnumPrimitivesObjects PRIVATE "MagnumPrimitives_EXPORTS")
 endif()
 if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumPrimitivesObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -114,9 +114,11 @@ if(MAGNUM_BUILD_TESTS)
     add_library(MagnumPrimitivesTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         $<TARGET_OBJECTS:MagnumPrimitivesObjects>
         ${MagnumPrimitives_GracefulAssert_SRCS})
+    target_compile_definitions(MagnumPrimitivesTestLib PRIVATE "CORRADE_GRACEFUL_ASSERT")
     set_target_properties(MagnumPrimitivesTestLib PROPERTIES DEBUG_POSTFIX "-d")
-    target_compile_definitions(MagnumPrimitivesTestLib PRIVATE
-        "CORRADE_GRACEFUL_ASSERT" "MagnumPrimitives_EXPORTS")
+    if(NOT MAGNUM_BUILD_STATIC)
+        set_target_properties(MagnumPrimitivesTestLib PROPERTIES DEFINE_SYMBOL "MagnumPrimitives_EXPORTS")
+    endif()
     if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumPrimitivesTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()

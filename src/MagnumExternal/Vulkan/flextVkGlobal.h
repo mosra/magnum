@@ -35,7 +35,7 @@ extern "C" {
 #ifndef DOXYGEN_GENERATING_OUTPUT /* So the macro names are preserved in the docs */
 
 /* Per-instance function pointers */
-extern FLEXTVK_EXPORT FlextVkInstance flextVkInstance;
+extern MAGNUM_VK_EXPORT FlextVkInstance flextVkInstance;
 
 /* VK_EXT_debug_marker */
 
@@ -162,7 +162,7 @@ extern FLEXTVK_EXPORT FlextVkInstance flextVkInstance;
 
 
 /* Per-device function pointers */
-extern FLEXTVK_EXPORT FlextVkDevice flextVkDevice;
+extern MAGNUM_VK_EXPORT FlextVkDevice flextVkDevice;
 
 /* VK_EXT_debug_marker */
 

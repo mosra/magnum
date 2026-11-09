@@ -32,6 +32,7 @@
 #include <Corrade/Utility/VisibilityMacros.h>
 
 #include "Magnum/configure.h"
+#include "Magnum/Vk/visibility.h"
 
 /* Defensive include guards */
 
@@ -52,16 +53,6 @@ extern "C" {
 #ifndef DOXYGEN_GENERATING_OUTPUT /* So the macro names are preserved in the docs */
 
 /* Function declaration macros */
-
-#ifndef MAGNUM_BUILD_STATIC
-    #ifdef FlextVk_EXPORTS
-        #define FLEXTVK_EXPORT CORRADE_VISIBILITY_EXPORT
-    #else
-        #define FLEXTVK_EXPORT CORRADE_VISIBILITY_IMPORT
-    #endif
-#else
-    #define FLEXTVK_EXPORT CORRADE_VISIBILITY_STATIC
-#endif
 
 /* Verbatim copied from upstream vk_platform.h */
 #if defined(_WIN32)
@@ -115,7 +106,7 @@ VKAPI_ATTR @f.returntype VKAPI_CALL vk@f.name\
 @if funcs:
 @for f in funcs:
 @if f.name in ['EnumerateInstanceVersion']:
-extern FLEXTVK_EXPORT @f.returntype\
+extern MAGNUM_VK_EXPORT @f.returntype\
 (VKAPI_PTR *flextvk@f.name)(@f.param_type_list_string());
 #define vk@f.name flextvk@f.name
 @end

@@ -169,7 +169,7 @@ target_include_directories(MagnumMathObjects PUBLIC
     ${PROJECT_BINARY_DIR}/src
     $<TARGET_PROPERTY:Corrade::Utility,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT MAGNUM_BUILD_STATIC)
-    target_compile_definitions(MagnumMathObjects PRIVATE "MagnumMathObjects_EXPORTS")
+    target_compile_definitions(MagnumMathObjects PRIVATE "Magnum_EXPORTS")
 endif()
 if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumMathObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -187,7 +187,7 @@ target_include_directories(MagnumObjects PUBLIC
     ${PROJECT_BINARY_DIR}/src
     $<TARGET_PROPERTY:Corrade::Utility,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT MAGNUM_BUILD_STATIC)
-    target_compile_definitions(MagnumObjects PRIVATE "MagnumObjects_EXPORTS")
+    target_compile_definitions(MagnumObjects PRIVATE "Magnum_EXPORTS")
 endif()
 if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -289,12 +289,14 @@ if(MAGNUM_BUILD_TESTS)
     target_include_directories(MagnumMathTestLib PUBLIC
         ${PROJECT_SOURCE_DIR}/src
         ${PROJECT_BINARY_DIR}/src)
-    target_compile_definitions(MagnumMathTestLib PRIVATE
-        "CORRADE_GRACEFUL_ASSERT" "Magnum_EXPORTS")
+    target_compile_definitions(MagnumMathTestLib PRIVATE "CORRADE_GRACEFUL_ASSERT")
     set_target_properties(MagnumMathTestLib PROPERTIES
         DEBUG_POSTFIX "-d"
         # Differs from CMAKE_FOLDER
         FOLDER "Magnum/Math")
+    if(NOT MAGNUM_BUILD_STATIC)
+        set_target_properties(MagnumMathTestLib PROPERTIES DEFINE_SYMBOL "Magnum_EXPORTS")
+    endif()
     target_link_libraries(MagnumMathTestLib PUBLIC Corrade::Utility)
 
     # Library with graceful assert for testing
@@ -306,8 +308,11 @@ if(MAGNUM_BUILD_TESTS)
         ${PROJECT_SOURCE_DIR}/src
         ${PROJECT_BINARY_DIR}/src)
     target_compile_definitions(MagnumTestLib PRIVATE
-        "CORRADE_GRACEFUL_ASSERT" "Magnum_EXPORTS")
+        "CORRADE_GRACEFUL_ASSERT")
     set_target_properties(MagnumTestLib PROPERTIES DEBUG_POSTFIX "-d")
+    if(NOT MAGNUM_BUILD_STATIC)
+        set_target_properties(MagnumTestLib PROPERTIES DEFINE_SYMBOL "Magnum_EXPORTS")
+    endif()
     if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()

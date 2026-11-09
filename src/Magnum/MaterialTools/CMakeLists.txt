@@ -58,7 +58,7 @@ add_library(MagnumMaterialToolsObjects OBJECT
     ${MagnumMaterialTools_PRIVATE_HEADERS})
 target_include_directories(MagnumMaterialToolsObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT MAGNUM_BUILD_STATIC)
-    target_compile_definitions(MagnumMaterialToolsObjects PRIVATE "MagnumMaterialToolsObjects_EXPORTS")
+    target_compile_definitions(MagnumMaterialToolsObjects PRIVATE "MagnumMaterialTools_EXPORTS")
 endif()
 if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumMaterialToolsObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -89,9 +89,11 @@ if(MAGNUM_BUILD_TESTS)
     add_library(MagnumMaterialToolsTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         $<TARGET_OBJECTS:MagnumMaterialToolsObjects>
         ${MagnumMaterialTools_GracefulAssert_SRCS})
+    target_compile_definitions(MagnumMaterialToolsTestLib PRIVATE "CORRADE_GRACEFUL_ASSERT")
     set_target_properties(MagnumMaterialToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
-    target_compile_definitions(MagnumMaterialToolsTestLib PRIVATE
-        "CORRADE_GRACEFUL_ASSERT" "MagnumMaterialTools_EXPORTS")
+    if(NOT MAGNUM_BUILD_STATIC)
+        set_target_properties(MagnumMaterialToolsTestLib PROPERTIES DEFINE_SYMBOL "MagnumMaterialTools_EXPORTS")
+    endif()
     if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumMaterialToolsTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()

@@ -105,7 +105,7 @@ endif()
 target_include_directories(MagnumTextObjects PUBLIC
     $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT MAGNUM_BUILD_STATIC)
-    target_compile_definitions(MagnumTextObjects PRIVATE "MagnumTextObjects_EXPORTS")
+    target_compile_definitions(MagnumTextObjects PRIVATE "MagnumText_EXPORTS")
 endif()
 if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumTextObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -179,9 +179,11 @@ if(MAGNUM_BUILD_TESTS)
     add_library(MagnumTextTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         $<TARGET_OBJECTS:MagnumTextObjects>
         ${MagnumText_GracefulAssert_SRCS})
+    target_compile_definitions(MagnumTextTestLib PRIVATE "CORRADE_GRACEFUL_ASSERT")
     set_target_properties(MagnumTextTestLib PROPERTIES DEBUG_POSTFIX "-d")
-    target_compile_definitions(MagnumTextTestLib PRIVATE
-        "CORRADE_GRACEFUL_ASSERT" "MagnumText_EXPORTS")
+    if(NOT MAGNUM_BUILD_STATIC)
+        set_target_properties(MagnumTextTestLib PROPERTIES DEFINE_SYMBOL "MagnumText_EXPORTS")
+    endif()
     if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumTextTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()

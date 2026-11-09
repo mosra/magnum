@@ -159,7 +159,7 @@ add_library(MagnumVkObjects OBJECT
 target_include_directories(MagnumVkObjects PUBLIC
     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT MAGNUM_BUILD_STATIC)
-    target_compile_definitions(MagnumVkObjects PRIVATE "MagnumVkObjects_EXPORTS" "FlextVk_EXPORTS")
+    target_compile_definitions(MagnumVkObjects PRIVATE "MagnumVk_EXPORTS")
 endif()
 if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumVkObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -172,7 +172,6 @@ add_library(MagnumVk ${SHARED_OR_STATIC}
     ${MagnumVk_GracefulAssert_SRCS})
 set_target_properties(MagnumVk PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT MAGNUM_BUILD_STATIC)
-    target_compile_definitions(MagnumVk PRIVATE "FlextVk_EXPORTS")
     set_target_properties(MagnumVk PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
 elseif(MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumVk PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -239,9 +238,11 @@ if(MAGNUM_BUILD_TESTS)
         $<TARGET_OBJECTS:MagnumVkObjects>
         $<TARGET_OBJECTS:MagnumFlextVkObjects>
         ${MagnumVk_GracefulAssert_SRCS})
+    target_compile_definitions(MagnumVkTestLib PRIVATE "CORRADE_GRACEFUL_ASSERT")
     set_target_properties(MagnumVkTestLib PROPERTIES DEBUG_POSTFIX "-d")
-    target_compile_definitions(MagnumVkTestLib PRIVATE
-        "CORRADE_GRACEFUL_ASSERT" "MagnumVk_EXPORTS" "FlextVk_EXPORTS")
+    if(NOT MAGNUM_BUILD_STATIC)
+        set_target_properties(MagnumVkTestLib PROPERTIES DEFINE_SYMBOL "MagnumVk_EXPORTS")
+    endif()
     if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumVkTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()

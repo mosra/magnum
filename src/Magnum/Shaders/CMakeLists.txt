@@ -112,7 +112,7 @@ if(MAGNUM_TARGET_GL)
         $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>)
     if(NOT MAGNUM_BUILD_STATIC)
-        target_compile_definitions(MagnumShadersObjects PRIVATE "MagnumShadersObjects_EXPORTS")
+        target_compile_definitions(MagnumShadersObjects PRIVATE "MagnumShaders_EXPORTS")
     endif()
     if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumShadersObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -148,9 +148,11 @@ if(MAGNUM_BUILD_TESTS)
     add_library(MagnumShadersTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         ${MagnumShadersObjects_OBJECTS}
         ${MagnumShaders_GracefulAssert_SRCS})
+    target_compile_definitions(MagnumShadersTestLib PRIVATE "CORRADE_GRACEFUL_ASSERT")
     set_target_properties(MagnumShadersTestLib PROPERTIES DEBUG_POSTFIX "-d")
-    target_compile_definitions(MagnumShadersTestLib PRIVATE
-        "CORRADE_GRACEFUL_ASSERT" "MagnumShaders_EXPORTS")
+    if(NOT MAGNUM_BUILD_STATIC)
+        set_target_properties(MagnumShadersTestLib PROPERTIES DEFINE_SYMBOL "MagnumShaders_EXPORTS")
+    endif()
     if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumShadersTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()

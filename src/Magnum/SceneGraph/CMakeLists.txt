@@ -82,7 +82,7 @@ add_library(MagnumSceneGraphObjects OBJECT
     ${MagnumSceneGraph_HEADERS})
 target_include_directories(MagnumSceneGraphObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT MAGNUM_BUILD_STATIC)
-    target_compile_definitions(MagnumSceneGraphObjects PRIVATE "MagnumSceneGraphObjects_EXPORTS")
+    target_compile_definitions(MagnumSceneGraphObjects PRIVATE "MagnumSceneGraph_EXPORTS")
 endif()
 if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumSceneGraphObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -112,10 +112,11 @@ if(MAGNUM_BUILD_TESTS)
     add_library(MagnumSceneGraphTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         $<TARGET_OBJECTS:MagnumSceneGraphObjects>
         ${MagnumSceneGraph_GracefulAssert_SRCS})
-    set_target_properties(MagnumSceneGraphTestLib PROPERTIES
-        DEBUG_POSTFIX "-d")
-    target_compile_definitions(MagnumSceneGraphTestLib PRIVATE
-        "CORRADE_GRACEFUL_ASSERT" "MagnumSceneGraph_EXPORTS")
+    target_compile_definitions(MagnumSceneGraphTestLib PRIVATE "CORRADE_GRACEFUL_ASSERT")
+    set_target_properties(MagnumSceneGraphTestLib PROPERTIES DEBUG_POSTFIX "-d")
+    if(NOT MAGNUM_BUILD_STATIC)
+        set_target_properties(MagnumSceneGraphTestLib PROPERTIES DEFINE_SYMBOL "MagnumSceneGraph_EXPORTS")
+    endif()
     target_link_libraries(MagnumSceneGraphTestLib MagnumMathTestLib)
 
     add_subdirectory(Test ${EXCLUDE_FROM_ALL_IF_TEST_TARGET})

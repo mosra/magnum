@@ -32,7 +32,7 @@
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_BUILD_STATIC
-    #if defined(MagnumSceneTools_EXPORTS) || defined(MagnumSceneToolsObjects_EXPORTS)
+    #ifdef MagnumSceneTools_EXPORTS
         #define MAGNUM_SCENETOOLS_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
         #define MAGNUM_SCENETOOLS_EXPORT CORRADE_VISIBILITY_IMPORT

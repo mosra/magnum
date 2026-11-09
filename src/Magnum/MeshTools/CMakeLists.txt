@@ -110,7 +110,7 @@ add_library(MagnumMeshToolsObjects OBJECT
     ${MagnumMeshTools_PRIVATE_HEADERS})
 target_include_directories(MagnumMeshToolsObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT MAGNUM_BUILD_STATIC)
-    target_compile_definitions(MagnumMeshToolsObjects PRIVATE "MagnumMeshToolsObjects_EXPORTS")
+    target_compile_definitions(MagnumMeshToolsObjects PRIVATE "MagnumMeshTools_EXPORTS")
 endif()
 if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumMeshToolsObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -146,9 +146,11 @@ if(MAGNUM_BUILD_TESTS)
     add_library(MagnumMeshToolsTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         $<TARGET_OBJECTS:MagnumMeshToolsObjects>
         ${MagnumMeshTools_GracefulAssert_SRCS})
+    target_compile_definitions(MagnumMeshToolsTestLib PRIVATE "CORRADE_GRACEFUL_ASSERT")
     set_target_properties(MagnumMeshToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
-    target_compile_definitions(MagnumMeshToolsTestLib PRIVATE
-        "CORRADE_GRACEFUL_ASSERT" "MagnumMeshTools_EXPORTS")
+    if(NOT MAGNUM_BUILD_STATIC)
+        set_target_properties(MagnumMeshToolsTestLib PROPERTIES DEFINE_SYMBOL "MagnumMeshTools_EXPORTS")
+    endif()
     if(MAGNUM_BUILD_STATIC_PIC)
         set_target_properties(MagnumMeshToolsTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()

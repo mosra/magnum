@@ -32,7 +32,7 @@
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_BUILD_STATIC
-    #if defined(MagnumMeshTools_EXPORTS) || defined(MagnumMeshToolsObjects_EXPORTS)
+    #ifdef MagnumMeshTools_EXPORTS
         #define MAGNUM_MESHTOOLS_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
         #define MAGNUM_MESHTOOLS_EXPORT CORRADE_VISIBILITY_IMPORT

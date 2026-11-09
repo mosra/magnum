@@ -31,6 +31,7 @@
 #include <Corrade/Utility/VisibilityMacros.h>
 
 #include "Magnum/configure.h"
+#include "Magnum/Vk/visibility.h"
 
 /* Defensive include guards */
 
@@ -51,16 +52,6 @@ extern "C" {
 #ifndef DOXYGEN_GENERATING_OUTPUT /* So the macro names are preserved in the docs */
 
 /* Function declaration macros */
-
-#ifndef MAGNUM_BUILD_STATIC
-    #ifdef FlextVk_EXPORTS
-        #define FLEXTVK_EXPORT CORRADE_VISIBILITY_EXPORT
-    #else
-        #define FLEXTVK_EXPORT CORRADE_VISIBILITY_IMPORT
-    #endif
-#else
-    #define FLEXTVK_EXPORT CORRADE_VISIBILITY_STATIC
-#endif
 
 /* Verbatim copied from upstream vk_platform.h */
 #if defined(_WIN32)
@@ -5096,7 +5087,7 @@ VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(VkInstance, const
    they need to be loaded at runtime. To avoid race conditions when calling
    an init function manually, the function pointer is fetched in a static
    constructor. */
-extern FLEXTVK_EXPORT VkResult(VKAPI_PTR *flextvkEnumerateInstanceVersion)(uint32_t*);
+extern MAGNUM_VK_EXPORT VkResult(VKAPI_PTR *flextvkEnumerateInstanceVersion)(uint32_t*);
 #define vkEnumerateInstanceVersion flextvkEnumerateInstanceVersion
 
 /* Per-instance function pointers */

@@ -30,6 +30,7 @@
 
 #include "Magnum/configure.h"
 #include "Magnum/GL/GL.h"
+#include "Magnum/GL/visibility.h"
 #include "MagnumExternal/OpenGL/KHR/khrplatform.h"
 
 /* Defensive include guards */
@@ -56,16 +57,6 @@ extern "C" {
 void flextGLInit(Magnum::GL::Context& context);
 
 /* Function declaration macros */
-
-#ifndef MAGNUM_BUILD_STATIC
-    #ifdef FlextGL_EXPORTS
-        #define FLEXTGL_EXPORT CORRADE_VISIBILITY_EXPORT
-    #else
-        #define FLEXTGL_EXPORT CORRADE_VISIBILITY_IMPORT
-    #endif
-#else
-    #define FLEXTGL_EXPORT CORRADE_VISIBILITY_STATIC
-#endif
 
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__)
 #define WIN32_LEAN_AND_MEAN 1
@@ -1114,51 +1105,51 @@ typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLen
 
 /* GL_ES_VERSION_2_0 */
 
-GLAPI FLEXTGL_EXPORT void APIENTRY glBindTexture(GLenum, GLuint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glBlendFunc(GLenum, GLenum);
-GLAPI FLEXTGL_EXPORT void APIENTRY glClear(GLbitfield);
-GLAPI FLEXTGL_EXPORT void APIENTRY glClearColor(GLfloat, GLfloat, GLfloat, GLfloat);
-GLAPI FLEXTGL_EXPORT void APIENTRY glClearStencil(GLint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glColorMask(GLboolean, GLboolean, GLboolean, GLboolean);
-GLAPI FLEXTGL_EXPORT void APIENTRY glCopyTexImage2D(GLenum, GLint, GLenum, GLint, GLint, GLsizei, GLsizei, GLint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glCopyTexSubImage2D(GLenum, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei);
-GLAPI FLEXTGL_EXPORT void APIENTRY glCullFace(GLenum);
-GLAPI FLEXTGL_EXPORT void APIENTRY glDeleteTextures(GLsizei, const GLuint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glDepthFunc(GLenum);
-GLAPI FLEXTGL_EXPORT void APIENTRY glDepthMask(GLboolean);
-GLAPI FLEXTGL_EXPORT void APIENTRY glDisable(GLenum);
-GLAPI FLEXTGL_EXPORT void APIENTRY glDrawArrays(GLenum, GLint, GLsizei);
-GLAPI FLEXTGL_EXPORT void APIENTRY glDrawElements(GLenum, GLsizei, GLenum, const void *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glEnable(GLenum);
-GLAPI FLEXTGL_EXPORT void APIENTRY glFinish(void);
-GLAPI FLEXTGL_EXPORT void APIENTRY glFlush(void);
-GLAPI FLEXTGL_EXPORT void APIENTRY glFrontFace(GLenum);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGenTextures(GLsizei, GLuint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetBooleanv(GLenum, GLboolean *);
-GLAPI FLEXTGL_EXPORT GLenum APIENTRY glGetError(void);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetFloatv(GLenum, GLfloat *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetIntegerv(GLenum, GLint *);
-GLAPI FLEXTGL_EXPORT const GLubyte * APIENTRY glGetString(GLenum);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetTexParameterfv(GLenum, GLenum, GLfloat *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetTexParameteriv(GLenum, GLenum, GLint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glHint(GLenum, GLenum);
-GLAPI FLEXTGL_EXPORT GLboolean APIENTRY glIsEnabled(GLenum);
-GLAPI FLEXTGL_EXPORT GLboolean APIENTRY glIsTexture(GLuint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glLineWidth(GLfloat);
-GLAPI FLEXTGL_EXPORT void APIENTRY glPixelStorei(GLenum, GLint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glPolygonOffset(GLfloat, GLfloat);
-GLAPI FLEXTGL_EXPORT void APIENTRY glReadPixels(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, void *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glScissor(GLint, GLint, GLsizei, GLsizei);
-GLAPI FLEXTGL_EXPORT void APIENTRY glStencilFunc(GLenum, GLint, GLuint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glStencilMask(GLuint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glStencilOp(GLenum, GLenum, GLenum);
-GLAPI FLEXTGL_EXPORT void APIENTRY glTexImage2D(GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glTexParameterf(GLenum, GLenum, GLfloat);
-GLAPI FLEXTGL_EXPORT void APIENTRY glTexParameterfv(GLenum, GLenum, const GLfloat *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glTexParameteri(GLenum, GLenum, GLint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glTexParameteriv(GLenum, GLenum, const GLint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glTexSubImage2D(GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const void *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glViewport(GLint, GLint, GLsizei, GLsizei);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glBindTexture(GLenum, GLuint);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glBlendFunc(GLenum, GLenum);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glClear(GLbitfield);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glClearColor(GLfloat, GLfloat, GLfloat, GLfloat);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glClearStencil(GLint);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glColorMask(GLboolean, GLboolean, GLboolean, GLboolean);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glCopyTexImage2D(GLenum, GLint, GLenum, GLint, GLint, GLsizei, GLsizei, GLint);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glCopyTexSubImage2D(GLenum, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glCullFace(GLenum);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glDeleteTextures(GLsizei, const GLuint *);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glDepthFunc(GLenum);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glDepthMask(GLboolean);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glDisable(GLenum);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glDrawArrays(GLenum, GLint, GLsizei);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glDrawElements(GLenum, GLsizei, GLenum, const void *);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glEnable(GLenum);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glFinish(void);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glFlush(void);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glFrontFace(GLenum);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glGenTextures(GLsizei, GLuint *);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glGetBooleanv(GLenum, GLboolean *);
+GLAPI MAGNUM_GL_EXPORT GLenum APIENTRY glGetError(void);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glGetFloatv(GLenum, GLfloat *);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glGetIntegerv(GLenum, GLint *);
+GLAPI MAGNUM_GL_EXPORT const GLubyte * APIENTRY glGetString(GLenum);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glGetTexParameterfv(GLenum, GLenum, GLfloat *);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glGetTexParameteriv(GLenum, GLenum, GLint *);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glHint(GLenum, GLenum);
+GLAPI MAGNUM_GL_EXPORT GLboolean APIENTRY glIsEnabled(GLenum);
+GLAPI MAGNUM_GL_EXPORT GLboolean APIENTRY glIsTexture(GLuint);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glLineWidth(GLfloat);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glPixelStorei(GLenum, GLint);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glPolygonOffset(GLfloat, GLfloat);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glReadPixels(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, void *);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glScissor(GLint, GLint, GLsizei, GLsizei);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glStencilFunc(GLenum, GLint, GLuint);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glStencilMask(GLuint);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glStencilOp(GLenum, GLenum, GLenum);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glTexImage2D(GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glTexParameterf(GLenum, GLenum, GLfloat);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glTexParameterfv(GLenum, GLenum, const GLfloat *);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glTexParameteri(GLenum, GLenum, GLint);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glTexParameteriv(GLenum, GLenum, const GLint *);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glTexSubImage2D(GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const void *);
+GLAPI MAGNUM_GL_EXPORT void APIENTRY glViewport(GLint, GLint, GLsizei, GLsizei);
 
 /* Dynamically-loaded function prototypes put into a struct in order to handle
    thread-localness and globals unique across shared libs, this also means way
@@ -1525,7 +1516,7 @@ struct FlextGL {
     GLboolean(APIENTRY *IsVertexArrayOES)(GLuint);
 };
 
-extern FLEXTGL_EXPORT FlextGL flextGL;
+extern MAGNUM_GL_EXPORT FlextGL flextGL;
 
 /* GL_ANGLE_framebuffer_blit */
 

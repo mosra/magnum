@@ -32,7 +32,7 @@
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_BUILD_STATIC
-    #if defined(MagnumMaterialTools_EXPORTS) || defined(MagnumMaterialToolsObjects_EXPORTS)
+    #ifdef MagnumMaterialTools_EXPORTS
         #define MAGNUM_MATERIALTOOLS_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
         #define MAGNUM_MATERIALTOOLS_EXPORT CORRADE_VISIBILITY_IMPORT
