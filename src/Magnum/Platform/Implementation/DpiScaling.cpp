@@ -33,6 +33,7 @@
 #include "Magnum/Magnum.h"
 
 #ifdef _MAGNUM_PLATFORM_USE_X11
+#include <cstdlib> /* std::getenv() */
 #include <cstring>
 #include <dlfcn.h>
 #include <X11/Xresource.h>
