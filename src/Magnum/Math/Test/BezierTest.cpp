@@ -178,6 +178,15 @@ void BezierTest::constructFromCubicHermite() {
     auto bezier = CubicBezier2D::fromCubicHermite(a, b);
 
     CORRADE_COMPARE(bezier, (CubicBezier2D{Vector2{0.0f, 0.0f}, Vector2{10.0f, 15.0f}, Vector2{20.0f, 4.0f}, Vector2{5.0f, -20.0f}}));
+
+    /* A nonzero starting point must translate the first control point as well.
+       Compare the entire curve, not just its endpoints. */
+    CubicHermite2D translatedA{{}, Vector2{1.0f, 2.0f}, Vector2{30.0f, 45.0f}};
+    CubicHermite2D translatedB{Vector2{-45.0f, -72.0f}, Vector2{6.0f, -18.0f}, {}};
+    auto translatedBezier = CubicBezier2D::fromCubicHermite(translatedA, translatedB);
+    CORRADE_COMPARE(translatedBezier, (CubicBezier2D{Vector2{1.0f, 2.0f}, Vector2{11.0f, 17.0f}, Vector2{21.0f, 6.0f}, Vector2{6.0f, -18.0f}}));
+    for(Float t: {0.0f, 0.1f, 0.25f, 0.5f, 0.75f, 0.9f, 1.0f})
+        CORRADE_COMPARE(translatedBezier.value(t), splerp(translatedA, translatedB, t));
 }
 
 void BezierTest::constructCopy() {
