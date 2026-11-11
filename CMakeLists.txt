@@ -392,7 +392,7 @@ if(CORRADE_TARGET_WINDOWS AND NOT CORRADE_TARGET_WINDOWS_RT)
     #   complicated logic from inside cmake_dependent_option() just for a
     #   single option.
     set(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS_DLL_NAME ""
-        CACHE STRING "Name of a DLL in which to search for unique globals symbols if MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS is enabled")
+        CACHE STRING "Name of a DLL in which to search for unique global symbols if MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS is enabled")
 endif()
 
 # Runtime CPU dispatch. Same logic as with equivalent options used in Corrade,
