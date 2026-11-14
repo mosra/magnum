@@ -554,7 +554,7 @@ RendererCore& RendererCore::add(AbstractShaper& shaper, const Float size, const 
            the next line (if any) starts at lineEnd.end(). If lineEnd is empty,
            we reached the end of the input text -- it's *not* an end of the
            line, because the next add() call may continue with it. */
-        const Containers::StringView lineEnd = line.findOr('\n', line.end());
+        const Containers::StringView lineEnd = line.find('\n');
 
         /* If the line is not empty, shape it */
         const UnsignedInt glyphCount = lineEnd.begin() != line.begin() ? shaper.shape(text, line.begin() - text.begin(), lineEnd.begin() - text.begin(), features) : 0;

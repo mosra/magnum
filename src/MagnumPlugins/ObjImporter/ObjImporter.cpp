@@ -188,7 +188,7 @@ void ObjImporter::doOpenData(Containers::Array<char>&& data, const DataFlags dat
     Containers::StringView in = _file->fileData;
     while(in) {
         /* Get a (trimmed) line from the input */
-        const Containers::StringView lineEnd = in.findOr('\n', in.end());
+        const Containers::StringView lineEnd = in.find('\n');
         const Containers::StringView line = in.prefix(lineEnd.begin()).trimmed(Whitespace);
         in = in.suffix(lineEnd.end());
 
@@ -197,7 +197,7 @@ void ObjImporter::doOpenData(Containers::Array<char>&& data, const DataFlags dat
             continue;
 
         /* Parse the keyword */
-        const Containers::StringView keywordEnd = line.findAnyOr(Whitespace, line.end());
+        const Containers::StringView keywordEnd = line.findAny(Whitespace);
         const Containers::StringView keyword = line.prefix(keywordEnd.begin());
 
         /* Mesh name */
@@ -297,7 +297,7 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
     Containers::StringView in{mesh.begin, std::size_t(_file->meshes[id + 1].begin - mesh.begin)};
     while(in) {
         /* Get a line from the input */
-        const Containers::StringView lineEnd = in.findOr('\n', in.end());
+        const Containers::StringView lineEnd = in.find('\n');
         const Containers::StringView line = in.prefix(lineEnd.begin()).trimmed(Whitespace);
         in = in.suffix(lineEnd.end());
 
@@ -306,7 +306,7 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
             continue;
 
         /* Parse the keyword */
-        const Containers::StringView keywordEnd = line.findAnyOr(Whitespace, line.end());
+        const Containers::StringView keywordEnd = line.findAny(Whitespace);
         const Containers::StringView keyword = line.prefix(keywordEnd.begin());
 
         /* Skip keywords that are not interesting to us or that were parsed
@@ -342,7 +342,7 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
             Float data[4];
             std::size_t i = 0;
             for(; i != maxComponentCount && contents; ++i) {
-                const Containers::StringView foundSpace = contents.findAnyOr(Whitespace, contents.end());
+                const Containers::StringView foundSpace = contents.findAny(Whitespace);
 
                 if(!parseFloat("Trade::ObjImporter::mesh():", contents.prefix(foundSpace.begin()), data[i]))
                     return {};
@@ -405,11 +405,11 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
             Vector3ui data[4];
             std::size_t i = 0;
             for(; i != maxIndexTupleCount && contents; ++i) {
-                const Containers::StringView foundSpace = contents.findAnyOr(Whitespace, contents.end());
+                const Containers::StringView foundSpace = contents.findAny(Whitespace);
                 Containers::StringView indexTuple = contents.prefix(foundSpace.begin());
 
                 /* The number before first slash is a position index */
-                const Containers::StringView foundSlash1 = indexTuple.findOr('/', indexTuple.end());
+                const Containers::StringView foundSlash1 = indexTuple.find('/');
                 Int index;
                 if(!parseInt("Trade::ObjImporter::mesh():", indexTuple.prefix(foundSlash1.begin()), index))
                     return {};
@@ -423,7 +423,7 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
                    empty */
                 if(foundSlash1) {
                     indexTuple = indexTuple.suffix(foundSlash1.end());
-                    const Containers::StringView foundSlash2 = indexTuple.findOr('/', indexTuple.end());
+                    const Containers::StringView foundSlash2 = indexTuple.find('/');
                     if(!foundSlash2 || foundSlash2.begin() != indexTuple.begin()) {
                         if(!parseInt("Trade::ObjImporter::mesh():", indexTuple.prefix(foundSlash2.begin()), index))
                             return {};
