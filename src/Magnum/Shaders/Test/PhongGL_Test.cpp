@@ -42,6 +42,8 @@ struct PhongGL_Test: TestSuite::Tester {
     void debugFlags();
     void debugFlagsSupersets();
 
+    void configurationConstruct();
+    void configurationSetters();
     void configurationSetLightCountInvalid();
     #ifndef MAGNUM_TARGET_GLES2
     void configurationSetJointCountInvalid();
@@ -88,7 +90,10 @@ const struct {
 PhongGL_Test::PhongGL_Test() {
     addTests({&PhongGL_Test::debugFlag,
               &PhongGL_Test::debugFlags,
-              &PhongGL_Test::debugFlagsSupersets});
+              &PhongGL_Test::debugFlagsSupersets,
+
+              &PhongGL_Test::configurationConstruct,
+              &PhongGL_Test::configurationSetters});
 
     addInstancedTests({&PhongGL_Test::configurationSetLightCountInvalid},
         Containers::arraySize(ConfigurationSetLightCountInvalidData));
@@ -160,6 +165,42 @@ void PhongGL_Test::debugFlagsSupersets() {
         CORRADE_COMPARE(out, "Shaders::PhongGL::Flag::MultiDraw|Shaders::PhongGL::Flag::ShaderStorageBuffers\n");
     }
     #endif
+    #endif
+}
+
+void PhongGL_Test::configurationConstruct() {
+    PhongGL::Configuration configuration;
+    CORRADE_COMPARE(configuration.flags(), PhongGL::Flags{});
+    CORRADE_COMPARE(configuration.lightCount(), 1);
+    CORRADE_COMPARE(configuration.perDrawLightCount(), 1);
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(configuration.jointCount(), 0);
+    CORRADE_COMPARE(configuration.perVertexJointCount(), 0);
+    CORRADE_COMPARE(configuration.secondaryPerVertexJointCount(), 0);
+    CORRADE_COMPARE(configuration.materialCount(), 1);
+    CORRADE_COMPARE(configuration.drawCount(), 1);
+    #endif
+}
+
+void PhongGL_Test::configurationSetters() {
+    PhongGL::Configuration configuration = PhongGL::Configuration{}
+        .setFlags(PhongGL::Flag::TextureTransformation)
+        .setLightCount(7, 4)
+        #ifndef MAGNUM_TARGET_GLES2
+        .setJointCount(6, 3, 1)
+        .setMaterialCount(17)
+        .setDrawCount(266)
+        #endif
+        ;
+    CORRADE_COMPARE(configuration.flags(), PhongGL::Flag::TextureTransformation);
+    CORRADE_COMPARE(configuration.lightCount(), 7);
+    CORRADE_COMPARE(configuration.perDrawLightCount(), 4);
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(configuration.jointCount(), 6);
+    CORRADE_COMPARE(configuration.perVertexJointCount(), 3);
+    CORRADE_COMPARE(configuration.secondaryPerVertexJointCount(), 1);
+    CORRADE_COMPARE(configuration.materialCount(), 17);
+    CORRADE_COMPARE(configuration.drawCount(), 266);
     #endif
 }
 

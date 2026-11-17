@@ -43,6 +43,9 @@ struct VectorGL_Test: TestSuite::Tester {
     void debugFlagsSupersets();
     #endif
 
+    template<UnsignedInt dimensions> void configurationConstruct();
+    template<UnsignedInt dimensions> void configurationSetters();
+
     template<UnsignedInt dimensions> void constructNoCreate();
     template<UnsignedInt dimensions> void constructCopy();
 };
@@ -53,6 +56,11 @@ VectorGL_Test::VectorGL_Test() {
               #ifndef MAGNUM_TARGET_GLES2
               &VectorGL_Test::debugFlagsSupersets,
               #endif
+
+              &VectorGL_Test::configurationConstruct<2>,
+              &VectorGL_Test::configurationConstruct<3>,
+              &VectorGL_Test::configurationSetters<2>,
+              &VectorGL_Test::configurationSetters<3>,
 
               &VectorGL_Test::constructNoCreate<2>,
               &VectorGL_Test::constructNoCreate<3>,
@@ -95,6 +103,34 @@ void VectorGL_Test::debugFlagsSupersets() {
     #endif
 }
 #endif
+
+template<UnsignedInt dimensions> void VectorGL_Test::configurationConstruct() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    typename VectorGL<dimensions>::Configuration configuration;
+    CORRADE_COMPARE(configuration.flags(), typename VectorGL<dimensions>::Flags{});
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(configuration.materialCount(), 1);
+    CORRADE_COMPARE(configuration.drawCount(), 1);
+    #endif
+}
+
+template<UnsignedInt dimensions> void VectorGL_Test::configurationSetters() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    typename VectorGL<dimensions>::Configuration configuration = typename VectorGL<dimensions>::Configuration{}
+        .setFlags(VectorGL<dimensions>::Flag::TextureTransformation)
+        #ifndef MAGNUM_TARGET_GLES2
+        .setMaterialCount(17)
+        .setDrawCount(266)
+        #endif
+        ;
+    CORRADE_COMPARE(configuration.flags(), VectorGL<dimensions>::Flag::TextureTransformation);
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(configuration.materialCount(), 17);
+    CORRADE_COMPARE(configuration.drawCount(), 266);
+    #endif
+}
 
 template<UnsignedInt dimensions> void VectorGL_Test::constructNoCreate() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));

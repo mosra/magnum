@@ -47,6 +47,10 @@ struct MeshVisualizerGL_Test: TestSuite::Tester {
     void debugFlagsSupersets3D();
     #endif
 
+    void configurationConstruct2D();
+    void configurationConstruct3D();
+    void configurationSetters2D();
+    void configurationSetters3D();
     #ifndef MAGNUM_TARGET_GLES2
     void configurationSetJointCountInvalid2D();
     void configurationSetJointCountInvalid3D();
@@ -91,7 +95,11 @@ MeshVisualizerGL_Test::MeshVisualizerGL_Test() {
               &MeshVisualizerGL_Test::debugFlagsSupersets2D,
               &MeshVisualizerGL_Test::debugFlagsSupersets3D,
               #endif
-              });
+
+              &MeshVisualizerGL_Test::configurationConstruct2D,
+              &MeshVisualizerGL_Test::configurationConstruct3D,
+              &MeshVisualizerGL_Test::configurationSetters2D,
+              &MeshVisualizerGL_Test::configurationSetters3D});
 
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests({
@@ -232,6 +240,68 @@ void MeshVisualizerGL_Test::debugFlagsSupersets3D() {
     #endif
 }
 #endif
+
+void MeshVisualizerGL_Test::configurationConstruct2D() {
+    MeshVisualizerGL2D::Configuration configuration;
+    CORRADE_COMPARE(configuration.flags(), MeshVisualizerGL2D::Flags{});
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(configuration.jointCount(), 0);
+    CORRADE_COMPARE(configuration.perVertexJointCount(), 0);
+    CORRADE_COMPARE(configuration.secondaryPerVertexJointCount(), 0);
+    CORRADE_COMPARE(configuration.materialCount(), 1);
+    CORRADE_COMPARE(configuration.drawCount(), 1);
+    #endif
+}
+
+void MeshVisualizerGL_Test::configurationConstruct3D() {
+    MeshVisualizerGL3D::Configuration configuration;
+    CORRADE_COMPARE(configuration.flags(), MeshVisualizerGL3D::Flags{});
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(configuration.jointCount(), 0);
+    CORRADE_COMPARE(configuration.perVertexJointCount(), 0);
+    CORRADE_COMPARE(configuration.secondaryPerVertexJointCount(), 0);
+    CORRADE_COMPARE(configuration.materialCount(), 1);
+    CORRADE_COMPARE(configuration.drawCount(), 1);
+    #endif
+}
+
+void MeshVisualizerGL_Test::configurationSetters2D() {
+    MeshVisualizerGL2D::Configuration configuration = MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::NoGeometryShader)
+        #ifndef MAGNUM_TARGET_GLES2
+        .setJointCount(6, 3, 1)
+        .setMaterialCount(17)
+        .setDrawCount(266)
+        #endif
+        ;
+    CORRADE_COMPARE(configuration.flags(), MeshVisualizerGL2D::Flag::NoGeometryShader);
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(configuration.jointCount(), 6);
+    CORRADE_COMPARE(configuration.perVertexJointCount(), 3);
+    CORRADE_COMPARE(configuration.secondaryPerVertexJointCount(), 1);
+    CORRADE_COMPARE(configuration.materialCount(), 17);
+    CORRADE_COMPARE(configuration.drawCount(), 266);
+    #endif
+}
+
+void MeshVisualizerGL_Test::configurationSetters3D() {
+    MeshVisualizerGL3D::Configuration configuration = MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::NoGeometryShader)
+        #ifndef MAGNUM_TARGET_GLES2
+        .setJointCount(6, 3, 1)
+        .setMaterialCount(17)
+        .setDrawCount(266)
+        #endif
+        ;
+    CORRADE_COMPARE(configuration.flags(), MeshVisualizerGL3D::Flag::NoGeometryShader);
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(configuration.jointCount(), 6);
+    CORRADE_COMPARE(configuration.perVertexJointCount(), 3);
+    CORRADE_COMPARE(configuration.secondaryPerVertexJointCount(), 1);
+    CORRADE_COMPARE(configuration.materialCount(), 17);
+    CORRADE_COMPARE(configuration.drawCount(), 266);
+    #endif
+}
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshVisualizerGL_Test::configurationSetJointCountInvalid2D() {

@@ -43,6 +43,9 @@ struct VertexColorGL_Test: TestSuite::Tester {
     void debugFlagsSupersets();
     #endif
 
+    template<UnsignedInt dimensions> void configurationConstruct();
+    template<UnsignedInt dimensions> void configurationSetters();
+
     template<UnsignedInt dimensions> void constructNoCreate();
     template<UnsignedInt dimensions> void constructCopy();
 };
@@ -53,6 +56,11 @@ VertexColorGL_Test::VertexColorGL_Test() {
               #ifndef MAGNUM_TARGET_GLES2
               &VertexColorGL_Test::debugFlagsSupersets,
               #endif
+
+              &VertexColorGL_Test::configurationConstruct<2>,
+              &VertexColorGL_Test::configurationConstruct<3>,
+              &VertexColorGL_Test::configurationSetters<2>,
+              &VertexColorGL_Test::configurationSetters<3>,
 
               &VertexColorGL_Test::constructNoCreate<2>,
               &VertexColorGL_Test::constructNoCreate<3>,
@@ -105,6 +113,31 @@ void VertexColorGL_Test::debugFlagsSupersets() {
     #endif
 }
 #endif
+
+template<UnsignedInt dimensions> void VertexColorGL_Test::configurationConstruct() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    typename VertexColorGL<dimensions>::Configuration configuration;
+    CORRADE_COMPARE(configuration.flags(), typename VertexColorGL<dimensions>::Flags{});
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(configuration.drawCount(), 1);
+    #endif
+}
+
+template<UnsignedInt dimensions> void VertexColorGL_Test::configurationSetters() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    typename VertexColorGL<dimensions>::Configuration configuration = typename VertexColorGL<dimensions>::Configuration{}
+        .setFlags(typename VertexColorGL<dimensions>::Flag(0x80))
+        #ifndef MAGNUM_TARGET_GLES2
+        .setDrawCount(266)
+        #endif
+        ;
+    CORRADE_COMPARE(configuration.flags(), typename VertexColorGL<dimensions>::Flag(0x80));
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(configuration.drawCount(), 266);
+    #endif
+}
 
 template<UnsignedInt dimensions> void VertexColorGL_Test::constructNoCreate() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));

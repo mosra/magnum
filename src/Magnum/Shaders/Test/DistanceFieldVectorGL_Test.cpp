@@ -43,6 +43,9 @@ struct DistanceFieldVectorGL_Test: TestSuite::Tester {
     void debugFlagsSupersets();
     #endif
 
+    template<UnsignedInt dimensions> void configurationConstruct();
+    template<UnsignedInt dimensions> void configurationSetters();
+
     template<UnsignedInt dimensions> void constructNoCreate();
     template<UnsignedInt dimensions> void constructCopy();
 };
@@ -53,6 +56,11 @@ DistanceFieldVectorGL_Test::DistanceFieldVectorGL_Test() {
               #ifndef MAGNUM_TARGET_GLES2
               &DistanceFieldVectorGL_Test::debugFlagsSupersets,
               #endif
+
+              &DistanceFieldVectorGL_Test::configurationConstruct<2>,
+              &DistanceFieldVectorGL_Test::configurationConstruct<3>,
+              &DistanceFieldVectorGL_Test::configurationSetters<2>,
+              &DistanceFieldVectorGL_Test::configurationSetters<3>,
 
               &DistanceFieldVectorGL_Test::constructNoCreate<2>,
               &DistanceFieldVectorGL_Test::constructNoCreate<3>,
@@ -95,6 +103,34 @@ void DistanceFieldVectorGL_Test::debugFlagsSupersets() {
     #endif
 }
 #endif
+
+template<UnsignedInt dimensions> void DistanceFieldVectorGL_Test::configurationConstruct() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    typename DistanceFieldVectorGL<dimensions>::Configuration configuration;
+    CORRADE_COMPARE(configuration.flags(), typename DistanceFieldVectorGL<dimensions>::Flags{});
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(configuration.materialCount(), 1);
+    CORRADE_COMPARE(configuration.drawCount(), 1);
+    #endif
+}
+
+template<UnsignedInt dimensions> void DistanceFieldVectorGL_Test::configurationSetters() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    typename DistanceFieldVectorGL<dimensions>::Configuration configuration = typename DistanceFieldVectorGL<dimensions>::Configuration{}
+        .setFlags(DistanceFieldVectorGL<dimensions>::Flag::TextureTransformation)
+        #ifndef MAGNUM_TARGET_GLES2
+        .setMaterialCount(17)
+        .setDrawCount(266)
+        #endif
+        ;
+    CORRADE_COMPARE(configuration.flags(), DistanceFieldVectorGL<dimensions>::Flag::TextureTransformation);
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(configuration.materialCount(), 17);
+    CORRADE_COMPARE(configuration.drawCount(), 266);
+    #endif
+}
 
 template<UnsignedInt dimensions> void DistanceFieldVectorGL_Test::constructNoCreate() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));

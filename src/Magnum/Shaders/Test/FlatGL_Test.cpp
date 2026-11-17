@@ -42,6 +42,8 @@ struct FlatGL_Test: TestSuite::Tester {
     void debugFlags();
     void debugFlagsSupersets();
 
+    template<UnsignedInt dimensions> void configurationConstruct();
+    template<UnsignedInt dimensions> void configurationSetters();
     #ifndef MAGNUM_TARGET_GLES2
     template<UnsignedInt dimensions> void configurationSetJointCountInvalid();
     #endif
@@ -74,7 +76,12 @@ const struct {
 FlatGL_Test::FlatGL_Test() {
     addTests({&FlatGL_Test::debugFlag,
               &FlatGL_Test::debugFlags,
-              &FlatGL_Test::debugFlagsSupersets});
+              &FlatGL_Test::debugFlagsSupersets,
+
+              &FlatGL_Test::configurationConstruct<2>,
+              &FlatGL_Test::configurationConstruct<3>,
+              &FlatGL_Test::configurationSetters<2>,
+              &FlatGL_Test::configurationSetters<3>});
 
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests<FlatGL_Test>({
@@ -149,6 +156,41 @@ void FlatGL_Test::debugFlagsSupersets() {
         CORRADE_COMPARE(out, "Shaders::FlatGL::Flag::MultiDraw|Shaders::FlatGL::Flag::ShaderStorageBuffers\n");
     }
     #endif
+    #endif
+}
+
+template<UnsignedInt dimensions> void FlatGL_Test::configurationConstruct() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    typename FlatGL<dimensions>::Configuration configuration;
+    CORRADE_COMPARE(configuration.flags(), typename FlatGL<dimensions>::Flags{});
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(configuration.jointCount(), 0);
+    CORRADE_COMPARE(configuration.perVertexJointCount(), 0);
+    CORRADE_COMPARE(configuration.secondaryPerVertexJointCount(), 0);
+    CORRADE_COMPARE(configuration.materialCount(), 1);
+    CORRADE_COMPARE(configuration.drawCount(), 1);
+    #endif
+}
+
+template<UnsignedInt dimensions> void FlatGL_Test::configurationSetters() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    typename FlatGL<dimensions>::Configuration configuration = typename FlatGL<dimensions>::Configuration{}
+        .setFlags(FlatGL<dimensions>::Flag::TextureTransformation)
+        #ifndef MAGNUM_TARGET_GLES2
+        .setJointCount(6, 3, 1)
+        .setMaterialCount(17)
+        .setDrawCount(266)
+        #endif
+        ;
+    CORRADE_COMPARE(configuration.flags(), FlatGL<dimensions>::Flag::TextureTransformation);
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(configuration.jointCount(), 6);
+    CORRADE_COMPARE(configuration.perVertexJointCount(), 3);
+    CORRADE_COMPARE(configuration.secondaryPerVertexJointCount(), 1);
+    CORRADE_COMPARE(configuration.materialCount(), 17);
+    CORRADE_COMPARE(configuration.drawCount(), 266);
     #endif
 }
 

@@ -45,8 +45,8 @@ struct LineGL_Test: TestSuite::Tester {
 
     void glslAttributeMatch();
 
-    template<UnsignedInt dimensions> void constructConfigurationDefault();
-    template<UnsignedInt dimensions> void constructConfigurationSetters();
+    template<UnsignedInt dimensions> void configurationConstruct();
+    template<UnsignedInt dimensions> void configurationSetters();
 
     template<UnsignedInt dimensions> void constructNoCreate();
     template<UnsignedInt dimensions> void constructCopy();
@@ -59,10 +59,10 @@ LineGL_Test::LineGL_Test() {
 
               &LineGL_Test::glslAttributeMatch,
 
-              &LineGL_Test::constructConfigurationDefault<2>,
-              &LineGL_Test::constructConfigurationDefault<3>,
-              &LineGL_Test::constructConfigurationSetters<2>,
-              &LineGL_Test::constructConfigurationSetters<3>,
+              &LineGL_Test::configurationConstruct<2>,
+              &LineGL_Test::configurationConstruct<3>,
+              &LineGL_Test::configurationSetters<2>,
+              &LineGL_Test::configurationSetters<3>,
 
               &LineGL_Test::constructNoCreate<2>,
               &LineGL_Test::constructNoCreate<3>,
@@ -124,7 +124,7 @@ void LineGL_Test::glslAttributeMatch() {
     CORRADE_COMPARE(LINE_ANNOTATION_ATTRIBUTE_LOCATION, LineGL3D::Annotation::Location);
 }
 
-template<UnsignedInt dimensions> void LineGL_Test::constructConfigurationDefault() {
+template<UnsignedInt dimensions> void LineGL_Test::configurationConstruct() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     typename LineGL<dimensions>::Configuration configuration;
@@ -133,7 +133,7 @@ template<UnsignedInt dimensions> void LineGL_Test::constructConfigurationDefault
     CORRADE_COMPARE(configuration.drawCount(), 1);
 }
 
-template<UnsignedInt dimensions> void LineGL_Test::constructConfigurationSetters() {
+template<UnsignedInt dimensions> void LineGL_Test::configurationSetters() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     typename LineGL<dimensions>::Configuration configuration = typename LineGL<dimensions>::Configuration{}
