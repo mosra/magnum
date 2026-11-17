@@ -25,7 +25,6 @@
 */
 
 #include <algorithm> /* std::next_permutation() */
-#include <Corrade/Containers/StaticArray.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
@@ -1282,7 +1281,7 @@ void MaterialDataTest::constructDuplicateAttribute() {
     MaterialData data{{}, Utility::move(attributes), Containers::array<UnsignedInt>({1, 1, 6})};
     /* Because with graceful asserts it doesn't exit on error, the assertion
        might get printed multiple times */
-    CORRADE_COMPARE(out.partition('\n')[0], "Trade::MaterialData: duplicate attribute DiffuseTextureCoordinates in layer 2"_s);
+    CORRADE_COMPARE(out.prefix(out.find('\n').begin()), "Trade::MaterialData: duplicate attribute DiffuseTextureCoordinates in layer 2"_s);
 }
 
 void MaterialDataTest::constructFromImmutableSortedArray() {
