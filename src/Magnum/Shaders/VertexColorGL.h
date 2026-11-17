@@ -484,6 +484,7 @@ template<UnsignedInt dimensions> class VertexColorGL<dimensions>::Configuration 
 
         /**
          * @brief Set flags
+         * @return Reference to self (for method chaining)
          *
          * No flags are set by default.
          * @see @ref VertexColorGL::flags()
@@ -504,6 +505,7 @@ template<UnsignedInt dimensions> class VertexColorGL<dimensions>::Configuration 
 
         /**
          * @brief Set draw count
+         * @return Reference to self (for method chaining)
          *
          * If @ref Flag::UniformBuffers is set, describes size of a
          * @ref TransformationProjectionUniform2D /

@@ -1410,6 +1410,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL<dimensions>:
 
         /**
          * @brief Set flags
+         * @return Reference to self (for method chaining)
          *
          * No flags are set by default.
          * @see @ref FlatGL::flags()
@@ -1446,6 +1447,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL<dimensions>:
 
         /**
          * @brief Set joint count
+         * @return Reference to self (for method chaining)
          *
          * If @ref Flag::UniformBuffers isn't set, @p count describes an upper
          * bound on how many joint matrices get supplied to each draw by
@@ -1494,6 +1496,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL<dimensions>:
 
         /**
          * @brief Set material count
+         * @return Reference to self (for method chaining)
          *
          * If @ref Flag::UniformBuffers is set, describes size of a
          * @ref FlatMaterialUniform buffer bound with
@@ -1527,6 +1530,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL<dimensions>:
 
         /**
          * @brief Set draw count
+         * @return Reference to self (for method chaining)
          *
          * If @ref Flag::UniformBuffers is set, describes size of a
          * @ref TransformationProjectionUniform2D /

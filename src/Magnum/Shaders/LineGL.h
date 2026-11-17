@@ -1015,6 +1015,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT LineGL<dimensions>:
 
         /**
          * @brief Set flags
+         * @return Reference to self (for method chaining)
          *
          * No flags are set by default.
          * @see @ref LineGL::flags()
@@ -1029,6 +1030,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT LineGL<dimensions>:
 
         /**
          * @brief Set cap style
+         * @return Reference to self (for method chaining)
          *
          * Unlike for example the SVG specification that uses
          * @ref LineCapStyle::Butt by default, the default value is
@@ -1046,6 +1048,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT LineGL<dimensions>:
 
         /**
          * @brief Set join style
+         * @return Reference to self (for method chaining)
          *
          * Default value is @ref LineJoinStyle::Miter, consistently with the
          * SVG specification.
@@ -1061,6 +1064,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT LineGL<dimensions>:
 
         /**
          * @brief Set material count
+         * @return Reference to self (for method chaining)
          *
          * If @ref Flag::UniformBuffers is set, describes size of a
          * @ref LineMaterialUniform buffer bound with
@@ -1087,6 +1091,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT LineGL<dimensions>:
 
         /**
          * @brief Set draw count
+         * @return Reference to self (for method chaining)
          *
          * If @ref Flag::UniformBuffers is set, describes size of a
          * @ref TransformationProjectionUniform2D /

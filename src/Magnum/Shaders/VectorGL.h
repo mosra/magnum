@@ -724,6 +724,7 @@ template<UnsignedInt dimensions> class VectorGL<dimensions>::Configuration {
 
         /**
          * @brief Set flags
+         * @return Reference to self (for method chaining)
          *
          * No flags are set by default.
          * @see @ref VectorGL::flags()
@@ -744,6 +745,7 @@ template<UnsignedInt dimensions> class VectorGL<dimensions>::Configuration {
 
         /**
          * @brief Set material count
+         * @return Reference to self (for method chaining)
          *
          * If @ref Flag::UniformBuffers is set, describes size of a
          * @ref VectorMaterialUniform buffer bound with
@@ -777,6 +779,7 @@ template<UnsignedInt dimensions> class VectorGL<dimensions>::Configuration {
 
         /**
          * @brief Set draw count
+         * @return Reference to self (for method chaining)
          *
          * If @ref Flag::UniformBuffers is set, describes size of a
          * @ref TransformationProjectionUniform2D /

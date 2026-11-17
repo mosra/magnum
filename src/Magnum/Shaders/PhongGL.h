@@ -2236,6 +2236,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL::Configuration {
 
         /**
          * @brief Set flags
+         * @return Reference to self (for method chaining)
          *
          * No flags are set by default.
          * @see @ref PhongGL::flags()
@@ -2253,6 +2254,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL::Configuration {
 
         /**
          * @brief Set light count
+         * @return Reference to self (for method chaining)
          *
          * If @ref Flag::UniformBuffers isn't set, @p count corresponds to the
          * range / array size accepted by @ref setLightPosition() /
@@ -2289,6 +2291,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL::Configuration {
 
         /**
          * @brief Set light count
+         * @return Reference to self (for method chaining)
          *
          * Same as calling @ref setLightCount(UnsignedInt, UnsignedInt) with
          * both parameters set to @p count.
@@ -2324,6 +2327,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL::Configuration {
 
         /**
          * @brief Set joint count
+         * @return Reference to self (for method chaining)
          *
          * If @ref Flag::UniformBuffers isn't set, @p count describes an upper
          * bound on how many joint matrices get supplied to each draw with
@@ -2371,6 +2375,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL::Configuration {
 
         /**
          * @brief Set material count
+         * @return Reference to self (for method chaining)
          *
          * If @ref Flag::UniformBuffers is set, describes size of a
          * @ref PhongMaterialUniform buffer bound with
@@ -2404,6 +2409,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL::Configuration {
 
         /**
          * @brief Set draw count
+         * @return Reference to self (for method chaining)
          *
          * If @ref Flag::UniformBuffers is set, describes size of a
          * @ref TransformationUniform3D / @ref PhongDrawUniform /
