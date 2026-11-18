@@ -57,6 +57,7 @@ if(MAGNUM_TARGET_GL)
     endif()
 
     list(APPEND MagnumShaders_SRCS
+        glShaderWrapper.cpp
         ${MagnumShaders_RESOURCES_GL})
 
     list(APPEND MagnumShaders_GracefulAssert_SRCS
@@ -65,9 +66,7 @@ if(MAGNUM_TARGET_GL)
         MeshVisualizerGL.cpp
         PhongGL.cpp
         VectorGL.cpp
-        VertexColorGL.cpp
-
-        glShaderWrapper.cpp)
+        VertexColorGL.cpp)
 
     list(APPEND MagnumShaders_HEADERS
         DistanceFieldVectorGL.h
