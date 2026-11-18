@@ -41,8 +41,8 @@
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/Shaders/baseGL.h"
 #include "Magnum/Shaders/GenericGL.h"
-#include "Magnum/Shaders/glShaderWrapper.h"
 #include "Magnum/Shaders/visibility.h"
 
 #ifndef MAGNUM_TARGET_GLES2

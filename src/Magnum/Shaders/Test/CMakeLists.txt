@@ -38,11 +38,10 @@ target_compile_definitions(ShadersLineTest PRIVATE "CORRADE_GRACEFUL_ASSERT")
 corrade_add_test(ShadersVectorTest VectorTest.cpp LIBRARIES MagnumShaders)
 
 if(MAGNUM_TARGET_GL)
-    corrade_add_test(ShadersGLShaderWrapperTest GLShaderWrapperTest.cpp LIBRARIES MagnumShaders)
-
     # There's an underscore between GL and Test to disambiguate from GLTest,
     # which is a common suffix used to mark tests that need a GL context. Ugly,
     # I know.
+    corrade_add_test(ShadersBaseGL_Test BaseGL_Test.cpp LIBRARIES MagnumShaders)
     corrade_add_test(ShadersDistanceFieldVectorGL_Test DistanceFieldVectorGL_Test.cpp LIBRARIES MagnumShaders)
     corrade_add_test(ShadersFlatGL_Test FlatGL_Test.cpp LIBRARIES MagnumShadersTestLib)
     corrade_add_test(ShadersGenericGL_Test GenericGL_Test.cpp LIBRARIES MagnumShaders)
@@ -80,6 +79,8 @@ if(MAGNUM_TARGET_GL)
                     ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
         file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
             INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+
+        corrade_add_test(ShadersBaseGLTest BaseGLTest.cpp LIBRARIES MagnumShaders MagnumOpenGLTester)
 
         set(ShadersDistanceFieldVectorGLTest_SRCS DistanceFieldVectorGLTest.cpp)
         if(CORRADE_TARGET_IOS)
@@ -179,8 +180,6 @@ if(MAGNUM_TARGET_GL)
                 add_dependencies(ShadersFlatGLTest TgaImporter)
             endif()
         endif()
-
-        corrade_add_test(ShadersGLShaderWrapperGLTest GLShaderWrapperGLTest.cpp LIBRARIES MagnumShaders MagnumOpenGLTester)
 
         set(ShadersMeshVisualizerGLTest_SRCS MeshVisualizerGLTest.cpp)
         if(CORRADE_TARGET_IOS)

@@ -27,29 +27,27 @@
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/Shader.h"
 #include "Magnum/GL/Version.h"
-#include "Magnum/Shaders/glShaderWrapper.h"
+#include "Magnum/Shaders/baseGL.h"
 
 namespace Magnum { namespace Shaders { namespace Test { namespace {
 
-struct GLShaderWrapperGLTest: GL::OpenGLTester {
-    explicit GLShaderWrapperGLTest();
+struct BaseGLTest: GL::OpenGLTester {
+    explicit BaseGLTest();
 
-    void construct();
-    void constructMove();
-
-    void convert();
-    void convertRvalue();
+    void shaderWrapperConstruct();
+    void shaderWrapperConstructMove();
+    void shaderWrapperConvert();
+    void shaderWrapperConvertRvalue();
 };
 
-GLShaderWrapperGLTest::GLShaderWrapperGLTest() {
-    addTests({&GLShaderWrapperGLTest::construct,
-              &GLShaderWrapperGLTest::constructMove,
-
-              &GLShaderWrapperGLTest::convert,
-              &GLShaderWrapperGLTest::convertRvalue});
+BaseGLTest::BaseGLTest() {
+    addTests({&BaseGLTest::shaderWrapperConstruct,
+              &BaseGLTest::shaderWrapperConstructMove,
+              &BaseGLTest::shaderWrapperConvert,
+              &BaseGLTest::shaderWrapperConvertRvalue});
 }
 
-void GLShaderWrapperGLTest::construct() {
+void BaseGLTest::shaderWrapperConstruct() {
     {
         GL::Shader glShader{
             #ifndef MAGNUM_TARGET_GLES
@@ -73,7 +71,7 @@ void GLShaderWrapperGLTest::construct() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-void GLShaderWrapperGLTest::constructMove() {
+void BaseGLTest::shaderWrapperConstructMove() {
     GL::Shader glShaderA{
         #ifndef MAGNUM_TARGET_GLES
         GL::Version::GL300,
@@ -113,7 +111,7 @@ void GLShaderWrapperGLTest::constructMove() {
     CORRADE_VERIFY(std::is_nothrow_move_assignable<Implementation::GLShaderWrapper>::value);
 }
 
-void GLShaderWrapperGLTest::convert() {
+void BaseGLTest::shaderWrapperConvert() {
     {
         GL::Shader glShader{
             #ifndef MAGNUM_TARGET_GLES
@@ -140,7 +138,7 @@ void GLShaderWrapperGLTest::convert() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-void GLShaderWrapperGLTest::convertRvalue() {
+void BaseGLTest::shaderWrapperConvertRvalue() {
     {
         GL::Shader glShader{
             #ifndef MAGNUM_TARGET_GLES
@@ -169,4 +167,4 @@ void GLShaderWrapperGLTest::convertRvalue() {
 
 }}}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::GLShaderWrapperGLTest)
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::BaseGLTest)

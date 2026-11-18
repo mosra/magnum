@@ -57,7 +57,7 @@ if(MAGNUM_TARGET_GL)
     endif()
 
     list(APPEND MagnumShaders_SRCS
-        glShaderWrapper.cpp
+        baseGL.cpp
         ${MagnumShaders_RESOURCES_GL})
 
     list(APPEND MagnumShaders_GracefulAssert_SRCS
@@ -69,15 +69,14 @@ if(MAGNUM_TARGET_GL)
         VertexColorGL.cpp)
 
     list(APPEND MagnumShaders_HEADERS
+        baseGL.h
         DistanceFieldVectorGL.h
         FlatGL.h
         GenericGL.h
         MeshVisualizerGL.h
         PhongGL.h
         VectorGL.h
-        VertexColorGL.h
-
-        glShaderWrapper.h)
+        VertexColorGL.h)
 
     if(NOT MAGNUM_TARGET_GLES2)
         list(APPEND MagnumShaders_GracefulAssert_SRCS

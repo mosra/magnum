@@ -24,36 +24,40 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/TestSuite/Tester.h>
+#include "baseGL.h"
 
-#include "Magnum/Magnum.h"
-#include "Magnum/Shaders/glShaderWrapper.h"
+#include "Magnum/GL/Shader.h"
 
-namespace Magnum { namespace Shaders { namespace Test { namespace {
+namespace Magnum { namespace Shaders { namespace Implementation {
 
-struct GLShaderWrapperTest: TestSuite::Tester {
-    explicit GLShaderWrapperTest();
+GLShaderWrapper::GLShaderWrapper(GL::Shader&& shader) noexcept: type{GLenum(shader.type())}, id{shader.release()} {}
 
-    void constructNoCreate();
-    void constructCopy();
-};
-
-GLShaderWrapperTest::GLShaderWrapperTest() {
-    addTests({&GLShaderWrapperTest::constructNoCreate,
-              &GLShaderWrapperTest::constructCopy});
+GLShaderWrapper::GLShaderWrapper(GLShaderWrapper&& other) noexcept: type{other.type}, id{other.id} {
+    other.id = 0;
 }
 
-void GLShaderWrapperTest::constructNoCreate() {
-    Implementation::GLShaderWrapper shader{NoCreate};
-    CORRADE_COMPARE(shader.type, 0);
-    CORRADE_COMPARE(shader.id, 0);
+GLShaderWrapper& GLShaderWrapper::operator=(GLShaderWrapper&& other) noexcept {
+    using Utility::swap;
+    swap(other.type, type);
+    swap(other.id, id);
+    return *this;
 }
 
-void GLShaderWrapperTest::constructCopy() {
-    CORRADE_VERIFY(!std::is_copy_constructible<Implementation::GLShaderWrapper>{});
-    CORRADE_VERIFY(!std::is_copy_assignable<Implementation::GLShaderWrapper>{});
+GLShaderWrapper::~GLShaderWrapper() {
+    /* Convert itself to a temporary GL::Shader, triggering deletion in its
+       destructor. Cast to void to avoid warnings about an unused result. */
+    if(id)
+        static_cast<void>(GL::Shader{Utility::move(*this)});
 }
 
-}}}}
+GLShaderWrapper::operator GL::Shader() & noexcept {
+    return GL::Shader::wrap(GL::Shader::Type(type), id);
+}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::GLShaderWrapperTest)
+GLShaderWrapper::operator GL::Shader() && noexcept {
+    GL::Shader out = GL::Shader::wrap(GL::Shader::Type(type), id, GL::ObjectFlag::DeleteOnDestruction);
+    id = 0;
+    return out;
+}
+
+}}}

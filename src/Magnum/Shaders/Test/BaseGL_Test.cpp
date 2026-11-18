@@ -1,5 +1,3 @@
-#ifndef Magnum_Shaders_glShaderWrapper_h
-#define Magnum_Shaders_glShaderWrapper_h
 /*
     This file is part of Magnum.
 
@@ -26,38 +24,36 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/Tags.h"
-#include "Magnum/GL/GL.h"
-#include "Magnum/Shaders/visibility.h"
+#include <Corrade/TestSuite/Tester.h>
 
-namespace Magnum { namespace Shaders { namespace Implementation {
+#include "Magnum/Magnum.h"
+#include "Magnum/Shaders/baseGL.h"
 
-/* A lightweight alternative to GL::Shader that holds just the type and ID,
-   used by CompileState instances of all shaders. There it's used just to
-   retrieve error messages in case of a compilation failures, so it doesn't
-   make sense to pull in stuff needed to store shader sources such as strings
-   and vectors/arrays.
+namespace Magnum { namespace Shaders { namespace Test { namespace {
 
-   Might get revisited once GL::Shader gets the deSTLification treatment, but
-   even then this class seems significantly lighter weight. */
-struct MAGNUM_SHADERS_EXPORT GLShaderWrapper {
-    /*implicit*/ GLShaderWrapper(NoCreateT) noexcept: type{}, id{} {}
-    /*implicit*/ GLShaderWrapper(GL::Shader&& shader) noexcept;
+struct BaseGL_Test: TestSuite::Tester {
+    explicit BaseGL_Test();
 
-    GLShaderWrapper(const GLShaderWrapper&) = delete;
-    GLShaderWrapper(GLShaderWrapper&& other) noexcept;
-
-    GLShaderWrapper& operator=(const GLShaderWrapper&) = delete;
-    GLShaderWrapper& operator=(GLShaderWrapper&& other) noexcept;
-
-    ~GLShaderWrapper();
-    /*implicit*/ operator GL::Shader() & noexcept;
-    /*implicit*/ operator GL::Shader() && noexcept;
-
-    GLenum type;
-    GLuint id;
+    void shaderWrapperConstructNoCreate();
+    void shaderWrapperConstructCopy();
 };
 
-}}}
+BaseGL_Test::BaseGL_Test() {
+    addTests({&BaseGL_Test::shaderWrapperConstructNoCreate,
+              &BaseGL_Test::shaderWrapperConstructCopy});
+}
 
-#endif
+void BaseGL_Test::shaderWrapperConstructNoCreate() {
+    Implementation::GLShaderWrapper shader{NoCreate};
+    CORRADE_COMPARE(shader.type, 0);
+    CORRADE_COMPARE(shader.id, 0);
+}
+
+void BaseGL_Test::shaderWrapperConstructCopy() {
+    CORRADE_VERIFY(!std::is_copy_constructible<Implementation::GLShaderWrapper>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Implementation::GLShaderWrapper>{});
+}
+
+}}}}
+
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::BaseGL_Test)

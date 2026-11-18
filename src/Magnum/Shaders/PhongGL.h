@@ -42,8 +42,8 @@
 #include <Corrade/Utility/Move.h>
 
 #include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/Shaders/baseGL.h"
 #include "Magnum/Shaders/GenericGL.h"
-#include "Magnum/Shaders/glShaderWrapper.h"
 #include "Magnum/Shaders/visibility.h"
 
 namespace Magnum { namespace Shaders {

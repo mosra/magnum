@@ -1,3 +1,5 @@
+#ifndef Magnum_Shaders_baseGL_h
+#define Magnum_Shaders_baseGL_h
 /*
     This file is part of Magnum.
 
@@ -24,40 +26,34 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "glShaderWrapper.h"
-
-#include "Magnum/GL/Shader.h"
+#include "Magnum/Tags.h"
+#include "Magnum/GL/GL.h"
+#include "Magnum/Shaders/visibility.h"
 
 namespace Magnum { namespace Shaders { namespace Implementation {
 
-GLShaderWrapper::GLShaderWrapper(GL::Shader&& shader) noexcept: type{GLenum(shader.type())}, id{shader.release()} {}
+/* A lightweight alternative to GL::Shader that holds just the type and ID,
+   used by CompileState instances of all shaders. There it's used just to
+   retrieve error messages in case of a compilation failures, so it doesn't
+   make sense to pull in the whole interface including dependent includes. */
+struct MAGNUM_SHADERS_EXPORT GLShaderWrapper {
+    /*implicit*/ GLShaderWrapper(NoCreateT) noexcept: type{}, id{} {}
+    /*implicit*/ GLShaderWrapper(GL::Shader&& shader) noexcept;
 
-GLShaderWrapper::GLShaderWrapper(GLShaderWrapper&& other) noexcept: type{other.type}, id{other.id} {
-    other.id = 0;
-}
+    GLShaderWrapper(const GLShaderWrapper&) = delete;
+    GLShaderWrapper(GLShaderWrapper&& other) noexcept;
 
-GLShaderWrapper& GLShaderWrapper::operator=(GLShaderWrapper&& other) noexcept {
-    using Utility::swap;
-    swap(other.type, type);
-    swap(other.id, id);
-    return *this;
-}
+    GLShaderWrapper& operator=(const GLShaderWrapper&) = delete;
+    GLShaderWrapper& operator=(GLShaderWrapper&& other) noexcept;
 
-GLShaderWrapper::~GLShaderWrapper() {
-    /* Convert itself to a temporary GL::Shader, triggering deletion in its
-       destructor. Cast to void to avoid warnings about an unused result. */
-    if(id)
-        static_cast<void>(GL::Shader{Utility::move(*this)});
-}
+    ~GLShaderWrapper();
+    /*implicit*/ operator GL::Shader() & noexcept;
+    /*implicit*/ operator GL::Shader() && noexcept;
 
-GLShaderWrapper::operator GL::Shader() & noexcept {
-    return GL::Shader::wrap(GL::Shader::Type(type), id);
-}
-
-GLShaderWrapper::operator GL::Shader() && noexcept {
-    GL::Shader out = GL::Shader::wrap(GL::Shader::Type(type), id, GL::ObjectFlag::DeleteOnDestruction);
-    id = 0;
-    return out;
-}
+    GLenum type;
+    GLuint id;
+};
 
 }}}
+
+#endif
