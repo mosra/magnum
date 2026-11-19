@@ -3238,7 +3238,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     #ifdef MAGNUM_TARGET_GLES
     if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
-        Debug() << "Using" << GL::Extensions::NV::shader_noperspective_interpolation::string();
+        CORRADE_INFO("Using" << GL::Extensions::NV::shader_noperspective_interpolation::string());
     #endif
 
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(16));
@@ -3356,7 +3356,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     #ifdef MAGNUM_TARGET_GLES
     if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
-        Debug() << "Using" << GL::Extensions::NV::shader_noperspective_interpolation::string();
+        CORRADE_INFO("Using" << GL::Extensions::NV::shader_noperspective_interpolation::string());
     #endif
 
     GL::Mesh sphere = MeshTools::compile(Primitives::icosphereSolid(1));
@@ -4019,7 +4019,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
     if(!GL::Context::current().isVersionSupported(GL::Version::GLES320))
     #endif
     {
-        Debug{} << "Using primitive ID from vertex ID";
+        CORRADE_INFO("Using primitive ID from vertex ID");
         flags = MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId;
     }
     else flags = MeshVisualizerGL2D::Flag::PrimitiveId;
@@ -4123,7 +4123,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
     if(!GL::Context::current().isVersionSupported(GL::Version::GLES320))
     #endif
     {
-        Debug{} << "Using primitive ID from vertex ID";
+        CORRADE_INFO("Using primitive ID from vertex ID");
         flags = MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId;
     }
     else flags = MeshVisualizerGL3D::Flag::PrimitiveId;
@@ -4302,8 +4302,8 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderWirefra
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
-        Debug() << "Using" << GL::Extensions::NV::shader_noperspective_interpolation::string();
+    if(!(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader) && GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
+        CORRADE_INFO("Using" << GL::Extensions::NV::shader_noperspective_interpolation::string());
     #endif
     #endif
 
@@ -4463,8 +4463,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderWirefra
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
-        Debug() << "Using" << GL::Extensions::NV::shader_noperspective_interpolation::string();
+    if(!(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader) && GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
+        CORRADE_INFO("Using" << GL::Extensions::NV::shader_noperspective_interpolation::string());
     #endif
     #endif
 
