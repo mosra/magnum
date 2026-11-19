@@ -1377,9 +1377,10 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
         .addSource(configuration.flags() & Flag::BitangentDirection ? "#define BITANGENT_DIRECTION\n"_s : ""_s)
         .addSource(configuration.flags() & Flag::NormalDirection ? "#define NORMAL_DIRECTION\n"_s : ""_s)
         #endif
-        ;
-    vert.addSource(rs.getString("generic.glsl"_s))
-        .addSource(rs.getString("MeshVisualizer.vert"_s));
+        .addSource(rs.getString("generic.glsl"_s))
+        .addSource(rs.getString("MeshVisualizer.vert"_s))
+        .submitCompile();
+
     frag
         /* Pass NO_GEOMETRY_SHADER not only when NoGeometryShader but also when
            nothing actually needs it, as that makes checks much simpler in
@@ -1398,7 +1399,8 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
         frag.addSource("#define THREE_DIMENSIONS\n"_s);
     #endif
     frag.addSource(rs.getString("generic.glsl"_s))
-        .addSource(rs.getString("MeshVisualizer.frag"_s));
+        .addSource(rs.getString("MeshVisualizer.frag"_s))
+        .submitCompile();
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(configuration.flags() & (Flag::Wireframe|Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection) && !(configuration.flags() & Flag::NoGeometryShader)) {
@@ -1450,16 +1452,13 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
             geom->addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
         }
         #endif
-        geom->addSource(rs.getString("MeshVisualizer.geom"_s));
+        (*geom)
+            .addSource(rs.getString("MeshVisualizer.geom"_s))
+            .submitCompile();
     }
     #else
     static_cast<void>(version);
     #endif
-
-    vert.submitCompile();
-    frag.submitCompile();
-    if(geom)
-        geom->submitCompile();
 
     out.attachShaders({vert, frag});
     if(geom)
