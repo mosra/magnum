@@ -167,6 +167,8 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     template<MeshVisualizerGL2D::Flag flag = MeshVisualizerGL2D::Flag{}> void renderDefaultsWireframe2D();
     template<MeshVisualizerGL3D::Flag flag = MeshVisualizerGL3D::Flag{}> void renderDefaultsWireframe3D();
     #endif
+    template<MeshVisualizerGL2D::Flag flag = MeshVisualizerGL2D::Flag{}> void renderDefaultsWireframeNoGeometryShader2D();
+    template<MeshVisualizerGL3D::Flag flag = MeshVisualizerGL3D::Flag{}> void renderDefaultsWireframeNoGeometryShader3D();
     #ifndef MAGNUM_TARGET_GLES2
     template<MeshVisualizerGL2D::Flag flag = MeshVisualizerGL2D::Flag{}> void renderDefaultsObjectId2D();
     template<MeshVisualizerGL3D::Flag flag = MeshVisualizerGL3D::Flag{}> void renderDefaultsObjectId3D();
@@ -1531,19 +1533,32 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         #endif
         });
 
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     /* MSVC needs explicit type due to default template args */
     addTests<MeshVisualizerGLTest>({
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         &MeshVisualizerGLTest::renderDefaultsWireframe2D,
         &MeshVisualizerGLTest::renderDefaultsWireframe2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
         &MeshVisualizerGLTest::renderDefaultsWireframe2D<MeshVisualizerGL2D::Flag::ShaderStorageBuffers>,
         &MeshVisualizerGLTest::renderDefaultsWireframe3D,
         &MeshVisualizerGLTest::renderDefaultsWireframe3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
         &MeshVisualizerGLTest::renderDefaultsWireframe3D<MeshVisualizerGL3D::Flag::ShaderStorageBuffers>,
-        },
-        &MeshVisualizerGLTest::renderSetup,
-        &MeshVisualizerGLTest::renderTeardown);
-    #endif
+        #endif
+        &MeshVisualizerGLTest::renderDefaultsWireframeNoGeometryShader2D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::renderDefaultsWireframeNoGeometryShader2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderDefaultsWireframeNoGeometryShader2D<MeshVisualizerGL2D::Flag::ShaderStorageBuffers>,
+        #endif
+        #endif
+        &MeshVisualizerGLTest::renderDefaultsWireframeNoGeometryShader3D,
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::renderDefaultsWireframeNoGeometryShader3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderDefaultsWireframeNoGeometryShader3D<MeshVisualizerGL3D::Flag::ShaderStorageBuffers>
+        #endif
+        #endif
+    }, &MeshVisualizerGLTest::renderSetup,
+       &MeshVisualizerGLTest::renderTeardown);
 
     #ifndef MAGNUM_TARGET_GLES2
     /* MSVC needs explicit type due to default template args */
@@ -3448,6 +3463,224 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.06f}));
 }
 #endif
+
+template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefaultsWireframeNoGeometryShader2D() {
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
+    } else
+    #endif
+    if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
+    /* Duplicate the vertices. The circle primitive is a triangle fan, so we
+       first need to turn it into indexed triangles. */
+    const Trade::MeshData circleDataIndexed =
+        MeshTools::generateIndices(Primitives::circle2DSolid(16));
+    GL::Mesh circle = MeshTools::compile(MeshTools::duplicate(circleDataIndexed));
+
+    /* Supply also the vertex ID, if needed */
+    #ifndef MAGNUM_TARGET_GLES2
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+    #endif
+    {
+        /* On ES2 UnsignedInt isn't available as an attribute type, so
+           interpret the buffer as shorts with 2-byte padding in between */
+        circle.addVertexBuffer(
+            GL::Buffer{MeshTools::generateTrivialIndices(circleDataIndexed.indexCount())}, 0,
+            #ifdef CORRADE_TARGET_BIG_ENDIAN
+            2,
+            #endif
+            MeshVisualizerGL2D::VertexIndex{MeshVisualizerGL2D::VertexIndex::DataType::UnsignedShort}
+            #ifndef CORRADE_TARGET_BIG_ENDIAN
+            , 2
+            #endif
+            );
+    }
+
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::Wireframe|
+                  MeshVisualizerGL2D::Flag::NoGeometryShader|flag)};
+
+    if(flag == MeshVisualizerGL2D::Flag{}) {
+        shader.draw(circle);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform2D{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerMaterialUniform{}
+        }};
+        shader
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .draw(circle);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    Image2D output = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        output.pixels<Color4ub>().slice(&Color4ub::rgb),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe-nogeo2D.tga"),
+        /* SwiftShader has rounding errors, mostly around the edges */
+        (DebugTools::CompareImageToFile{_manager, 17.0f, 0.317f}));
+
+    /* Verify it's not too off from the geometry shader variant */
+    CORRADE_COMPARE_WITH(
+        output.pixels<Color4ub>().slice(&Color4ub::rgb),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe2D.tga"),
+        (DebugTools::CompareImageToFile{_manager, 101.0f, 22.51f}));
+}
+
+template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefaultsWireframeNoGeometryShader3D() {
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
+    } else
+    #endif
+    if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
+    const Trade::MeshData sphereData = Primitives::icosphereSolid(1);
+    /* Duplicate the vertices */
+    GL::Mesh sphere = MeshTools::compile(MeshTools::duplicate(sphereData));
+
+    /* Supply also the vertex ID, if needed */
+    #ifndef MAGNUM_TARGET_GLES2
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+    #endif
+    {
+        /* On ES2 UnsignedInt isn't available as an attribute type, so
+           interpret the buffer as shorts with 2-byte padding in between */
+        sphere.addVertexBuffer(
+            GL::Buffer{MeshTools::generateTrivialIndices(sphereData.indexCount())}, 0,
+            #ifdef CORRADE_TARGET_BIG_ENDIAN
+            2,
+            #endif
+            MeshVisualizerGL3D::VertexIndex{MeshVisualizerGL3D::VertexIndex::DataType::UnsignedShort}
+            #ifndef CORRADE_TARGET_BIG_ENDIAN
+            , 2
+            #endif
+            );
+    }
+
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::Wireframe|
+                  MeshVisualizerGL3D::Flag::NoGeometryShader|flag)};
+
+    if(flag == MeshVisualizerGL3D::Flag{}) {
+        shader.draw(sphere);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform3D{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerMaterialUniform{}
+        }};
+        shader
+            .bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .draw(sphere);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    Image2D output = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        output.pixels<Color4ub>().slice(&Color4ub::rgb),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe-nogeo3D.tga"),
+        /* SwiftShader has rounding errors */
+        (DebugTools::CompareImageToFile{_manager, 6.0f, 0.574f}));
+
+    /* Verify it's not too off from the geometry shader variant */
+    CORRADE_COMPARE_WITH(
+        output.pixels<Color4ub>().slice(&Color4ub::rgb),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe3D.tga"),
+        (DebugTools::CompareImageToFile{_manager, 102.0f, 27.88f}));
+}
 
 #ifndef MAGNUM_TARGET_GLES2
 template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefaultsObjectId2D() {
