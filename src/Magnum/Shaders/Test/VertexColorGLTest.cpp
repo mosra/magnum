@@ -665,8 +665,7 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::renderDefa
         setTestCaseTemplateName(T::Size == 3 ? "Color3" : "Color4");
     }
 
-    Trade::MeshData circleData = Primitives::circle2DSolid(32,
-        Primitives::Circle2DFlag::TextureCoordinates);
+    Trade::MeshData circleData = Primitives::circle2DSolid(32);
     GL::Mesh circle = MeshTools::compile(circleData);
     /* All a single color */
     circle.addVertexBuffer(
@@ -751,8 +750,7 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::renderDefa
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
-        Primitives::UVSphereFlag::TextureCoordinates);
+    Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32);
     GL::Mesh sphere = MeshTools::compile(sphereData);
     /* All a single color */
     sphere.addVertexBuffer(
@@ -829,8 +827,7 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::render2D()
         setTestCaseTemplateName(T::Size == 3 ? "Color3" : "Color4");
     }
 
-    Trade::MeshData circleData = Primitives::circle2DSolid(32,
-        Primitives::Circle2DFlag::TextureCoordinates);
+    Trade::MeshData circleData = Primitives::circle2DSolid(32);
 
     /* Highlight a quarter */
     Containers::Array<T> colorData{DirectInit, circleData.vertexCount(), 0x9999ff_rgbf};
@@ -918,12 +915,11 @@ template<class T, VertexColorGL3D::Flag flag> void VertexColorGLTest::render3D()
         setTestCaseTemplateName(T::Size == 3 ? "Color3" : "Color4");
     }
 
-    Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
-        Primitives::UVSphereFlag::TextureCoordinates);
+    Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32);
 
     /* Highlight the middle rings */
     Containers::Array<T> colorData{DirectInit, sphereData.vertexCount(), 0x9999ff_rgbf};
-    for(std::size_t i = 6*33; i != 9*33; ++i)
+    for(std::size_t i = 6*32; i != 9*32; ++i)
         colorData[i + 1] = 0xffff99_rgbf;
 
     GL::Mesh sphere = MeshTools::compile(sphereData);
