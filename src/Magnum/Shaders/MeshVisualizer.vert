@@ -509,7 +509,15 @@ flat out highp uint
     ;
 #endif
 
+#ifdef VERTEX_SHADER_INTERFACE_EXTRA
+VERTEX_SHADER_INTERFACE_EXTRA
+#endif
+
 void main() {
+    #ifdef VERTEX_SHADER_BEGIN_EXTRA
+    VERTEX_SHADER_BEGIN_EXTRA
+    #endif
+
     #ifdef UNIFORM_BUFFERS
     #ifdef MULTI_DRAW
     #ifdef NO_GEOMETRY_SHADER
@@ -720,5 +728,9 @@ void main() {
     interpolatedVsPrimitiveId
     #endif
         = uint(gl_VertexID/3);
+    #endif
+
+    #ifdef VERTEX_SHADER_END_EXTRA
+    VERTEX_SHADER_END_EXTRA
     #endif
 }

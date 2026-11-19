@@ -44,11 +44,15 @@ struct VectorGL_Test: TestSuite::Tester {
     #endif
 
     template<UnsignedInt dimensions> void configurationConstruct();
+    template<UnsignedInt dimensions> void configurationConstructCopy();
+    template<UnsignedInt dimensions> void configurationConstructMove();
     template<UnsignedInt dimensions> void configurationSetters();
 
     template<UnsignedInt dimensions> void constructNoCreate();
     template<UnsignedInt dimensions> void constructCopy();
 };
+
+using namespace Containers::Literals;
 
 VectorGL_Test::VectorGL_Test() {
     addTests({&VectorGL_Test::debugFlag,
@@ -59,6 +63,10 @@ VectorGL_Test::VectorGL_Test() {
 
               &VectorGL_Test::configurationConstruct<2>,
               &VectorGL_Test::configurationConstruct<3>,
+              &VectorGL_Test::configurationConstructCopy<2>,
+              &VectorGL_Test::configurationConstructCopy<3>,
+              &VectorGL_Test::configurationConstructMove<2>,
+              &VectorGL_Test::configurationConstructMove<3>,
               &VectorGL_Test::configurationSetters<2>,
               &VectorGL_Test::configurationSetters<3>,
 
@@ -113,23 +121,100 @@ template<UnsignedInt dimensions> void VectorGL_Test::configurationConstruct() {
     CORRADE_COMPARE(configuration.materialCount(), 1);
     CORRADE_COMPARE(configuration.drawCount(), 1);
     #endif
+    CORRADE_COMPARE(configuration.extraSource(), "");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+}
+
+template<UnsignedInt dimensions> void VectorGL_Test::configurationConstructCopy() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* The copy is implicitly generated so just verify it propagates to the
+       ConfigurationBaseGL constructor and does what's expected for other
+       members */
+
+    typename VectorGL<dimensions>::Configuration a = typename VectorGL<dimensions>::Configuration{}
+        .setFlags(VectorGL<dimensions>::Flag::TextureTransformation)
+        .setExtraSource("// hello\n"_s);
+
+    typename VectorGL<dimensions>::Configuration b = a;
+    CORRADE_COMPARE(b.flags(), VectorGL<dimensions>::Flag::TextureTransformation);
+    CORRADE_COMPARE(b.extraSource(), "// hello\n");
+    /* Copying invokes a copy constructor on the string, so the Global flag
+       gets lost */
+    CORRADE_COMPARE(b.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+
+    typename VectorGL<dimensions>::Configuration c = typename VectorGL<dimensions>::Configuration{}
+        .setExtraSource("// hi\n"_s);
+    c = a;
+    CORRADE_COMPARE(c.flags(), VectorGL<dimensions>::Flag::TextureTransformation);
+    CORRADE_COMPARE(c.extraSource(), "// hello\n");
+    /* Same here */
+    CORRADE_COMPARE(c.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+}
+
+template<UnsignedInt dimensions> void VectorGL_Test::configurationConstructMove() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* The copy is implicitly generated so just verify it propagates to the
+       ConfigurationBaseGL constructor and does what's expected for other
+       members */
+
+    /* Not using method chaining because it returns & instead of && and so a
+       copy would happen when forming `a`, losing the Global flag. Due to SSO
+       the copy isn't such a big deal that it'd need && overloads for all
+       setters right now. */
+    typename VectorGL<dimensions>::Configuration a;
+    a.setFlags(VectorGL<dimensions>::Flag::TextureTransformation);
+    a.setExtraSource("// hello\n"_s);
+    CORRADE_COMPARE(a.flags(), VectorGL<dimensions>::Flag::TextureTransformation);
+    CORRADE_COMPARE(a.extraSource(), "// hello\n");
+    CORRADE_COMPARE(a.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    typename VectorGL<dimensions>::Configuration b = Utility::move(a);
+    CORRADE_COMPARE(b.flags(), VectorGL<dimensions>::Flag::TextureTransformation);
+    CORRADE_COMPARE(b.extraSource(), "// hello\n");
+    CORRADE_COMPARE(b.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    typename VectorGL<dimensions>::Configuration c;
+    c.setExtraSource("// hi\n"_s);
+    c = Utility::move(b);
+    CORRADE_COMPARE(c.flags(), VectorGL<dimensions>::Flag::TextureTransformation);
+    CORRADE_COMPARE(c.extraSource(), "// hello\n");
+    CORRADE_COMPARE(c.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
 }
 
 template<UnsignedInt dimensions> void VectorGL_Test::configurationSetters() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
+    /* Chaining the setters to verify they all return a meaningful reference.
+       The chaining returns & instead of && and so a copy happens, losing any
+       potential Global flag on the string. That's tested below instead. Due to
+       SSO the copy isn't such a big deal that it'd need && overloads for all
+       setters right now. */
     typename VectorGL<dimensions>::Configuration configuration = typename VectorGL<dimensions>::Configuration{}
         .setFlags(VectorGL<dimensions>::Flag::TextureTransformation)
         #ifndef MAGNUM_TARGET_GLES2
         .setMaterialCount(17)
         .setDrawCount(266)
         #endif
-        ;
+        .setExtraSource("// raw C string\n");
     CORRADE_COMPARE(configuration.flags(), VectorGL<dimensions>::Flag::TextureTransformation);
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(configuration.materialCount(), 17);
     CORRADE_COMPARE(configuration.drawCount(), 266);
     #endif
+    CORRADE_COMPARE(configuration.extraSource(), "// raw C string\n");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+
+    /* Verify also that the other setExtraSource() overloads delegate
+       properly */
+    configuration.setExtraSource("// hello\n"_s);
+    CORRADE_COMPARE(configuration.extraSource(), "// hello\n");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    configuration.setExtraSource(Containers::String::nullTerminatedGlobalView("// r-value global string\n"_s));
+    CORRADE_COMPARE(configuration.extraSource(), "// r-value global string\n");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
 }
 
 template<UnsignedInt dimensions> void VectorGL_Test::constructNoCreate() {

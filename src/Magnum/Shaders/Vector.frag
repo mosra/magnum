@@ -151,7 +151,15 @@ layout(location = COLOR_OUTPUT_ATTRIBUTE_LOCATION)
 out lowp vec4 fragmentColor;
 #endif
 
+#ifdef FRAGMENT_SHADER_INTERFACE_EXTRA
+FRAGMENT_SHADER_INTERFACE_EXTRA
+#endif
+
 void main() {
+    #ifdef FRAGMENT_SHADER_BEGIN_EXTRA
+    FRAGMENT_SHADER_BEGIN_EXTRA
+    #endif
+
     #ifdef UNIFORM_BUFFERS
     /* With SSBOs MATERIAL_COUNT is defined to be empty, +0 makes the condition
        not cause a compile error */
@@ -166,4 +174,8 @@ void main() {
 
     lowp float intensity = texture(vectorTexture, interpolatedTextureCoordinates).r;
     fragmentColor = mix(backgroundColor, color, intensity);
+
+    #ifdef FRAGMENT_SHADER_END_EXTRA
+    FRAGMENT_SHADER_END_EXTRA
+    #endif
 }

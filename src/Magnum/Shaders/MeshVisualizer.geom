@@ -300,7 +300,15 @@ void emitQuad(
 }
 #endif
 
+#ifdef GEOMETRY_SHADER_INTERFACE_EXTRA
+GEOMETRY_SHADER_INTERFACE_EXTRA
+#endif
+
 void main() {
+    #ifdef GEOMETRY_SHADER_BEGIN_EXTRA
+    GEOMETRY_SHADER_BEGIN_EXTRA
+    #endif
+
     #ifdef UNIFORM_BUFFERS
     #ifdef MULTI_DRAW
     drawId = vsDrawId[0];

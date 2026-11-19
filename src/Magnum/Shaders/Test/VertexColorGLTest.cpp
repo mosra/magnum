@@ -40,6 +40,7 @@
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/GL/OpenGLTester.h"
+#include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/GL/Shader.h"
@@ -56,7 +57,6 @@
 #include "Magnum/Trade/MeshData.h"
 
 #ifndef MAGNUM_TARGET_GLES2
-#include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/MeshView.h"
 #include "Magnum/MeshTools/Concatenate.h"
 #include "Magnum/MeshTools/GenerateIndices.h"
@@ -108,6 +108,10 @@ struct VertexColorGLTest: GL::OpenGLTester {
     void renderMulti2D();
     void renderMulti3D();
     #endif
+
+    template<UnsignedInt dimensions> void renderExtraMacros();
+    template<UnsignedInt dimensions> void renderExtraExtensionEnable();
+    template<UnsignedInt dimensions> void renderExtra();
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
@@ -210,6 +214,17 @@ constexpr struct {
     #endif
 };
 #endif
+
+const struct {
+    const char* name;
+} RenderExtraMacrosData[]{
+    {"VERTEX_SHADER_INTERFACE_EXTRA"},
+    {"FRAGMENT_SHADER_INTERFACE_EXTRA"},
+    {"VERTEX_SHADER_BEGIN_EXTRA"},
+    {"VERTEX_SHADER_END_EXTRA"},
+    {"FRAGMENT_SHADER_BEGIN_EXTRA"},
+    {"FRAGMENT_SHADER_END_EXTRA"},
+};
 
 VertexColorGLTest::VertexColorGLTest() {
     addTests<VertexColorGLTest>({
@@ -323,6 +338,19 @@ VertexColorGLTest::VertexColorGLTest() {
         &VertexColorGLTest::renderSetup,
         &VertexColorGLTest::renderTeardown);
     #endif
+
+    addInstancedTests({&VertexColorGLTest::renderExtraMacros<2>,
+                       &VertexColorGLTest::renderExtraMacros<3>},
+        Containers::arraySize(RenderExtraMacrosData),
+        &VertexColorGLTest::renderSetup,
+        &VertexColorGLTest::renderTeardown);
+
+    addTests({&VertexColorGLTest::renderExtraExtensionEnable<2>,
+              &VertexColorGLTest::renderExtraExtensionEnable<3>,
+              &VertexColorGLTest::renderExtra<2>,
+              &VertexColorGLTest::renderExtra<3>},
+        &VertexColorGLTest::renderSetup,
+        &VertexColorGLTest::renderTeardown);
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -1264,6 +1292,190 @@ void VertexColorGLTest::renderMulti3D() {
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 }
 #endif
+
+template<UnsignedInt dimensions> void VertexColorGLTest::renderExtraMacros() {
+    auto&& data = RenderExtraMacrosData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* Tests that defining a single macro doesn't fail compilation, for
+       example due to copypaste errors such as this:
+        #ifdef STUFF_EXTRA
+        OTHER_STUFF_EXTRA
+        #endif
+       Since the macros are empty, they should not affect the output at all.
+       The same mesh is drawn for 2D and 3D as that doesn't really matter. */
+
+    Trade::MeshData circleData = Primitives::circle2DSolid(32);
+    GL::Mesh circle = MeshTools::compile(circleData);
+    /* All a single color */
+    circle.addVertexBuffer(
+        GL::Buffer{Containers::Array<Color3>{DirectInit, circleData.vertexCount(), 0xffffff_rgbf}}, 0,
+        VertexColorGL2D::Color3{});
+
+    VertexColorGL<dimensions> shader{typename VertexColorGL<dimensions>::Configuration{}
+        .setExtraSource(Utility::format("#define {}\n", data.name))};
+    shader.draw(circle);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
+        Utility::Path::join(_testDir, "FlatTestFiles/defaults.tga"),
+        /* SwiftShader has 8 different pixels on the edges */
+        (DebugTools::CompareImageToFile{_manager, 238.0f, 0.298f}));
+}
+
+template<UnsignedInt dimensions> void VertexColorGLTest::renderExtraExtensionEnable() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* Verifies that the extra source is put early enough to allow #extension
+       statements (i.e., before any other non-macro definition). Not verifying
+       rendering output as no output-affecting macros are defined. */
+
+    /* Picking extensions that are the most likely to be present */
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>())
+        CORRADE_SKIP(GL::Extensions::ARB::explicit_attrib_location::string() << "not supported, cannot test");
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::OES::standard_derivatives>())
+        CORRADE_SKIP(GL::Extensions::OES::standard_derivatives::string() << "not supported, cannot test");
+    #elif defined(MAGNUM_TARGET_WEBGL)
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "not supported, cannot test");
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "not supported, cannot test");
+    #endif
+
+    VertexColorGL<dimensions> shader{typename VertexColorGL<dimensions>::Configuration{}
+        .setExtraSource(
+            #ifndef MAGNUM_TARGET_GLES
+            "#extension GL_ARB_explicit_attrib_location: require\n"
+            #elif defined(MAGNUM_TARGET_GLES2)
+            "#extension GL_OES_standard_derivatives: require\n"
+            #else
+            /* covers both ES3 and WebGL */
+            "#extension GL_ANGLE_multi_draw: require\n"
+            #endif
+        )};
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+template<UnsignedInt dimensions> void VertexColorGLTest::renderExtra() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* Verifying the full set of macros and both attributes and uniforms, bound
+       and queried instead of having explicit locations, to ensure the feature
+       makes sense as a whole. The same mesh is again drawn for 2D and 3D as
+       that doesn't really matter. */
+
+    /* The renderExtraExtensionEnable() above tested that the extra source is
+       added early enough, the #ifndef POSITION_ATTRIBUTE_LOCATION below tests
+       that it's added only after all definitions we might want to rely on */
+    struct Shader: VertexColorGL<dimensions> {
+        explicit Shader(): VertexColorGL<dimensions>{NoCreate} {
+            typename VertexColorGL<dimensions>::CompileState state = VertexColorGL<dimensions>::compile(typename VertexColorGL<dimensions>::Configuration{}
+                .setExtraSource(R"(
+#ifndef POSITION_ATTRIBUTE_LOCATION
+#error extra source inserted too early
+#endif
+#ifndef NEW_GLSL
+#define VERTEX_SHADER_INTERFACE_EXTRA                                       \
+    attribute lowp float colorR;                                            \
+    uniform lowp float colorG;                                              \
+    varying lowp vec3 interpolatedColorRgb;
+#define FRAGMENT_SHADER_INTERFACE_EXTRA                                     \
+    varying lowp vec3 interpolatedColorRgb;
+#else
+#define VERTEX_SHADER_INTERFACE_EXTRA                                       \
+    in lowp float colorR;                                                   \
+    uniform lowp float colorG;                                              \
+    out lowp vec3 interpolatedColorRgb;
+#define FRAGMENT_SHADER_INTERFACE_EXTRA                                     \
+    in lowp vec3 interpolatedColorRgb;
+#endif
+#define VERTEX_SHADER_BEGIN_EXTRA                                           \
+    interpolatedColorRgb = vec3(colorR, colorG, 0.0);
+#define VERTEX_SHADER_END_EXTRA                                             \
+    interpolatedColorRgb.b += 0.5;
+#define FRAGMENT_SHADER_BEGIN_EXTRA                                         \
+    lowp vec3 extraColor = interpolatedColorRgb;                            \
+    extraColor.b += 0.5;
+#define FRAGMENT_SHADER_END_EXTRA                                           \
+    fragmentColor.rgb *= extraColor;
+)"));
+            /* Attribute location can be bound only before linking, so submit a
+               relink after. This also has to be done before the finalization
+               as otherwise the uniform defaults would be lost on GLES and the
+               *= above would result in a black output. */
+            state.bindAttributeLocation(7, "colorR");
+            state.submitLink();
+
+            /* Finish the setup by replacing the underlying instance */
+            static_cast<VertexColorGL<dimensions>&>(*this) = VertexColorGL<dimensions>{Utility::move(state)};
+
+            /* Query the uniform location once linking succeeded */
+            _colorGUniform = VertexColorGL<dimensions>::uniformLocation("colorG");
+        }
+
+        Shader& setColorG(Float green) {
+            VertexColorGL<dimensions>::setUniform(_colorGUniform, green);
+            return *this;
+        }
+
+        private:
+            Int _colorGUniform;
+    } shader;
+
+    Trade::MeshData circleData = Primitives::circle2DSolid(32);
+
+    /* Highlight a quarter. The color is multiplied with 0x9999ff_rgbf in the
+       shader so divide by it here to have it match the expected output. */
+    Containers::Array<Color3> colorData{DirectInit, circleData.vertexCount(), 0xffffff_rgbf};
+    for(std::size_t i = 8; i != 16; ++i)
+        colorData[i + 1] = 0xffff99_rgbf/0x9999ff_rgbf;
+
+    GL::Mesh circle = MeshTools::compile(circleData);
+    circle.addVertexBuffer(GL::Buffer{colorData}, 0,
+        VertexColorGL2D::Color3{});
+    /* Two buffers, yes, I know, it's ugly but this is a test */
+    circle.addVertexBuffer(
+        GL::Buffer{Containers::Array<Float>{DirectInit, circleData.vertexCount(), 0.6f}},
+        0, GL::Attribute<7, Float>{});
+
+    shader
+        .setColorG(0.6f)
+        /* Same as in render2D(), expanded to Matrix4 for 3D */
+        .setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{Matrix3::projection({2.1f, 2.1f})})
+        .draw(circle);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* AMD has minor rounding differences in the gradient compared to Intel,
+       SwiftShader as well */
+    const Float maxThreshold = 1.0f, meanThreshold = 0.667f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 11.34f, meanThreshold = 1.479f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
+        Utility::Path::join(_testDir, "VertexColorTestFiles/vertexColor2D.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
 
 }}}}
 

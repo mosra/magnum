@@ -372,6 +372,7 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     }
     #endif
     vert.addSource(rs.getString("generic.glsl"_s))
+        .addSource(configuration.extraSource())
         .addSource(rs.getString("Flat.vert"_s))
         .submitCompile();
 
@@ -412,6 +413,7 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     }
     #endif
     frag.addSource(rs.getString("generic.glsl"_s))
+        .addSource(configuration.extraSource())
         .addSource(rs.getString("Flat.frag"_s))
         .submitCompile();
 
@@ -909,6 +911,15 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::Configuration& Fla
     return *this;
 }
 #endif
+
+template<UnsignedInt dimensions> Containers::StringView FlatGL<dimensions>::Configuration::extraSource() const {
+    return Implementation::ConfigurationBaseGL::extraSource();
+}
+
+template<UnsignedInt dimensions> typename FlatGL<dimensions>::Configuration& FlatGL<dimensions>::Configuration::setExtraSource(Containers::StringView source) {
+    Implementation::ConfigurationBaseGL::setExtraSource(source);
+    return *this;
+}
 
 template class MAGNUM_SHADERS_EXPORT FlatGL<2>;
 template class MAGNUM_SHADERS_EXPORT FlatGL<3>;

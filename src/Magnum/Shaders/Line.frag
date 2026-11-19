@@ -209,7 +209,15 @@ mediump float lineBlendFactor(
     in mediump const float width,
     in mediump const float smoothness);
 
+#ifdef FRAGMENT_SHADER_INTERFACE_EXTRA
+FRAGMENT_SHADER_INTERFACE_EXTRA
+#endif
+
 void main() {
+    #ifdef FRAGMENT_SHADER_BEGIN_EXTRA
+    FRAGMENT_SHADER_BEGIN_EXTRA
+    #endif
+
     #ifdef UNIFORM_BUFFERS
     #ifdef OBJECT_ID
     highp const uint objectId = draws[drawId].draw_objectId;
@@ -246,5 +254,9 @@ void main() {
         interpolatedInstanceObjectId +
         #endif
         objectId;
+    #endif
+
+    #ifdef FRAGMENT_SHADER_END_EXTRA
+    FRAGMENT_SHADER_END_EXTRA
     #endif
 }

@@ -46,11 +46,15 @@ struct LineGL_Test: TestSuite::Tester {
     void glslAttributeMatch();
 
     template<UnsignedInt dimensions> void configurationConstruct();
+    template<UnsignedInt dimensions> void configurationConstructCopy();
+    template<UnsignedInt dimensions> void configurationConstructMove();
     template<UnsignedInt dimensions> void configurationSetters();
 
     template<UnsignedInt dimensions> void constructNoCreate();
     template<UnsignedInt dimensions> void constructCopy();
 };
+
+using namespace Containers::Literals;
 
 LineGL_Test::LineGL_Test() {
     addTests({&LineGL_Test::debugFlag,
@@ -61,6 +65,10 @@ LineGL_Test::LineGL_Test() {
 
               &LineGL_Test::configurationConstruct<2>,
               &LineGL_Test::configurationConstruct<3>,
+              &LineGL_Test::configurationConstructCopy<2>,
+              &LineGL_Test::configurationConstructCopy<3>,
+              &LineGL_Test::configurationConstructMove<2>,
+              &LineGL_Test::configurationConstructMove<3>,
               &LineGL_Test::configurationSetters<2>,
               &LineGL_Test::configurationSetters<3>,
 
@@ -131,18 +139,96 @@ template<UnsignedInt dimensions> void LineGL_Test::configurationConstruct() {
     CORRADE_COMPARE(configuration.flags(), typename LineGL<dimensions>::Flags{});
     CORRADE_COMPARE(configuration.materialCount(), 1);
     CORRADE_COMPARE(configuration.drawCount(), 1);
+    CORRADE_COMPARE(configuration.extraSource(), "");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+}
+
+template<UnsignedInt dimensions> void LineGL_Test::configurationConstructCopy() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* The copy is implicitly generated so just verify it propagates to the
+       ConfigurationBaseGL constructor and does what's expected for other
+       members */
+
+    typename LineGL<dimensions>::Configuration a = typename LineGL<dimensions>::Configuration{}
+        .setFlags(LineGL<dimensions>::Flag::VertexColor)
+        .setExtraSource("// hello\n"_s);
+
+    typename LineGL<dimensions>::Configuration b = a;
+    CORRADE_COMPARE(b.flags(), LineGL<dimensions>::Flag::VertexColor);
+    CORRADE_COMPARE(b.extraSource(), "// hello\n");
+    /* Copying invokes a copy constructor on the string, so the Global flag
+       gets lost */
+    CORRADE_COMPARE(b.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+
+    typename LineGL<dimensions>::Configuration c = typename LineGL<dimensions>::Configuration{}
+        .setExtraSource("// hi\n"_s);
+    c = a;
+    CORRADE_COMPARE(c.flags(), LineGL<dimensions>::Flag::VertexColor);
+    CORRADE_COMPARE(c.extraSource(), "// hello\n");
+    /* Same here */
+    CORRADE_COMPARE(c.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+}
+
+template<UnsignedInt dimensions> void LineGL_Test::configurationConstructMove() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* The copy is implicitly generated so just verify it propagates to the
+       ConfigurationBaseGL constructor and does what's expected for other
+       members */
+
+    /* Not using method chaining because it returns & instead of && and so a
+       copy would happen when forming `a`, losing the Global flag. Due to SSO
+       the copy isn't such a big deal that it'd need && overloads for all
+       setters right now. */
+    typename LineGL<dimensions>::Configuration a;
+    a.setFlags(LineGL<dimensions>::Flag::VertexColor);
+    a.setExtraSource("// hello\n"_s);
+    CORRADE_COMPARE(a.flags(), LineGL<dimensions>::Flag::VertexColor);
+    CORRADE_COMPARE(a.extraSource(), "// hello\n");
+    CORRADE_COMPARE(a.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    typename LineGL<dimensions>::Configuration b = Utility::move(a);
+    CORRADE_COMPARE(b.flags(), LineGL<dimensions>::Flag::VertexColor);
+    CORRADE_COMPARE(b.extraSource(), "// hello\n");
+    CORRADE_COMPARE(b.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    typename LineGL<dimensions>::Configuration c;
+    c.setExtraSource("// hi\n"_s);
+    c = Utility::move(b);
+    CORRADE_COMPARE(c.flags(), LineGL<dimensions>::Flag::VertexColor);
+    CORRADE_COMPARE(c.extraSource(), "// hello\n");
+    CORRADE_COMPARE(c.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
 }
 
 template<UnsignedInt dimensions> void LineGL_Test::configurationSetters() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
+    /* Chaining the setters to verify they all return a meaningful reference.
+       The chaining returns & instead of && and so a copy happens, losing any
+       potential Global flag on the string. That's tested below instead. Due to
+       SSO the copy isn't such a big deal that it'd need && overloads for all
+       setters right now. */
     typename LineGL<dimensions>::Configuration configuration = typename LineGL<dimensions>::Configuration{}
         .setFlags(LineGL<dimensions>::Flag::VertexColor)
         .setMaterialCount(17)
-        .setDrawCount(266);
+        .setDrawCount(266)
+        .setExtraSource("// raw C string\n");
     CORRADE_COMPARE(configuration.flags(), LineGL<dimensions>::Flag::VertexColor);
     CORRADE_COMPARE(configuration.materialCount(), 17);
     CORRADE_COMPARE(configuration.drawCount(), 266);
+    CORRADE_COMPARE(configuration.extraSource(), "// raw C string\n");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+
+    /* Verify also that the other setExtraSource() overloads delegate
+       properly */
+    configuration.setExtraSource("// hello\n"_s);
+    CORRADE_COMPARE(configuration.extraSource(), "// hello\n");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    configuration.setExtraSource(Containers::String::nullTerminatedGlobalView("// r-value global string\n"_s));
+    CORRADE_COMPARE(configuration.extraSource(), "// r-value global string\n");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
 }
 
 template<UnsignedInt dimensions> void LineGL_Test::constructNoCreate() {

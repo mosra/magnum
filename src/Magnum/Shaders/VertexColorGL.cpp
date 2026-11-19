@@ -194,12 +194,14 @@ template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileStat
     }
     #endif
     vert.addSource(rs.getString("generic.glsl"_s))
+        .addSource(configuration.extraSource())
         .addSource(rs.getString("VertexColor.vert"_s))
         .submitCompile();
 
     GL::Shader frag{version, GL::Shader::Type::Fragment};
     frag.addSource(rs.getString("compatibility.glsl"_s))
         .addSource(rs.getString("generic.glsl"_s))
+        .addSource(configuration.extraSource())
         .addSource(rs.getString("VertexColor.frag"_s))
         .submitCompile();
 
@@ -368,6 +370,15 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>& VertexColorGL<dimens
     return *this;
 }
 #endif
+
+template<UnsignedInt dimensions> Containers::StringView VertexColorGL<dimensions>::Configuration::extraSource() const {
+    return Implementation::ConfigurationBaseGL::extraSource();
+}
+
+template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::Configuration& VertexColorGL<dimensions>::Configuration::setExtraSource(Containers::StringView source) {
+    Implementation::ConfigurationBaseGL::setExtraSource(source);
+    return *this;
+}
 
 template class MAGNUM_SHADERS_EXPORT VertexColorGL<2>;
 template class MAGNUM_SHADERS_EXPORT VertexColorGL<3>;

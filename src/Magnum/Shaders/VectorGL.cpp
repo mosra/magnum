@@ -215,6 +215,7 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
     }
     #endif
     vert.addSource(rs.getString("generic.glsl"_s))
+        .addSource(configuration.extraSource())
         .addSource(rs.getString("Vector.vert"_s))
         .submitCompile();
 
@@ -247,6 +248,7 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
     }
     #endif
     frag.addSource(rs.getString("generic.glsl"_s))
+        .addSource(configuration.extraSource())
         .addSource(rs.getString("Vector.frag"_s))
         .submitCompile();
 
@@ -571,6 +573,15 @@ template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::bin
     return *this;
 }
 #endif
+
+template<UnsignedInt dimensions> Containers::StringView VectorGL<dimensions>::Configuration::extraSource() const {
+    return Implementation::ConfigurationBaseGL::extraSource();
+}
+
+template<UnsignedInt dimensions> typename VectorGL<dimensions>::Configuration& VectorGL<dimensions>::Configuration::setExtraSource(Containers::StringView source) {
+    Implementation::ConfigurationBaseGL::setExtraSource(source);
+    return *this;
+}
 
 template class MAGNUM_SHADERS_EXPORT VectorGL<2>;
 template class MAGNUM_SHADERS_EXPORT VectorGL<3>;

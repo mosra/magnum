@@ -171,6 +171,10 @@ struct FlatGLTest: GL::OpenGLTester {
     void renderMultiSkinning3D();
     #endif
 
+    template<UnsignedInt dimensions> void renderExtraMacros();
+    template<UnsignedInt dimensions> void renderExtraExtensionEnable();
+    template<UnsignedInt dimensions> void renderExtra();
+
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
         Containers::String _testDir;
@@ -833,6 +837,17 @@ const struct {
 };
 #endif
 
+const struct {
+    const char* name;
+} RenderExtraMacrosData[]{
+    {"VERTEX_SHADER_INTERFACE_EXTRA"},
+    {"FRAGMENT_SHADER_INTERFACE_EXTRA"},
+    {"VERTEX_SHADER_BEGIN_EXTRA"},
+    {"VERTEX_SHADER_END_EXTRA"},
+    {"FRAGMENT_SHADER_BEGIN_EXTRA"},
+    {"FRAGMENT_SHADER_END_EXTRA"},
+};
+
 FlatGLTest::FlatGLTest() {
     addInstancedTests<FlatGLTest>({
         &FlatGLTest::construct<2>,
@@ -1152,6 +1167,19 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::renderSetup,
         &FlatGLTest::renderTeardown);
     #endif
+
+    addInstancedTests({&FlatGLTest::renderExtraMacros<2>,
+                       &FlatGLTest::renderExtraMacros<3>},
+        Containers::arraySize(RenderExtraMacrosData),
+        &FlatGLTest::renderSetup,
+        &FlatGLTest::renderTeardown);
+
+    addTests({&FlatGLTest::renderExtraExtensionEnable<2>,
+              &FlatGLTest::renderExtraExtensionEnable<3>,
+              &FlatGLTest::renderExtra<2>,
+              &FlatGLTest::renderExtra<3>},
+        &FlatGLTest::renderSetup,
+        &FlatGLTest::renderTeardown);
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -6139,6 +6167,171 @@ void FlatGLTest::renderMultiSkinning3D() {
         (DebugTools::CompareImageToFile{_manager}));
 }
 #endif
+
+template<UnsignedInt dimensions> void FlatGLTest::renderExtraMacros() {
+    auto&& data = RenderExtraMacrosData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* Tests that defining a single macro doesn't fail compilation, for
+       example due to copypaste errors such as this:
+        #ifdef STUFF_EXTRA
+        OTHER_STUFF_EXTRA
+        #endif
+       Since the macros are empty, they should not affect the output at all.
+       The same mesh is drawn for 2D and 3D as that doesn't really matter. */
+
+    FlatGL<dimensions> shader{typename FlatGL<dimensions>::Configuration{}
+        .setExtraSource(Utility::format("#define {}\n", data.name))};
+    shader.draw(MeshTools::compile(Primitives::circle2DSolid(32)));
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
+        Utility::Path::join(_testDir, "FlatTestFiles/defaults.tga"),
+        /* SwiftShader has 8 different pixels on the edges */
+        (DebugTools::CompareImageToFile{_manager, 238.0f, 0.2975f}));
+}
+
+template<UnsignedInt dimensions> void FlatGLTest::renderExtraExtensionEnable() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* Verifies that the extra source is put early enough to allow #extension
+       statements (i.e., before any other non-macro definition). Not verifying
+       rendering output as no output-affecting macros are defined. */
+
+    /* Picking extensions that are the most likely to be present */
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>())
+        CORRADE_SKIP(GL::Extensions::ARB::explicit_attrib_location::string() << "not supported, cannot test");
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::OES::standard_derivatives>())
+        CORRADE_SKIP(GL::Extensions::OES::standard_derivatives::string() << "not supported, cannot test");
+    #elif defined(MAGNUM_TARGET_WEBGL)
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "not supported, cannot test");
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "not supported, cannot test");
+    #endif
+
+    FlatGL<dimensions> shader{typename FlatGL<dimensions>::Configuration{}
+        .setExtraSource(
+            #ifndef MAGNUM_TARGET_GLES
+            "#extension GL_ARB_explicit_attrib_location: require\n"
+            #elif defined(MAGNUM_TARGET_GLES2)
+            "#extension GL_OES_standard_derivatives: require\n"
+            #else
+            /* covers both ES3 and WebGL */
+            "#extension GL_ANGLE_multi_draw: require\n"
+            #endif
+        )};
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+template<UnsignedInt dimensions> void FlatGLTest::renderExtra() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* Verifying the full set of macros and both attributes and uniforms, bound
+       and queried instead of having explicit locations, to ensure the feature
+       makes sense as a whole. The same mesh is again drawn for 2D and 3D as
+       that doesn't really matter. */
+
+    /* The renderExtraExtensionEnable() above tested that the extra source is
+       added early enough, the #ifndef POSITION_ATTRIBUTE_LOCATION below tests
+       that it's added only after all definitions we might want to rely on */
+    struct Shader: FlatGL<dimensions> {
+        explicit Shader(): FlatGL<dimensions>{NoCreate} {
+            typename FlatGL<dimensions>::CompileState state = FlatGL<dimensions>::compile(typename FlatGL<dimensions>::Configuration{}
+                .setExtraSource(R"(
+#ifndef POSITION_ATTRIBUTE_LOCATION
+#error extra source inserted too early
+#endif
+#ifndef NEW_GLSL
+#define VERTEX_SHADER_INTERFACE_EXTRA                                       \
+    attribute lowp float colorR;                                            \
+    uniform lowp float colorG;                                              \
+    varying lowp vec3 interpolatedColorRgb;
+#define FRAGMENT_SHADER_INTERFACE_EXTRA                                     \
+    varying lowp vec3 interpolatedColorRgb;
+#else
+#define VERTEX_SHADER_INTERFACE_EXTRA                                       \
+    in lowp float colorR;                                                   \
+    uniform lowp float colorG;                                              \
+    out lowp vec3 interpolatedColorRgb;
+#define FRAGMENT_SHADER_INTERFACE_EXTRA                                     \
+    in lowp vec3 interpolatedColorRgb;
+#endif
+#define VERTEX_SHADER_BEGIN_EXTRA                                           \
+    interpolatedColorRgb = vec3(colorR, colorG, 0.0);
+#define VERTEX_SHADER_END_EXTRA                                             \
+    interpolatedColorRgb.b += 0.5;
+#define FRAGMENT_SHADER_BEGIN_EXTRA                                         \
+    lowp vec3 extraColor = interpolatedColorRgb;                            \
+    extraColor.b += 0.5;
+#define FRAGMENT_SHADER_END_EXTRA                                           \
+    fragmentColor.rgb *= extraColor;
+)"));
+            /* Attribute location can be bound only before linking, so submit a
+               relink after. This also has to be done before the finalization
+               as otherwise the uniform defaults would be lost on GLES and the
+               *= above would result in a black output. */
+            state.bindAttributeLocation(7, "colorR");
+            state.submitLink();
+
+            /* Finish the setup by replacing the underlying instance */
+            static_cast<FlatGL<dimensions>&>(*this) = FlatGL<dimensions>{Utility::move(state)};
+
+            /* Query the uniform location once linking succeeded */
+            _colorGUniform = FlatGL<dimensions>::uniformLocation("colorG");
+        }
+
+        Shader& setColorG(Float green) {
+            FlatGL<dimensions>::setUniform(_colorGUniform, green);
+            return *this;
+        }
+
+        private:
+            Int _colorGUniform;
+    } shader;
+
+    GL::Mesh mesh = MeshTools::compile(Primitives::circle2DSolid(32));
+    CORRADE_VERIFY(!mesh.isIndexed());
+    mesh.addVertexBuffer(
+        GL::Buffer{Containers::Array<Float>{DirectInit, std::size_t(mesh.count()), 0.6f}},
+        0, GL::Attribute<7, Float>{});
+
+    shader
+        .setColorG(0.6f)
+        /* Same as in renderColored2D(), expanded to Matrix4 for 3D */
+        .setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{Matrix3::projection({2.1f, 2.1f})})
+        .draw(mesh);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    const Float maxThreshold = 0.0f, meanThreshold = 0.0f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 11.34f, meanThreshold = 0.51f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
+        Utility::Path::join(_testDir, "FlatTestFiles/colored2D.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
 
 }}}}
 

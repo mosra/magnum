@@ -115,6 +115,10 @@ struct LineGLTest: GL::OpenGLTester {
     void renderMulti2D();
     void renderMulti3D();
 
+    template<UnsignedInt dimensions> void renderExtraMacros();
+    template<UnsignedInt dimensions> void renderExtraExtensionEnable();
+    template<UnsignedInt dimensions> void renderExtra();
+
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
 
@@ -385,6 +389,17 @@ const struct {
     #endif
 };
 
+const struct {
+    const char* name;
+} RenderExtraMacrosData[]{
+    {"VERTEX_SHADER_INTERFACE_EXTRA"},
+    {"FRAGMENT_SHADER_INTERFACE_EXTRA"},
+    {"VERTEX_SHADER_BEGIN_EXTRA"},
+    {"VERTEX_SHADER_END_EXTRA"},
+    {"FRAGMENT_SHADER_BEGIN_EXTRA"},
+    {"FRAGMENT_SHADER_END_EXTRA"},
+};
+
 LineGLTest::LineGLTest() {
     addInstancedTests<LineGLTest>({
         &LineGLTest::construct<2>,
@@ -545,6 +560,19 @@ LineGLTest::LineGLTest() {
     addInstancedTests({&LineGLTest::renderMulti2D,
                        &LineGLTest::renderMulti3D},
         Containers::arraySize(RenderMultiData),
+        &LineGLTest::renderSetupSmall,
+        &LineGLTest::renderTeardown);
+
+    addInstancedTests({&LineGLTest::renderExtraMacros<2>,
+                       &LineGLTest::renderExtraMacros<3>},
+        Containers::arraySize(RenderExtraMacrosData),
+        &LineGLTest::renderSetupSmall,
+        &LineGLTest::renderTeardown);
+
+    addTests({&LineGLTest::renderExtraExtensionEnable<2>,
+              &LineGLTest::renderExtraExtensionEnable<3>,
+              &LineGLTest::renderExtra<2>,
+              &LineGLTest::renderExtra<3>},
         &LineGLTest::renderSetupSmall,
         &LineGLTest::renderTeardown);
 
@@ -3121,6 +3149,201 @@ void LineGLTest::renderMulti3D() {
         CORRADE_COMPARE(image.pixels<UnsignedInt>()[20][60], data.expectedId[1]); /* Cross */
         CORRADE_COMPARE(image.pixels<UnsignedInt>()[60][40], data.expectedId[2]); /* Point */
     }
+}
+
+template<UnsignedInt dimensions> void LineGLTest::renderExtraMacros() {
+    auto&& data = RenderExtraMacrosData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* Tests that defining a single macro doesn't fail compilation, for
+       example due to copypaste errors such as this:
+        #ifdef STUFF_EXTRA
+        OTHER_STUFF_EXTRA
+        #endif
+       Since the macros are empty, they should not affect the output at all.
+       The same mesh is drawn for 2D and 3D as that doesn't really matter. */
+
+    LineGL<dimensions> shader{typename LineGL<dimensions>::Configuration{}
+        .setExtraSource(Utility::format("#define {}\n", data.name))};
+
+    /* Enabling blending and a half-transparent color -- there should be no
+       overlaps */
+    GL::Renderer::enable(GL::Renderer::Feature::Blending);
+    GL::Renderer::setBlendFunction(
+        GL::Renderer::BlendFunction::One,
+        GL::Renderer::BlendFunction::OneMinusSourceAlpha);
+
+    shader
+        .setViewportSize(Vector2{RenderSizeSmall})
+        .draw(generateLineMesh({
+            /* A / line from the top to bottom */
+            {-0.0f, 0.5f}, {-0.5f, -0.5f},
+            /* A / line from the bottom to top */
+            {-0.5f, -0.5f}, {0.5f, -0.25f},
+            /* A | line from the bottom to top */
+            {-0.75f, -0.25f}, {-0.75f, 0.75f},
+            /* A _ line from the left to right */
+            {-0.25f, -0.75f}, {0.75f, -0.75f},
+            /* A zero-size line that should be visible as a point */
+            {0.5f, 0.5f}, {0.5f, 0.5f}
+        }));
+
+    GL::Renderer::disable(GL::Renderer::Feature::Blending);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
+        Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/defaults.tga"),
+        /* llvmpipe has one pixel different */
+        (DebugTools::CompareImageToFile{_manager, 238.0f, 0.038f}));
+}
+
+template<UnsignedInt dimensions> void LineGLTest::renderExtraExtensionEnable() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* Verifies that the extra source is put early enough to allow #extension
+       statements (i.e., before any other non-macro definition). Not verifying
+       rendering output as no output-affecting macros are defined. */
+
+    /* Picking extensions that are the most likely to be present */
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>())
+        CORRADE_SKIP(GL::Extensions::ARB::explicit_attrib_location::string() << "not supported, cannot test");
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::OES::standard_derivatives>())
+        CORRADE_SKIP(GL::Extensions::OES::standard_derivatives::string() << "not supported, cannot test");
+    #elif defined(MAGNUM_TARGET_WEBGL)
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "not supported, cannot test");
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "not supported, cannot test");
+    #endif
+
+    LineGL<dimensions> shader{typename LineGL<dimensions>::Configuration{}
+        .setExtraSource(
+            #ifndef MAGNUM_TARGET_GLES
+            "#extension GL_ARB_explicit_attrib_location: require\n"
+            #elif defined(MAGNUM_TARGET_GLES2)
+            "#extension GL_OES_standard_derivatives: require\n"
+            #else
+            /* covers both ES3 and WebGL */
+            "#extension GL_ANGLE_multi_draw: require\n"
+            #endif
+        )};
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+template<UnsignedInt dimensions> void LineGLTest::renderExtra() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* Verifying the full set of macros and both attributes and uniforms, bound
+       and queried instead of having explicit locations, to ensure the feature
+       makes sense as a whole. The same mesh is again drawn for 2D and 3D as
+       that doesn't really matter. */
+
+    /* The renderExtraExtensionEnable() above tested that the extra source is
+       added early enough, the #ifndef POSITION_ATTRIBUTE_LOCATION below tests
+       that it's added only after all definitions we might want to rely on */
+    struct Shader: LineGL<dimensions> {
+        explicit Shader(): LineGL<dimensions>{NoCreate} {
+            typename LineGL<dimensions>::CompileState state = LineGL<dimensions>::compile(typename LineGL<dimensions>::Configuration{}
+                .setExtraSource(R"(
+#ifndef POSITION_ATTRIBUTE_LOCATION
+#error extra source inserted too early
+#endif
+#ifndef NEW_GLSL
+#define VERTEX_SHADER_INTERFACE_EXTRA                                       \
+    attribute lowp float colorR;                                            \
+    uniform lowp float colorG;                                              \
+    varying lowp vec3 interpolatedColorRgb;
+#define FRAGMENT_SHADER_INTERFACE_EXTRA                                     \
+    varying lowp vec3 interpolatedColorRgb;
+#else
+#define VERTEX_SHADER_INTERFACE_EXTRA                                       \
+    in lowp float colorR;                                                   \
+    uniform lowp float colorG;                                              \
+    out lowp vec3 interpolatedColorRgb;
+#define FRAGMENT_SHADER_INTERFACE_EXTRA                                     \
+    in lowp vec3 interpolatedColorRgb;
+#endif
+#define VERTEX_SHADER_BEGIN_EXTRA                                           \
+    interpolatedColorRgb = vec3(colorR, colorG, 0.0);
+#define VERTEX_SHADER_END_EXTRA                                             \
+    interpolatedColorRgb.b += 0.5;
+#define FRAGMENT_SHADER_BEGIN_EXTRA                                         \
+    lowp vec3 extraColor = interpolatedColorRgb;                            \
+    extraColor.b += 0.5;
+#define FRAGMENT_SHADER_END_EXTRA                                           \
+    fragmentColor.rgb += extraColor;
+)"));
+            /* Attribute location can be bound only before linking, so submit a
+               relink after. This also has to be done before the finalization
+               as otherwise the uniform defaults such as identity transform
+               matrix would get lost on GLES, leading to empty output. */
+            state.bindAttributeLocation(7, "colorR");
+            state.submitLink();
+
+            /* Finish the setup by replacing the underlying instance */
+            static_cast<LineGL<dimensions>&>(*this) = LineGL<dimensions>{Utility::move(state)};
+
+            /* Query the uniform location once linking succeeded */
+            _colorGUniform = LineGL<dimensions>::uniformLocation("colorG");
+        }
+
+        Shader& setColorG(Float green) {
+            LineGL<dimensions>::setUniform(_colorGUniform, green);
+            return *this;
+        }
+
+        private:
+            Int _colorGUniform;
+    } shader;
+
+    GL::Mesh mesh = generateLineMesh({
+        /* A / line from the top to bottom */
+        {-0.0f, 0.5f}, {-0.5f, -0.5f},
+        /* A / line from the bottom to top */
+        {-0.5f, -0.5f}, {0.5f, -0.25f},
+        /* A | line from the bottom to top */
+        {-0.75f, -0.25f}, {-0.75f, 0.75f},
+        /* A _ line from the left to right */
+        {-0.25f, -0.75f}, {0.75f, -0.75f},
+        /* A zero-size line that should be visible as a point */
+        {0.5f, 0.5f}, {0.5f, 0.5f}
+    });
+    mesh.addVertexBuffer(
+        GL::Buffer{Containers::Array<Float>{DirectInit, 5*4, 0.6f}},
+        0, GL::Attribute<7, Float>{});
+
+    shader
+        .setColorG(0.6f)
+        /* Together with the color supplied by the attribute and the other
+           uniform we should arrive back at 0xffffff_rgbf */
+        .setColor(0x666600_rgbf)
+        .setViewportSize(Vector2{RenderSizeSmall})
+        .draw(mesh);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
+        Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/defaults.tga"),
+        /* llvmpipe has one pixel different */
+        (DebugTools::CompareImageToFile{_manager, 238.0f, 0.038f}));
 }
 
 }}}}

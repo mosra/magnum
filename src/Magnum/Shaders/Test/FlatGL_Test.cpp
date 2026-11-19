@@ -43,6 +43,8 @@ struct FlatGL_Test: TestSuite::Tester {
     void debugFlagsSupersets();
 
     template<UnsignedInt dimensions> void configurationConstruct();
+    template<UnsignedInt dimensions> void configurationConstructCopy();
+    template<UnsignedInt dimensions> void configurationConstructMove();
     template<UnsignedInt dimensions> void configurationSetters();
     #ifndef MAGNUM_TARGET_GLES2
     template<UnsignedInt dimensions> void configurationSetJointCountInvalid();
@@ -51,6 +53,8 @@ struct FlatGL_Test: TestSuite::Tester {
     template<UnsignedInt dimensions> void constructNoCreate();
     template<UnsignedInt dimensions> void constructCopy();
 };
+
+using namespace Containers::Literals;
 
 #ifndef MAGNUM_TARGET_GLES2
 const struct {
@@ -80,6 +84,10 @@ FlatGL_Test::FlatGL_Test() {
 
               &FlatGL_Test::configurationConstruct<2>,
               &FlatGL_Test::configurationConstruct<3>,
+              &FlatGL_Test::configurationConstructCopy<2>,
+              &FlatGL_Test::configurationConstructCopy<3>,
+              &FlatGL_Test::configurationConstructMove<2>,
+              &FlatGL_Test::configurationConstructMove<3>,
               &FlatGL_Test::configurationSetters<2>,
               &FlatGL_Test::configurationSetters<3>});
 
@@ -171,11 +179,76 @@ template<UnsignedInt dimensions> void FlatGL_Test::configurationConstruct() {
     CORRADE_COMPARE(configuration.materialCount(), 1);
     CORRADE_COMPARE(configuration.drawCount(), 1);
     #endif
+    CORRADE_COMPARE(configuration.extraSource(), "");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+}
+
+template<UnsignedInt dimensions> void FlatGL_Test::configurationConstructCopy() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* The copy is implicitly generated so just verify it propagates to the
+       ConfigurationBaseGL constructor and does what's expected for other
+       members */
+
+    typename FlatGL<dimensions>::Configuration a = typename FlatGL<dimensions>::Configuration{}
+        .setFlags(FlatGL<dimensions>::Flag::TextureTransformation)
+        .setExtraSource("// hello\n"_s);
+
+    typename FlatGL<dimensions>::Configuration b = a;
+    CORRADE_COMPARE(b.flags(), FlatGL<dimensions>::Flag::TextureTransformation);
+    CORRADE_COMPARE(b.extraSource(), "// hello\n");
+    /* Copying invokes a copy constructor on the string, so the Global flag
+       gets lost */
+    CORRADE_COMPARE(b.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+
+    typename FlatGL<dimensions>::Configuration c = typename FlatGL<dimensions>::Configuration{}
+        .setExtraSource("// hi\n"_s);
+    c = a;
+    CORRADE_COMPARE(c.flags(), FlatGL<dimensions>::Flag::TextureTransformation);
+    CORRADE_COMPARE(c.extraSource(), "// hello\n");
+    /* Same here */
+    CORRADE_COMPARE(c.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+}
+
+template<UnsignedInt dimensions> void FlatGL_Test::configurationConstructMove() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* The copy is implicitly generated so just verify it propagates to the
+       ConfigurationBaseGL constructor and does what's expected for other
+       members */
+
+    /* Not using method chaining because it returns & instead of && and so a
+       copy would happen when forming `a`, losing the Global flag. Due to SSO
+       the copy isn't such a big deal that it'd need && overloads for all
+       setters right now. */
+    typename FlatGL<dimensions>::Configuration a;
+    a.setFlags(FlatGL<dimensions>::Flag::TextureTransformation);
+    a.setExtraSource("// hello\n"_s);
+    CORRADE_COMPARE(a.flags(), FlatGL<dimensions>::Flag::TextureTransformation);
+    CORRADE_COMPARE(a.extraSource(), "// hello\n");
+    CORRADE_COMPARE(a.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    typename FlatGL<dimensions>::Configuration b = Utility::move(a);
+    CORRADE_COMPARE(b.flags(), FlatGL<dimensions>::Flag::TextureTransformation);
+    CORRADE_COMPARE(b.extraSource(), "// hello\n");
+    CORRADE_COMPARE(b.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    typename FlatGL<dimensions>::Configuration c;
+    c.setExtraSource("// hi\n"_s);
+    c = Utility::move(b);
+    CORRADE_COMPARE(c.flags(), FlatGL<dimensions>::Flag::TextureTransformation);
+    CORRADE_COMPARE(c.extraSource(), "// hello\n");
+    CORRADE_COMPARE(c.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
 }
 
 template<UnsignedInt dimensions> void FlatGL_Test::configurationSetters() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
+    /* Chaining the setters to verify they all return a meaningful reference.
+       The chaining returns & instead of && and so a copy happens, losing any
+       potential Global flag on the string. That's tested below instead. Due to
+       SSO the copy isn't such a big deal that it'd need && overloads for all
+       setters right now. */
     typename FlatGL<dimensions>::Configuration configuration = typename FlatGL<dimensions>::Configuration{}
         .setFlags(FlatGL<dimensions>::Flag::TextureTransformation)
         #ifndef MAGNUM_TARGET_GLES2
@@ -183,7 +256,7 @@ template<UnsignedInt dimensions> void FlatGL_Test::configurationSetters() {
         .setMaterialCount(17)
         .setDrawCount(266)
         #endif
-        ;
+        .setExtraSource("// raw C string\n");
     CORRADE_COMPARE(configuration.flags(), FlatGL<dimensions>::Flag::TextureTransformation);
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(configuration.jointCount(), 6);
@@ -192,6 +265,18 @@ template<UnsignedInt dimensions> void FlatGL_Test::configurationSetters() {
     CORRADE_COMPARE(configuration.materialCount(), 17);
     CORRADE_COMPARE(configuration.drawCount(), 266);
     #endif
+    CORRADE_COMPARE(configuration.extraSource(), "// raw C string\n");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+
+    /* Verify also that the other setExtraSource() overloads delegate
+       properly */
+    configuration.setExtraSource("// hello\n"_s);
+    CORRADE_COMPARE(configuration.extraSource(), "// hello\n");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    configuration.setExtraSource(Containers::String::nullTerminatedGlobalView("// r-value global string\n"_s));
+    CORRADE_COMPARE(configuration.extraSource(), "// r-value global string\n");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
 }
 
 #ifndef MAGNUM_TARGET_GLES2

@@ -26,9 +26,49 @@
 
 #include "baseGL.h"
 
+#include <Corrade/Containers/String.h>
+
 #include "Magnum/GL/Shader.h"
 
 namespace Magnum { namespace Shaders { namespace Implementation {
+
+ConfigurationBaseGL::ConfigurationBaseGL() {
+    new(_extraSource) Containers::String{};
+}
+
+ConfigurationBaseGL::ConfigurationBaseGL(const ConfigurationBaseGL& other) {
+    new(_extraSource) Containers::String{reinterpret_cast<const Containers::String&>(other._extraSource)};
+}
+
+ConfigurationBaseGL::ConfigurationBaseGL(ConfigurationBaseGL&& other) noexcept {
+    new(_extraSource) Containers::String{Utility::move(reinterpret_cast<Containers::String&>(other._extraSource))};
+}
+
+ConfigurationBaseGL::~ConfigurationBaseGL() {
+    reinterpret_cast<Containers::String&>(_extraSource).~String();
+}
+
+ConfigurationBaseGL& ConfigurationBaseGL::operator=(const ConfigurationBaseGL& other) {
+    reinterpret_cast<Containers::String&>(_extraSource) = reinterpret_cast<const Containers::String&>(other._extraSource);
+    return *this;
+}
+
+ConfigurationBaseGL& ConfigurationBaseGL::operator=(ConfigurationBaseGL&& other) noexcept {
+    reinterpret_cast<Containers::String&>(_extraSource) = Utility::move(reinterpret_cast<Containers::String&>(other._extraSource));
+    return *this;
+}
+
+Containers::StringView ConfigurationBaseGL::extraSource() const {
+    return reinterpret_cast<const Containers::String&>(_extraSource);
+}
+
+void ConfigurationBaseGL::setExtraSource(const Containers::StringView source) {
+    setExtraSource(Containers::String::nullTerminatedGlobalView(source));
+}
+
+void ConfigurationBaseGL::setExtraSource(Containers::String&& source) {
+    reinterpret_cast<Containers::String&>(_extraSource) = Utility::move(source);
+}
 
 GLShaderWrapper::GLShaderWrapper(GL::Shader&& shader) noexcept: type{GLenum(shader.type())}, id{shader.release()} {}
 

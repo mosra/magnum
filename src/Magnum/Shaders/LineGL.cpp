@@ -233,6 +233,7 @@ template<UnsignedInt dimensions> typename LineGL<dimensions>::CompileState LineG
         vert.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     vert.addSource(rs.getString("generic.glsl"_s))
+        .addSource(configuration.extraSource())
         .addSource(rs.getString("Line.vert"_s))
         .addSource(rs.getString("Line.in.vert"_s))
         .submitCompile();
@@ -265,6 +266,7 @@ template<UnsignedInt dimensions> typename LineGL<dimensions>::CompileState LineG
         frag.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     frag.addSource(rs.getString("generic.glsl"_s))
+        .addSource(configuration.extraSource())
         .addSource(rs.getString("Line.frag"_s))
         .addSource(rs.getString("Line.in.frag"_s))
         .submitCompile();
@@ -535,6 +537,15 @@ template<UnsignedInt dimensions> LineGL<dimensions>& LineGL<dimensions>::bindMat
 }
 
 template<UnsignedInt dimensions> LineGL<dimensions>::Configuration::Configuration(): _capStyle{LineCapStyle::Square}, _joinStyle{LineJoinStyle::Miter} {}
+
+template<UnsignedInt dimensions> Containers::StringView LineGL<dimensions>::Configuration::extraSource() const {
+    return Implementation::ConfigurationBaseGL::extraSource();
+}
+
+template<UnsignedInt dimensions> typename LineGL<dimensions>::Configuration& LineGL<dimensions>::Configuration::setExtraSource(Containers::StringView source) {
+    Implementation::ConfigurationBaseGL::setExtraSource(source);
+    return *this;
+}
 
 template class MAGNUM_SHADERS_EXPORT LineGL<2>;
 template class MAGNUM_SHADERS_EXPORT LineGL<3>;

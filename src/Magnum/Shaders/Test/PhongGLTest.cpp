@@ -184,6 +184,10 @@ struct PhongGLTest: GL::OpenGLTester {
     void renderMultiSkinning();
     #endif
 
+    void renderExtraMacros();
+    void renderExtraExtensionEnable();
+    void renderExtra();
+
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
         Containers::String _testDir;
@@ -1251,6 +1255,17 @@ const struct {
 };
 #endif
 
+const struct {
+    const char* name;
+} RenderExtraMacrosData[]{
+    {"VERTEX_SHADER_INTERFACE_EXTRA"},
+    {"FRAGMENT_SHADER_INTERFACE_EXTRA"},
+    {"VERTEX_SHADER_BEGIN_EXTRA"},
+    {"VERTEX_SHADER_END_EXTRA"},
+    {"FRAGMENT_SHADER_BEGIN_EXTRA"},
+    {"FRAGMENT_SHADER_END_EXTRA"},
+};
+
 PhongGLTest::PhongGLTest() {
     addInstancedTests({&PhongGLTest::construct},
         Containers::arraySize(ConstructData));
@@ -1549,6 +1564,16 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
     #endif
+
+    addInstancedTests({&PhongGLTest::renderExtraMacros},
+        Containers::arraySize(RenderExtraMacrosData),
+        &PhongGLTest::renderSetup,
+        &PhongGLTest::renderTeardown);
+
+    addTests({&PhongGLTest::renderExtraExtensionEnable,
+              &PhongGLTest::renderExtra},
+        &PhongGLTest::renderSetup,
+        &PhongGLTest::renderTeardown);
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -6041,6 +6066,184 @@ void PhongGLTest::renderMultiSkinning() {
         (DebugTools::CompareImageToFile{_manager}));
 }
 #endif
+
+void PhongGLTest::renderExtraMacros() {
+    auto&& data = RenderExtraMacrosData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Tests that defining a single macro doesn't fail compilation, for
+       example due to copypaste errors such as this:
+        #ifdef STUFF_EXTRA
+        OTHER_STUFF_EXTRA
+        #endif
+       Since the macros are empty, they should not affect the output at all. */
+
+    PhongGL shader{PhongGL::Configuration{}
+        .setExtraSource(Utility::format("#define {}\n", data.name))};
+    shader.draw(MeshTools::compile(Primitives::uvSphereSolid(16, 32)));
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has 6 different pixels on the edges and a bunch of small
+       rounding errors */
+    const Float maxThreshold = 31.0f, meanThreshold = 0.122f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 31.0f, meanThreshold = 4.142f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
+        Utility::Path::join(_testDir, "PhongTestFiles/defaults.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
+
+void PhongGLTest::renderExtraExtensionEnable() {
+    /* Verifies that the extra source is put early enough to allow #extension
+       statements (i.e., before any other non-macro definition). Not verifying
+       rendering output as no output-affecting macros are defined. */
+
+    /* Picking extensions that are the most likely to be present */
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>())
+        CORRADE_SKIP(GL::Extensions::ARB::explicit_attrib_location::string() << "not supported, cannot test");
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::OES::standard_derivatives>())
+        CORRADE_SKIP(GL::Extensions::OES::standard_derivatives::string() << "not supported, cannot test");
+    #elif defined(MAGNUM_TARGET_WEBGL)
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "not supported, cannot test");
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "not supported, cannot test");
+    #endif
+
+    PhongGL shader{PhongGL::Configuration{}
+        .setExtraSource(
+            #ifndef MAGNUM_TARGET_GLES
+            "#extension GL_ARB_explicit_attrib_location: require\n"
+            #elif defined(MAGNUM_TARGET_GLES2)
+            "#extension GL_OES_standard_derivatives: require\n"
+            #else
+            /* covers both ES3 and WebGL */
+            "#extension GL_ANGLE_multi_draw: require\n"
+            #endif
+        )};
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void PhongGLTest::renderExtra() {
+    /* Verifying the full set of macros and both attributes and uniforms, bound
+       and queried instead of having explicit locations, to ensure the feature
+       makes sense as a whole. */
+
+    /* The renderExtraExtensionEnable() above tested that the extra source is
+       added early enough, the #ifndef POSITION_ATTRIBUTE_LOCATION below tests
+       that it's added only after all definitions we might want to rely on */
+    struct Shader: PhongGL {
+        explicit Shader(): PhongGL{NoCreate} {
+            CompileState state = compile(Configuration{}
+                .setLightCount(2)
+                .setExtraSource(R"(
+#ifndef POSITION_ATTRIBUTE_LOCATION
+#error extra source inserted too early
+#endif
+#ifndef NEW_GLSL
+#define VERTEX_SHADER_INTERFACE_EXTRA                                       \
+    attribute lowp float colorR;                                            \
+    uniform lowp float colorB;                                              \
+    varying lowp vec3 interpolatedColorRgb;
+#define FRAGMENT_SHADER_INTERFACE_EXTRA                                     \
+    varying lowp vec3 interpolatedColorRgb;
+#else
+#define VERTEX_SHADER_INTERFACE_EXTRA                                       \
+    in lowp float colorR;                                                   \
+    uniform lowp float colorB;                                              \
+    out lowp vec3 interpolatedColorRgb;
+#define FRAGMENT_SHADER_INTERFACE_EXTRA                                     \
+    in lowp vec3 interpolatedColorRgb;
+#endif
+#define VERTEX_SHADER_BEGIN_EXTRA                                           \
+    interpolatedColorRgb = vec3(colorR, 0.0, colorB);
+#define VERTEX_SHADER_END_EXTRA                                             \
+    interpolatedColorRgb.b += 0.1;
+#define FRAGMENT_SHADER_BEGIN_EXTRA                                         \
+    lowp vec3 extraColor = interpolatedColorRgb;
+#define FRAGMENT_SHADER_END_EXTRA                                           \
+    fragmentColor.rgb += extraColor;
+)"));
+            /* Attribute location can be bound only before linking, so submit a
+               relink after. This also has to be done before the finalization
+               as otherwise the uniform defaults such as identity normal matrix
+               would be lost on GLES and result in a black output. */
+            state.bindAttributeLocation(7, "colorR");
+            state.submitLink();
+
+            /* Finish the setup by replacing the underlying instance */
+            static_cast<PhongGL&>(*this) = PhongGL{Utility::move(state)};
+
+            /* Query the uniform location once linking succeeded */
+            _colorBUniform = uniformLocation("colorB");
+        }
+
+        Shader& setColorB(Float blue) {
+            setUniform(_colorBUniform, blue);
+            return *this;
+        }
+
+        private:
+            Int _colorBUniform;
+    } shader;
+
+    Trade::MeshData sphere = Primitives::uvSphereSolid(16, 32);
+    GL::Mesh mesh = MeshTools::compile(sphere);
+    mesh.addVertexBuffer(
+        GL::Buffer{Containers::Array<Float>{DirectInit, sphere.vertexCount(), 0.2f}},
+        0, GL::Attribute<7, Float>{});
+
+    shader
+        .setColorB(0.1f)
+        /* Same as in renderColored() */
+        .setLightColors({0x993366_rgbf, 0x669933_rgbf})
+        .setLightPositions({
+            {-3.0f, -3.0f, 2.0f, 0.0f},
+            { 3.0f, -3.0f, 2.0f, 0.0f}
+        })
+        /* Ambient color stays at default, 0x330033_rgbf is passed from the
+           extra attribute and uniform */
+        .setDiffuseColor(0xccffcc_rgbf)
+        .setSpecularColor(0x6666ff_rgbf)
+        .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f)))
+        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+        .draw(mesh);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has some minor rounding differences (max = 1). ARM Mali G71
+       and Apple A8 has bigger rounding differences. NVidia as well, more on
+       ES2. */
+    const Float maxThreshold = 12.67f, meanThreshold = 0.123f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 15.34f, meanThreshold = 3.33f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
+        Utility::Path::join(_testDir, "PhongTestFiles/colored.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
 
 }}}}
 

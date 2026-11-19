@@ -39,9 +39,10 @@
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/DebugTools/CompareImage.h"
-#include "Magnum/GL/OpenGLTester.h"
+#include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/Mesh.h"
+#include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/Renderbuffer.h"
 #include "Magnum/GL/RenderbufferFormat.h"
 #include "Magnum/GL/Shader.h"
@@ -61,7 +62,6 @@
 #ifndef MAGNUM_TARGET_GLES2
 #include <Corrade/Utility/Format.h>
 
-#include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/MeshView.h"
 #include "Magnum/GL/TextureArray.h"
 #include "Magnum/MeshTools/Concatenate.h"
@@ -125,6 +125,10 @@ struct DistanceFieldVectorGLTest: GL::OpenGLTester {
     void renderMulti2D();
     void renderMulti3D();
     #endif
+
+    template<UnsignedInt dimensions> void renderExtraMacros();
+    template<UnsignedInt dimensions> void renderExtraExtensionEnable();
+    template<UnsignedInt dimensions> void renderExtra();
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
@@ -357,6 +361,17 @@ constexpr struct {
 };
 #endif
 
+const struct {
+    const char* name;
+} RenderExtraMacrosData[]{
+    {"VERTEX_SHADER_INTERFACE_EXTRA"},
+    {"FRAGMENT_SHADER_INTERFACE_EXTRA"},
+    {"VERTEX_SHADER_BEGIN_EXTRA"},
+    {"VERTEX_SHADER_END_EXTRA"},
+    {"FRAGMENT_SHADER_BEGIN_EXTRA"},
+    {"FRAGMENT_SHADER_END_EXTRA"},
+};
+
 DistanceFieldVectorGLTest::DistanceFieldVectorGLTest() {
     addInstancedTests<DistanceFieldVectorGLTest>({
         &DistanceFieldVectorGLTest::construct<2>,
@@ -468,6 +483,19 @@ DistanceFieldVectorGLTest::DistanceFieldVectorGLTest() {
         &DistanceFieldVectorGLTest::renderSetup,
         &DistanceFieldVectorGLTest::renderTeardown);
     #endif
+
+    addInstancedTests({&DistanceFieldVectorGLTest::renderExtraMacros<2>,
+                       &DistanceFieldVectorGLTest::renderExtraMacros<3>},
+        Containers::arraySize(RenderExtraMacrosData),
+        &DistanceFieldVectorGLTest::renderSetup,
+        &DistanceFieldVectorGLTest::renderTeardown);
+
+    addTests({&DistanceFieldVectorGLTest::renderExtraExtensionEnable<2>,
+              &DistanceFieldVectorGLTest::renderExtraExtensionEnable<3>,
+              &DistanceFieldVectorGLTest::renderExtra<2>,
+              &DistanceFieldVectorGLTest::renderExtra<3>},
+        &DistanceFieldVectorGLTest::renderSetup,
+        &DistanceFieldVectorGLTest::renderTeardown);
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -2134,6 +2162,230 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 }
 #endif
+
+template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::renderExtraMacros() {
+    auto&& data = RenderExtraMacrosData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* Tests that defining a single macro doesn't fail compilation, for
+       example due to copypaste errors such as this:
+        #ifdef STUFF_EXTRA
+        OTHER_STUFF_EXTRA
+        #endif
+       Since the macros are empty, they should not affect the output at all.
+       The same mesh is drawn for 2D and 3D as that doesn't really matter. */
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
+    CORRADE_VERIFY(importer);
+
+    GL::Texture2D texture;
+    Containers::Optional<Trade::ImageData2D> image;
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector-distancefield.tga")) && (image = importer->image2D(0)));
+    texture.setMinificationFilter(GL::SamplerFilter::Linear)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setWrapping(GL::SamplerWrapping::ClampToEdge);
+
+    #ifdef MAGNUM_TARGET_GLES2
+    /* Don't want to bother with the fiasco of single-channel formats and
+       texture storage extensions on ES2 */
+    texture.setImage(0, TextureFormatR, *image);
+    #else
+    texture.setStorage(1, TextureFormatR, image->size())
+        .setSubImage(0, {}, *image);
+    #endif
+
+    DistanceFieldVectorGL<dimensions> shader{typename DistanceFieldVectorGL<dimensions>::Configuration{}
+        .setExtraSource(Utility::format("#define {}\n", data.name))};
+    shader
+        .bindVectorTexture(texture)
+        .draw(MeshTools::compile(Primitives::squareSolid(Primitives::SquareFlag::TextureCoordinates)));
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has off-by-one differences on edges, ARM Mali off-by-one in
+       all channels. Apple A8 & llvmpipe off-by-more. */
+    const Float maxThreshold = 32.0f, meanThreshold = 0.596f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 17.0f, meanThreshold = 0.480f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
+        Utility::Path::join(_testDir, "VectorTestFiles/defaults-distancefield.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
+
+template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::renderExtraExtensionEnable() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* Verifies that the extra source is put early enough to allow #extension
+       statements (i.e., before any other non-macro definition). Not verifying
+       rendering output as no output-affecting macros are defined. */
+
+    /* Picking extensions that are the most likely to be present */
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>())
+        CORRADE_SKIP(GL::Extensions::ARB::explicit_attrib_location::string() << "not supported, cannot test");
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::OES::standard_derivatives>())
+        CORRADE_SKIP(GL::Extensions::OES::standard_derivatives::string() << "not supported, cannot test");
+    #elif defined(MAGNUM_TARGET_WEBGL)
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "not supported, cannot test");
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "not supported, cannot test");
+    #endif
+
+    DistanceFieldVectorGL<dimensions> shader{typename DistanceFieldVectorGL<dimensions>::Configuration{}
+        .setExtraSource(
+            #ifndef MAGNUM_TARGET_GLES
+            "#extension GL_ARB_explicit_attrib_location: require\n"
+            #elif defined(MAGNUM_TARGET_GLES2)
+            "#extension GL_OES_standard_derivatives: require\n"
+            #else
+            /* covers both ES3 and WebGL */
+            "#extension GL_ANGLE_multi_draw: require\n"
+            #endif
+        )};
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::renderExtra() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* Verifying the full set of macros and both attributes and uniforms, bound
+       and queried instead of having explicit locations, to ensure the feature
+       makes sense as a whole. The same mesh is again drawn for 2D and 3D as
+       that doesn't really matter. */
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
+    CORRADE_VERIFY(importer);
+
+    GL::Texture2D texture;
+    Containers::Optional<Trade::ImageData2D> image;
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(_testDir, "TestFiles/vector-distancefield.tga")) && (image = importer->image2D(0)));
+    texture.setMinificationFilter(GL::SamplerFilter::Linear)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setWrapping(GL::SamplerWrapping::ClampToEdge);
+
+    #ifdef MAGNUM_TARGET_GLES2
+    /* Don't want to bother with the fiasco of single-channel formats and
+       texture storage extensions on ES2 */
+    texture.setImage(0, TextureFormatR, *image);
+    #else
+    texture.setStorage(1, TextureFormatR, image->size())
+        .setSubImage(0, {}, *image);
+    #endif
+
+    /* The renderExtraExtensionEnable() above tested that the extra source is
+       added early enough, the #ifndef POSITION_ATTRIBUTE_LOCATION below tests
+       that it's added only after all definitions we might want to rely on */
+    struct Shader: DistanceFieldVectorGL<dimensions> {
+        explicit Shader(): DistanceFieldVectorGL<dimensions>{NoCreate} {
+            typename DistanceFieldVectorGL<dimensions>::CompileState state = DistanceFieldVectorGL<dimensions>::compile(typename DistanceFieldVectorGL<dimensions>::Configuration{}
+                .setExtraSource(R"(
+#ifndef POSITION_ATTRIBUTE_LOCATION
+#error extra source inserted too early
+#endif
+#ifndef NEW_GLSL
+#define VERTEX_SHADER_INTERFACE_EXTRA                                       \
+    attribute lowp float colorR;                                            \
+    uniform lowp float colorG;                                              \
+    varying lowp vec3 interpolatedColorRgb;
+#define FRAGMENT_SHADER_INTERFACE_EXTRA                                     \
+    varying lowp vec3 interpolatedColorRgb;
+#else
+#define VERTEX_SHADER_INTERFACE_EXTRA                                       \
+    in lowp float colorR;                                                   \
+    uniform lowp float colorG;                                              \
+    out lowp vec3 interpolatedColorRgb;
+#define FRAGMENT_SHADER_INTERFACE_EXTRA                                     \
+    in lowp vec3 interpolatedColorRgb;
+#endif
+#define VERTEX_SHADER_BEGIN_EXTRA                                           \
+    interpolatedColorRgb = vec3(colorR, colorG, 0.0);
+#define VERTEX_SHADER_END_EXTRA                                             \
+    interpolatedColorRgb.b += 0.5;
+#define FRAGMENT_SHADER_BEGIN_EXTRA                                         \
+    lowp vec3 extraColor = interpolatedColorRgb;                            \
+    extraColor.b += 0.5;
+#define FRAGMENT_SHADER_END_EXTRA                                           \
+    lowp float mid = (outlineRange.x + outlineRange.y)*0.5; \
+    lowp float halfRange = (outlineRange.x - outlineRange.y)*0.5; \
+    fragmentColor.rgb += smoothstep(halfRange+smoothness, halfRange-smoothness, distance(mid, intensity))*extraColor;
+)"));
+            /* Attribute location can be bound only before linking, so submit a
+               relink after. This also has to be done before the finalization
+               as otherwise the uniform defaults such as the texture binding
+               unit would be lost on GLES and would result in wrong output. */
+            state.bindAttributeLocation(7, "colorR");
+            state.submitLink();
+
+            /* Finish the setup by replacing the underlying instance */
+            static_cast<DistanceFieldVectorGL<dimensions>&>(*this) = DistanceFieldVectorGL<dimensions>{Utility::move(state)};
+
+            /* Query the uniform location once linking succeeded */
+            _colorGUniform = DistanceFieldVectorGL<dimensions>::uniformLocation("colorG");
+        }
+
+        Shader& setColorG(Float green) {
+            DistanceFieldVectorGL<dimensions>::setUniform(_colorGUniform, green);
+            return *this;
+        }
+
+        private:
+            Int _colorGUniform;
+    } shader;
+
+    GL::Mesh mesh = MeshTools::compile(Primitives::squareSolid(Primitives::SquareFlag::TextureCoordinates));
+    CORRADE_VERIFY(!mesh.isIndexed());
+    mesh.addVertexBuffer(
+        GL::Buffer{Containers::Array<Float>{DirectInit, std::size_t(mesh.count()), 0.6f}},
+        0, GL::Attribute<7, Float>{});
+
+    shader
+        .setColorG(0.6f)
+        .bindVectorTexture(texture)
+        /* Same as in render2D(), expanded to Matrix4 for 3D */
+        .setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{Matrix3::projection({2.1f, 2.1f})})
+        .setColor(0xffff99_rgbf)
+        .setOutlineRange(0.6f, 0.45f)
+        .setSmoothness(0.05f)
+        .draw(mesh);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has off-by-one differences when smoothing, Apple A8 a bit
+       more, llvmpipe also */
+    const Float maxThreshold = 32.0f, meanThreshold = 0.942f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 32.0f, meanThreshold = 2.386f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
+        Utility::Path::join(_testDir, "VectorTestFiles/outline2D.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
 
 }}}}
 
