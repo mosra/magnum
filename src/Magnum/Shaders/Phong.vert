@@ -387,7 +387,15 @@ out highp vec3 transformedPosition;
 flat out highp uint drawId;
 #endif
 
+#ifdef VERTEX_SHADER_INTERFACE_EXTRA
+VERTEX_SHADER_INTERFACE_EXTRA
+#endif
+
 void main() {
+    #ifdef VERTEX_SHADER_BEGIN_EXTRA
+    VERTEX_SHADER_BEGIN_EXTRA
+    #endif
+
     #ifdef UNIFORM_BUFFERS
     #ifdef MULTI_DRAW
     drawId = drawOffset + uint(
@@ -517,5 +525,9 @@ void main() {
     #ifdef INSTANCED_OBJECT_ID
     /* Instanced object ID, if enabled */
     interpolatedInstanceObjectId = instanceObjectId;
+    #endif
+
+    #ifdef VERTEX_SHADER_END_EXTRA
+    VERTEX_SHADER_END_EXTRA
     #endif
 }

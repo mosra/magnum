@@ -44,11 +44,15 @@ struct DistanceFieldVectorGL_Test: TestSuite::Tester {
     #endif
 
     template<UnsignedInt dimensions> void configurationConstruct();
+    template<UnsignedInt dimensions> void configurationConstructCopy();
+    template<UnsignedInt dimensions> void configurationConstructMove();
     template<UnsignedInt dimensions> void configurationSetters();
 
     template<UnsignedInt dimensions> void constructNoCreate();
     template<UnsignedInt dimensions> void constructCopy();
 };
+
+using namespace Containers::Literals;
 
 DistanceFieldVectorGL_Test::DistanceFieldVectorGL_Test() {
     addTests({&DistanceFieldVectorGL_Test::debugFlag,
@@ -59,6 +63,10 @@ DistanceFieldVectorGL_Test::DistanceFieldVectorGL_Test() {
 
               &DistanceFieldVectorGL_Test::configurationConstruct<2>,
               &DistanceFieldVectorGL_Test::configurationConstruct<3>,
+              &DistanceFieldVectorGL_Test::configurationConstructCopy<2>,
+              &DistanceFieldVectorGL_Test::configurationConstructCopy<3>,
+              &DistanceFieldVectorGL_Test::configurationConstructMove<2>,
+              &DistanceFieldVectorGL_Test::configurationConstructMove<3>,
               &DistanceFieldVectorGL_Test::configurationSetters<2>,
               &DistanceFieldVectorGL_Test::configurationSetters<3>,
 
@@ -113,23 +121,100 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGL_Test::configurationC
     CORRADE_COMPARE(configuration.materialCount(), 1);
     CORRADE_COMPARE(configuration.drawCount(), 1);
     #endif
+    CORRADE_COMPARE(configuration.extraSource(), "");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+}
+
+template<UnsignedInt dimensions> void DistanceFieldVectorGL_Test::configurationConstructCopy() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* The copy is implicitly generated so just verify it propagates to the
+       ConfigurationBaseGL constructor and does what's expected for other
+       members */
+
+    typename DistanceFieldVectorGL<dimensions>::Configuration a = typename DistanceFieldVectorGL<dimensions>::Configuration{}
+        .setFlags(DistanceFieldVectorGL<dimensions>::Flag::TextureTransformation)
+        .setExtraSource("// hello\n"_s);
+
+    typename DistanceFieldVectorGL<dimensions>::Configuration b = a;
+    CORRADE_COMPARE(b.flags(), DistanceFieldVectorGL<dimensions>::Flag::TextureTransformation);
+    CORRADE_COMPARE(b.extraSource(), "// hello\n");
+    /* Copying invokes a copy constructor on the string, so the Global flag
+       gets lost */
+    CORRADE_COMPARE(b.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+
+    typename DistanceFieldVectorGL<dimensions>::Configuration c = typename DistanceFieldVectorGL<dimensions>::Configuration{}
+        .setExtraSource("// hi\n"_s);
+    c = a;
+    CORRADE_COMPARE(c.flags(), DistanceFieldVectorGL<dimensions>::Flag::TextureTransformation);
+    CORRADE_COMPARE(c.extraSource(), "// hello\n");
+    /* Same here */
+    CORRADE_COMPARE(c.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+}
+
+template<UnsignedInt dimensions> void DistanceFieldVectorGL_Test::configurationConstructMove() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* The copy is implicitly generated so just verify it propagates to the
+       ConfigurationBaseGL constructor and does what's expected for other
+       members */
+
+    /* Not using method chaining because it returns & instead of && and so a
+       copy would happen when forming `a`, losing the Global flag. Due to SSO
+       the copy isn't such a big deal that it'd need && overloads for all
+       setters right now. */
+    typename DistanceFieldVectorGL<dimensions>::Configuration a;
+    a.setFlags(DistanceFieldVectorGL<dimensions>::Flag::TextureTransformation);
+    a.setExtraSource("// hello\n"_s);
+    CORRADE_COMPARE(a.flags(), DistanceFieldVectorGL<dimensions>::Flag::TextureTransformation);
+    CORRADE_COMPARE(a.extraSource(), "// hello\n");
+    CORRADE_COMPARE(a.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    typename DistanceFieldVectorGL<dimensions>::Configuration b = Utility::move(a);
+    CORRADE_COMPARE(b.flags(), DistanceFieldVectorGL<dimensions>::Flag::TextureTransformation);
+    CORRADE_COMPARE(b.extraSource(), "// hello\n");
+    CORRADE_COMPARE(b.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    typename DistanceFieldVectorGL<dimensions>::Configuration c;
+    c.setExtraSource("// hi\n"_s);
+    c = Utility::move(b);
+    CORRADE_COMPARE(c.flags(), DistanceFieldVectorGL<dimensions>::Flag::TextureTransformation);
+    CORRADE_COMPARE(c.extraSource(), "// hello\n");
+    CORRADE_COMPARE(c.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
 }
 
 template<UnsignedInt dimensions> void DistanceFieldVectorGL_Test::configurationSetters() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
+    /* Chaining the setters to verify they all return a meaningful reference.
+       The chaining returns & instead of && and so a copy happens, losing any
+       potential Global flag on the string. That's tested below instead. Due to
+       SSO the copy isn't such a big deal that it'd need && overloads for all
+       setters right now. */
     typename DistanceFieldVectorGL<dimensions>::Configuration configuration = typename DistanceFieldVectorGL<dimensions>::Configuration{}
         .setFlags(DistanceFieldVectorGL<dimensions>::Flag::TextureTransformation)
         #ifndef MAGNUM_TARGET_GLES2
         .setMaterialCount(17)
         .setDrawCount(266)
         #endif
-        ;
+        .setExtraSource("// raw C string\n");
     CORRADE_COMPARE(configuration.flags(), DistanceFieldVectorGL<dimensions>::Flag::TextureTransformation);
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(configuration.materialCount(), 17);
     CORRADE_COMPARE(configuration.drawCount(), 266);
     #endif
+    CORRADE_COMPARE(configuration.extraSource(), "// raw C string\n");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+
+    /* Verify also that the other setExtraSource() overloads delegate
+       properly */
+    configuration.setExtraSource("// hello\n"_s);
+    CORRADE_COMPARE(configuration.extraSource(), "// hello\n");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    configuration.setExtraSource(Containers::String::nullTerminatedGlobalView("// r-value global string\n"_s));
+    CORRADE_COMPARE(configuration.extraSource(), "// r-value global string\n");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
 }
 
 template<UnsignedInt dimensions> void DistanceFieldVectorGL_Test::constructNoCreate() {

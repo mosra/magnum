@@ -274,7 +274,15 @@ layout(location = COLOR_OUTPUT_ATTRIBUTE_LOCATION)
 out lowp vec4 fragmentColor;
 #endif
 
+#ifdef FRAGMENT_SHADER_INTERFACE_EXTRA
+FRAGMENT_SHADER_INTERFACE_EXTRA
+#endif
+
 void main() {
+    #ifdef FRAGMENT_SHADER_BEGIN_EXTRA
+    FRAGMENT_SHADER_BEGIN_EXTRA
+    #endif
+
     #ifdef UNIFORM_BUFFERS
     #ifdef OBJECT_ID
     highp const uint objectId = draws[drawId].draw_objectId;
@@ -429,5 +437,9 @@ void main() {
 
     #else
     #error no visualization enabled, huh?
+    #endif
+
+    #ifdef FRAGMENT_SHADER_END_EXTRA
+    FRAGMENT_SHADER_END_EXTRA
     #endif
 }

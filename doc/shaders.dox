@@ -380,5 +380,157 @@ shader's @ref Shaders-FlatGL-object-id but using the generic definitions would
 look like this:
 
 @snippet Shaders-gl.cpp shaders-generic-object-id
+
+@section shaders-extending Extending builtin shaders with custom code
+
+All builtin shaders provide means to extend their interface with extra
+uniforms, inputs or outputs, and expose multiple insertion points for extra
+shader code. This is achieved by supplying an additional source file with
+@relativeref{Shaders::PhongGL,Configuration::setExtraSource()} that defines
+macros that subsequently get placed at different portions of a particular
+shader source file. As a simple starter example, the following code extends
+@ref Shaders::PhongGL with a brightness uniform that multiplies the fragment
+color with desired value:
+
+@snippet Shaders-gl.cpp shaders-extending-brightness
+
+The above snippets creates a subclass that provides also a uniform setter, for
+simplicity an explicitly hardcoded uniform location @cpp 101 @ce is used. A
+shader defined like that will work on most desktop drivers and locations
+starting at @cpp 100 @ce should be generally safe to use, compatibility
+considerations are explained further below if broader GL version support is
+desired.
+
+@m_class{m-note m-success}
+
+@par
+    Embedded shader sources embedded make tracking down compilation errors
+    harder. You might want to use @ref CORRADE_LINE_STRING to include a
+    @glsl #line @ce directive in the source for better experience --- see
+    documentation of the macro for an example snippet.
+
+Extending a shader means having awareness of the original source in order to
+know how the variables you want to modify are named --- such as the
+`fragmentColor` above. Shader sources are the `*.glsl`, `*.vert`, `*.frag` and
+`*.geom` files in the [src/Magnum/Shaders](https://github.com/mosra/magnum/tree/master/src/Magnum/Shaders)
+directory of the Magnum source tree, and the following macros are recognized by
+all shaders:
+
+-   `VERTEX_SHADER_INTERFACE_EXTRA` --- extra interface to insert in addition
+    to existing @glsl in @ce, @glsl out @ce and @glsl uniform @ce declarations
+    in the vertex shader, placed right above the @glsl main() @ce function
+-   `VERTEX_SHADER_BEGIN_EXTRA` --- extra code to insert at the very beginning
+    of the @glsl main() @ce function in the vertex shader
+-   `VERTEX_SHADER_END_EXTRA` --- extra code to insert at the very end of the
+    @glsl main() @ce function in the vertex shader. Note that certain shaders
+    may perform conditional early @glsl return @ce depending on various feature
+    flags so this code may not always be reached.
+-   `FRAGMENT_SHADER_INTERFACE_EXTRA` --- extra interface to insert in addition
+    to existing @glsl in @ce, @glsl out @ce and @glsl uniform @ce declarations
+    in the fragment shader, placed right above the @glsl main() @ce function
+-   `FRAGMENT_SHADER_BEGIN_EXTRA` --- extra code to insert at the very
+    beginning of the @glsl main() @ce function in the fragment shader
+-   `FRAGMENT_SHADER_END_EXTRA` --- extra code to insert at the very end of the
+    @glsl main() @ce function in the fragment shader. Note that certain shaders
+    may perform conditional early @glsl return @ce or @glsl discard @ce
+    depending on various feature flags so this code may not always be reached.
+
+Various shaders may then recognize additional macros, such as for example
+@ref Shaders::MeshVisualizerGL3D "Shaders::MeshVisualizerGL*D" providing
+insertion points for a geometry shader. The extra source is added right after
+all other @glsl #define @ce statements, in particular those coming from
+[generic.glsl](https://github.com/mosra/magnum/blob/master/src/Magnum/Shaders/generic.glsl)
+and [compatibility.glsl](https://github.com/mosra/magnum/blob/master/src/Magnum/Shaders/compatibility.glsl),
+and after macros exposing shader configuration and flags like `LIGHT_COUNT` in
+case of @ref Shaders::PhongGL. At the same time, the extra source is added
+early enough to allow for insertion of @glsl #extension @ce statements, for
+example like this to make use of @gl_extension{ARB,fragment_coord_conventions}
+to adjust @glsl gl_FragCoord @ce behavior:
+
+@snippet Shaders-gl.cpp shaders-extending-extension
+
+Apart from the above, unless said otherwise in documentation of a particular
+shader, presence and state of local variables and macros at each insertion
+point is considered an implementation detail and as such isn't explicitly
+documented.
+
+@m_class{m-block m-warning}
+
+@par Defining helper functions and variables
+    While it's very tempting to define helper functions and variables directly
+    in the source file like shown below, doing so will mean the code gets
+    compiled in both the vertex and the fragment shader even if used only in
+    one. Additionally, it will also mean that any @glsl #extension @ce
+    statements that the builtin shader may use will cause a compilation
+    failure, as they're no longer defined before all other code.
+@par
+    @snippet Shaders-gl.cpp shaders-extending-helpers-wrong
+@par
+    The correct solution is to put the code into an `*_INTERFACE_EXTRA` macro
+    definition instead, along with all required restrictions like `\` line
+    continuations. That also means @glsl #ifdef @ce statements (such as for
+    `NEW_GLSL` coming from [compatibility.glsl](https://github.com/mosra/magnum/blob/master/src/Magnum/Shaders/compatibility.glsl))
+    have to be done differently, can't just nest them:
+@par
+    @snippet Shaders-gl.cpp shaders-extending-helpers
+
+@subsection shaders-extending-uniforms Uniform location queries
+
+Explicit uniform location, used in the brightness example above, is only
+available with @gl_extension{ARB,explicit_uniform_location}, OpenGL 4.3+ or
+OpenGL ES 3.1+. For WebGL and older versions you have to explicitly query the
+location with @ref GL::AbstractShaderProgram::uniformLocation() instead. This
+is done after linking the shader, which the base constructor performs already,
+so you can call the function right after in the derived constructor. For
+example along with setting a default value that's also not possible to do
+directly in the source in OpenGL ES or WebGL:
+
+@snippet Shaders-gl.cpp shaders-extending-brightness-uniform-location
+
+Doing it this way also prevents potential conflicts with builtin uniforms, for
+example if @ref Shaders::PhongGL gets created with a very large light count
+that causes even locations above @cpp 100 @ce to be used. Similar workflow
+would be for uniform blocks with @ref GL::AbstractShaderProgram::uniformBlockIndex() and
+@relativeref{GL::AbstractShaderProgram,setUniformBlockBinding()}.
+
+@subsection shaders-extending-attributes Custom inputs and outputs
+
+If the brightness would be a vertex attribute instead, the code would change to
+the following, along with propagating the attribute from the vertex shader to
+the fragment shader. The `Brightness` @cpp typedef @ce would then be used in a
+@ref GL::Mesh::addVertexBuffer() call the same way as e.g.
+@ref Shaders::PhongGL::Position. To avoid a conflict with builtin attribute
+bindings you might want to check out the table of reserved locations in
+@ref Shaders::GenericGL --- in this case location @cpp 7 @ce won't conflict
+with any other attribute as long as we don't use the shader for skinning:
+
+@snippet Shaders-gl.cpp shaders-extending-brightness-attribute
+
+Similarly to explicit uniform locations, the above requires @gl_extension{ARB,explicit_attrib_location}, OpenGL 3.3+, OpenGL ES 3.0+ or
+WebGL 2.0 and for broader compatibility you have to explicitly bind the
+locations with @ref GL::AbstractShaderProgram::bindAttributeLocation(). This
+however has to be done between shader compilation and linking, for which we can
+abuse the @ref shaders-async "async shader compilation" feature described above
+--- we start with an empty instance by delegating to the
+@ref Shaders::PhongGL::PhongGL(NoCreateT) "NoCreate"
+constructor, submit a compilation into a temporary instance, bind the
+attribute, relink with @relativeref{GL::AbstractShaderProgram,submitLink()} and
+then finalize the setup by replacing the base class instance in-place, which
+also does all checks that compilation and linking actually succeeded. Any
+uniform location queries, if needed, would come after that.
+
+@snippet Shaders-gl.cpp shaders-extending-brightness-attribute-binding
+
+Similar workflow can be applied for fragment shader outputs and
+@ref GL::AbstractShaderProgram::bindFragmentDataLocation() /
+@relativeref{GL::AbstractShaderProgram,bindFragmentDataLocationIndexed()} or
+transform feedback outputs and
+@relativeref{GL::AbstractShaderProgram,setTransformFeedbackOutputs()}, which
+all also need to be done between compilation and linking. Along with
+@relativeref{GL::AbstractShaderProgram,submitLink()} and
+@relativeref{GL::AbstractShaderProgram,link()} they're all implicitly
+@cpp protected @ce, but are exposed as @cpp public @ce on the
+@relativeref{Shaders::PhongGL,CompileState} instances for exactly this
+purpose.
 */
 }

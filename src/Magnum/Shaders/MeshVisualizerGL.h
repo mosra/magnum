@@ -219,6 +219,41 @@ matrix, a combined one is supplied via a @ref TransformationProjectionUniform2D
 buffer bound with @ref bindTransformationProjectionBuffer(), and
 a trimmed-down @ref MeshVisualizerDrawUniform2D is used instead of
 @ref MeshVisualizerDrawUniform3D. The rest is the same.
+
+@section Shaders-MeshVisualizerGL2D-extending Extending with custom code
+
+The shader provides means to extend its interface with custom uniforms, inputs
+or outputs, and exposes multiple insertion points for extra shader code. See
+@ref shaders-extending for an introduction covering all builtin shaders.
+
+The custom code is supplied using @ref Configuration::setExtraSource(), and the
+following macros are recognized:
+
+-   `VERTEX_SHADER_INTERFACE_EXTRA`, `VERTEX_SHADER_BEGIN_EXTRA` and
+    `VERTEX_SHADER_END_EXTRA` for the vertex shader, with behavior as described
+    in the introduction. Note that if @ref Flag::Wireframe is enabled and
+    @ref Flag::NoGeometryShader is not enabled, either explicitly or implicitly
+    on platforms without geometry shader support, any outputs defined in
+    `VERTEX_SHADER_INTERFACE_EXTRA` get propagated only to the geometry shader
+    and not directly to the fragment shader.
+-   `FRAGMENT_SHADER_INTERFACE_EXTRA`, `FRAGMENT_SHADER_BEGIN_EXTRA` and
+    `FRAGMENT_SHADER_END_EXTRA` for the fragment shader, with behavior as
+    described in the introduction and no special cases for this particular
+    shader
+-   `GEOMETRY_SHADER_INTERFACE_EXTRA` --- extra interface to insert in addition
+    to existing @glsl in @ce, @glsl out @ce and @glsl uniform @ce declarations
+    in the geometry shader, placed right above the @glsl main() @ce function.
+    Used only if @ref Flag::Wireframe is enabled and
+    @ref Flag::NoGeometryShader is not enabled, either explicitly or implicitly
+    on platforms without geometry shader support.
+-   `GEOMETRY_SHADER_BEGIN_EXTRA` --- extra code to insert at the very
+    beginning of the @glsl main() @ce function in the geometry shader. Used only if
+    @ref Flag::Wireframe is enabled and @ref Flag::NoGeometryShader is not
+    enabled, either explicitly or implicitly on platforms without geometry
+    shader support. Note that as the geometry shader may emit multiple
+    primitives, there's currently no `GEOMETRY_SHADER_END_EXTRA` as the code
+    would get executed after all primitives are emitted and thus have no
+    effect.
 */
 class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisualizerGLBase {
     public:
@@ -1192,7 +1227,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
 @see @ref MeshVisualizerGL2D(const Configuration&),
     @ref compile(const Configuration&)
 */
-class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D::Configuration {
+class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D::Configuration: private Implementation::ConfigurationBaseGL {
     public:
         explicit Configuration() = default;
 
@@ -1349,6 +1384,52 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D::Configuration {
         }
         #endif
 
+        /**
+         * @brief Extra source to use for extending shader behavior
+         *
+         * The returned view is
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated},
+         * @relativeref{Corrade,Containers::StringViewFlag::Global} is set if a
+         * global null-terminated view was passed to @ref setExtraSource().
+         */
+        Containers::StringView extraSource() const;
+
+        /**
+         * @brief Set an extra source to use for extending shader behavior
+         * @return Reference to self (for method chaining)
+         *
+         * If the string is not empty, uses it along with other builtin shader
+         * sources. Macros defined in the file are then used to modify or
+         * extend shader behavior, see @ref shaders-extending for an
+         * introduction and @ref Shaders-MeshVisualizerGL2D-extending for a
+         * list of extension points for the @ref MeshVisualizerGL2D shader
+         * itself.
+         *
+         * Calling this function multiple times replaces the previous source,
+         * doesn't add to it. Call the function with an empty string to remove
+         * any previously set extra source. By default there is no extra shader
+         * source added.
+         *
+         * If the view is both
+         * @relativeref{Corrade,Containers::StringViewFlag::Global} and
+         * @relativeref{Corrade::Containers::StringViewFlag,NullTerminated},
+         * it's directly referenced, otherwise a copy is made internally. For
+         * dynamic strings prefer to use the @ref setExtraSource(Containers::String&&)
+         * overload to avoid copies.
+         */
+        Configuration& setExtraSource(Containers::StringView source);
+        /** @overload */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Configuration& setExtraSource(Containers::String&& source);
+        #else
+        /* Otherwise passing a char* is ambiguous between this and the
+           StringView overload. Sigh, C++. */
+        template<class U, typename std::enable_if<std::is_same<U&&, Containers::String&&>::value, int>::type = 0> Configuration& setExtraSource(U&& source) {
+            Implementation::ConfigurationBaseGL::setExtraSource(Utility::move(source));
+            return *this;
+        }
+        #endif
+
     private:
         Flags _flags;
         #ifndef MAGNUM_TARGET_GLES2
@@ -1367,7 +1448,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D::Configuration {
 Returned by @ref compile(). See @ref shaders-async for more information.
 */
 class MeshVisualizerGL2D::CompileState: public MeshVisualizerGL2D {
-    /* Everything deliberately private except for the inheritance */
+    /* Everything deliberately private except for the inheritance and the
+       publicized APIs for extending the shader */
+    _MAGNUM_SHADERS_COMPILESTATE_PUBLICIZED_APIS()
     friend class MeshVisualizerGL2D;
 
     explicit CompileState(NoCreateT): MeshVisualizerGL2D{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
@@ -1686,6 +1769,47 @@ doesn't need to vary per draw.
     (unlisted) for multidraw.
 @requires_webgl_extension Extension @webgl_extension{ANGLE,multi_draw} for
     multidraw.
+
+@section Shaders-MeshVisualizerGL3D-extending Extending with custom code
+
+The shader provides means to extend its interface with custom uniforms, inputs
+or outputs, and exposes multiple insertion points for extra shader code. See
+@ref shaders-extending for an introduction covering all builtin shaders.
+
+The custom code is supplied using @ref Configuration::setExtraSource(), and the
+following macros are recognized:
+
+-   `VERTEX_SHADER_INTERFACE_EXTRA`, `VERTEX_SHADER_BEGIN_EXTRA` and
+    `VERTEX_SHADER_END_EXTRA` for the vertex shader, with behavior as described
+    in the introduction. Note that if @ref Flag::Wireframe,
+    @ref Flag::TangentDirection, @ref Flag::BitangentFromTangentDirection,
+    @ref Flag::BitangentDirection or @ref Flag::NormalDirection is enabled and
+    @ref Flag::NoGeometryShader is not enabled, either explicitly or implicitly
+    on platforms without geometry shader support, any outputs defined in
+    `VERTEX_SHADER_INTERFACE_EXTRA` get propagated only to the geometry shader
+    and not directly to the fragment shader.
+-   `FRAGMENT_SHADER_INTERFACE_EXTRA`, `FRAGMENT_SHADER_BEGIN_EXTRA` and
+    `FRAGMENT_SHADER_END_EXTRA` for the fragment shader, with behavior as
+    described in the introduction and no special cases for this particular
+    shader
+-   `GEOMETRY_SHADER_INTERFACE_EXTRA` --- extra interface to insert in addition
+    to existing @glsl in @ce, @glsl out @ce and @glsl uniform @ce declarations
+    in the geometry shader, placed right above the @glsl main() @ce function.
+    Used only if @ref Flag::Wireframe, @ref Flag::TangentDirection,
+    @ref Flag::BitangentFromTangentDirection, @ref Flag::BitangentDirection or
+    @ref Flag::NormalDirection is enabled and @ref Flag::NoGeometryShader is
+    not enabled, either explicitly or implicitly on platforms without geometry
+    shader support.
+-   `GEOMETRY_SHADER_BEGIN_EXTRA` --- extra code to insert at the very
+    beginning of the @glsl main() @ce function in the geometry shader. Used
+    only if @ref Flag::Wireframe, @ref Flag::TangentDirection,
+    @ref Flag::BitangentFromTangentDirection, @ref Flag::BitangentDirection or
+    @ref Flag::NormalDirection is enabled and @ref Flag::NoGeometryShader is
+    not enabled, either explicitly or implicitly on platforms without geometry
+    shader support. Note that as the geometry shader may emit multiple
+    primitives, there's currently no `GEOMETRY_SHADER_END_EXTRA` as the code
+    would get executed after all primitives are emitted and thus have no
+    effect.
 
 @see @ref shaders, @ref MeshVisualizerGL2D
 @todo Understand and add support wireframe width/smoothness without GS
@@ -3210,7 +3334,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
 @see @ref MeshVisualizerGL3D(const Configuration&),
     @ref compile(const Configuration&)
 */
-class MeshVisualizerGL3D::Configuration {
+class MeshVisualizerGL3D::Configuration: private Implementation::ConfigurationBaseGL {
     public:
         explicit Configuration() = default;
 
@@ -3369,6 +3493,52 @@ class MeshVisualizerGL3D::Configuration {
         }
         #endif
 
+        /**
+         * @brief Extra source to use for extending shader behavior
+         *
+         * The returned view is
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated},
+         * @relativeref{Corrade,Containers::StringViewFlag::Global} is set if a
+         * global null-terminated view was passed to @ref setExtraSource().
+         */
+        Containers::StringView extraSource() const;
+
+        /**
+         * @brief Set an extra source to use for extending shader behavior
+         * @return Reference to self (for method chaining)
+         *
+         * If the string is not empty, uses it along with other builtin shader
+         * sources. Macros defined in the file are then used to modify or
+         * extend shader behavior, see @ref shaders-extending for an
+         * introduction and @ref Shaders-MeshVisualizerGL3D-extending for a
+         * list of extension points for the @ref MeshVisualizerGL3D shader
+         * itself.
+         *
+         * Calling this function multiple times replaces the previous source,
+         * doesn't add to it. Call the function with an empty string to remove
+         * any previously set extra source. By default there is no extra shader
+         * source added.
+         *
+         * If the view is both
+         * @relativeref{Corrade,Containers::StringViewFlag::Global} and
+         * @relativeref{Corrade::Containers::StringViewFlag,NullTerminated},
+         * it's directly referenced, otherwise a copy is made internally. For
+         * dynamic strings prefer to use the @ref setExtraSource(Containers::String&&)
+         * overload to avoid copies.
+         */
+        Configuration& setExtraSource(Containers::StringView source);
+        /** @overload */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Configuration& setExtraSource(Containers::String&& source);
+        #else
+        /* Otherwise passing a char* is ambiguous between this and the
+           StringView overload. Sigh, C++. */
+        template<class U, typename std::enable_if<std::is_same<U&&, Containers::String&&>::value, int>::type = 0> Configuration& setExtraSource(U&& source) {
+            Implementation::ConfigurationBaseGL::setExtraSource(Utility::move(source));
+            return *this;
+        }
+        #endif
+
     private:
         Flags _flags;
         #ifndef MAGNUM_TARGET_GLES2
@@ -3387,7 +3557,9 @@ class MeshVisualizerGL3D::Configuration {
 Returned by @ref compile(). See @ref shaders-async for more information.
 */
 class MeshVisualizerGL3D::CompileState: public MeshVisualizerGL3D {
-    /* Everything deliberately private except for the inheritance */
+    /* Everything deliberately private except for the inheritance and the
+       publicized APIs for extending the shader */
+    _MAGNUM_SHADERS_COMPILESTATE_PUBLICIZED_APIS()
     friend class MeshVisualizerGL3D;
 
     explicit CompileState(NoCreateT): MeshVisualizerGL3D{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}

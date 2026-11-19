@@ -847,6 +847,7 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
         .addSource((configuration.flags() & Flag::NoGeometryShader) || !(configuration.flags() & Flag::Wireframe) ?
             "#define NO_GEOMETRY_SHADER\n"_s : ""_s)
         .addSource(rs.getString("generic.glsl"_s))
+        .addSource(configuration.extraSource())
         .addSource(rs.getString("MeshVisualizer.vert"_s))
         .submitCompile();
 
@@ -861,6 +862,7 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
         frag.addSource("#define TWO_DIMENSIONS\n"_s);
     #endif
     frag.addSource(rs.getString("generic.glsl"_s))
+        .addSource(configuration.extraSource())
         .addSource(rs.getString("MeshVisualizer.frag"_s))
         .submitCompile();
 
@@ -901,6 +903,7 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
         }
         #endif
         (*geom)
+            .addSource(configuration.extraSource())
             .addSource(rs.getString("MeshVisualizer.geom"_s))
             .submitCompile();
     }
@@ -1275,6 +1278,15 @@ MeshVisualizerGL2D::Configuration& MeshVisualizerGL2D::Configuration::setJointCo
 }
 #endif
 
+Containers::StringView MeshVisualizerGL2D::Configuration::extraSource() const {
+    return Implementation::ConfigurationBaseGL::extraSource();
+}
+
+MeshVisualizerGL2D::Configuration& MeshVisualizerGL2D::Configuration::setExtraSource(Containers::StringView source) {
+    Implementation::ConfigurationBaseGL::setExtraSource(source);
+    return *this;
+}
+
 MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration& configuration) {
     FlagsBase baseFlags = Implementation::MeshVisualizerGLBase::FlagBase(UnsignedInt(configuration.flags()));
     assertExtensions(baseFlags);
@@ -1378,6 +1390,7 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
         .addSource(configuration.flags() & Flag::NormalDirection ? "#define NORMAL_DIRECTION\n"_s : ""_s)
         #endif
         .addSource(rs.getString("generic.glsl"_s))
+        .addSource(configuration.extraSource())
         .addSource(rs.getString("MeshVisualizer.vert"_s))
         .submitCompile();
 
@@ -1399,6 +1412,7 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
         frag.addSource("#define THREE_DIMENSIONS\n"_s);
     #endif
     frag.addSource(rs.getString("generic.glsl"_s))
+        .addSource(configuration.extraSource())
         .addSource(rs.getString("MeshVisualizer.frag"_s))
         .submitCompile();
 
@@ -1453,6 +1467,7 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
         }
         #endif
         (*geom)
+            .addSource(configuration.extraSource())
             .addSource(rs.getString("MeshVisualizer.geom"_s))
             .submitCompile();
     }
@@ -1954,5 +1969,14 @@ MeshVisualizerGL3D::Configuration& MeshVisualizerGL3D::Configuration::setJointCo
     return *this;
 }
 #endif
+
+Containers::StringView MeshVisualizerGL3D::Configuration::extraSource() const {
+    return Implementation::ConfigurationBaseGL::extraSource();
+}
+
+MeshVisualizerGL3D::Configuration& MeshVisualizerGL3D::Configuration::setExtraSource(Containers::StringView source) {
+    Implementation::ConfigurationBaseGL::setExtraSource(source);
+    return *this;
+}
 
 }}

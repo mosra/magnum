@@ -49,6 +49,10 @@ struct MeshVisualizerGL_Test: TestSuite::Tester {
 
     void configurationConstruct2D();
     void configurationConstruct3D();
+    void configurationConstructCopy2D();
+    void configurationConstructCopy3D();
+    void configurationConstructMove2D();
+    void configurationConstructMove3D();
     void configurationSetters2D();
     void configurationSetters3D();
     #ifndef MAGNUM_TARGET_GLES2
@@ -64,6 +68,8 @@ struct MeshVisualizerGL_Test: TestSuite::Tester {
 
     void vertexIndexSameAsObjectId();
 };
+
+using namespace Containers::Literals;
 
 #ifndef MAGNUM_TARGET_GLES2
 const struct {
@@ -98,6 +104,10 @@ MeshVisualizerGL_Test::MeshVisualizerGL_Test() {
 
               &MeshVisualizerGL_Test::configurationConstruct2D,
               &MeshVisualizerGL_Test::configurationConstruct3D,
+              &MeshVisualizerGL_Test::configurationConstructCopy2D,
+              &MeshVisualizerGL_Test::configurationConstructCopy3D,
+              &MeshVisualizerGL_Test::configurationConstructMove2D,
+              &MeshVisualizerGL_Test::configurationConstructMove3D,
               &MeshVisualizerGL_Test::configurationSetters2D,
               &MeshVisualizerGL_Test::configurationSetters3D});
 
@@ -244,6 +254,8 @@ void MeshVisualizerGL_Test::debugFlagsSupersets3D() {
 void MeshVisualizerGL_Test::configurationConstruct2D() {
     MeshVisualizerGL2D::Configuration configuration;
     CORRADE_COMPARE(configuration.flags(), MeshVisualizerGL2D::Flags{});
+    CORRADE_COMPARE(configuration.extraSource(), "");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(configuration.jointCount(), 0);
     CORRADE_COMPARE(configuration.perVertexJointCount(), 0);
@@ -256,6 +268,8 @@ void MeshVisualizerGL_Test::configurationConstruct2D() {
 void MeshVisualizerGL_Test::configurationConstruct3D() {
     MeshVisualizerGL3D::Configuration configuration;
     CORRADE_COMPARE(configuration.flags(), MeshVisualizerGL3D::Flags{});
+    CORRADE_COMPARE(configuration.extraSource(), "");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(configuration.jointCount(), 0);
     CORRADE_COMPARE(configuration.perVertexJointCount(), 0);
@@ -265,7 +279,120 @@ void MeshVisualizerGL_Test::configurationConstruct3D() {
     #endif
 }
 
+void MeshVisualizerGL_Test::configurationConstructCopy2D() {
+    /* The copy is implicitly generated so just verify it propagates to the
+       ConfigurationBaseGL constructor and does what's expected for other
+       members */
+
+    MeshVisualizerGL2D::Configuration a = MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::NoGeometryShader)
+        .setExtraSource("// hello\n"_s);
+
+    MeshVisualizerGL2D::Configuration b = a;
+    CORRADE_COMPARE(b.flags(), MeshVisualizerGL2D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(b.extraSource(), "// hello\n");
+    /* Copying invokes a copy constructor on the string, so the Global flag
+       gets lost */
+    CORRADE_COMPARE(b.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+
+    MeshVisualizerGL2D::Configuration c = MeshVisualizerGL2D::Configuration{}
+        .setExtraSource("// hi\n"_s);
+    c = a;
+    CORRADE_COMPARE(c.flags(), MeshVisualizerGL2D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(c.extraSource(), "// hello\n");
+    /* Same here */
+    CORRADE_COMPARE(c.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+}
+
+void MeshVisualizerGL_Test::configurationConstructCopy3D() {
+    /* The copy is implicitly generated so just verify it propagates to the
+       ConfigurationBaseGL constructor and does what's expected for other
+       members */
+
+    MeshVisualizerGL3D::Configuration a = MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::NoGeometryShader)
+        .setExtraSource("// hello\n"_s);
+
+    MeshVisualizerGL3D::Configuration b = a;
+    CORRADE_COMPARE(b.flags(), MeshVisualizerGL3D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(b.extraSource(), "// hello\n");
+    /* Copying invokes a copy constructor on the string, so the Global flag
+       gets lost */
+    CORRADE_COMPARE(b.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+
+    MeshVisualizerGL3D::Configuration c = MeshVisualizerGL3D::Configuration{}
+        .setExtraSource("// hi\n"_s);
+    c = a;
+    CORRADE_COMPARE(c.flags(), MeshVisualizerGL3D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(c.extraSource(), "// hello\n");
+    /* Same here */
+    CORRADE_COMPARE(c.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+}
+
+void MeshVisualizerGL_Test::configurationConstructMove2D() {
+    /* The copy is implicitly generated so just verify it propagates to the
+       ConfigurationBaseGL constructor and does what's expected for other
+       members */
+
+    /* Not using method chaining because it returns & instead of && and so a
+       copy would happen when forming `a`, losing the Global flag. Due to SSO
+       the copy isn't such a big deal that it'd need && overloads for all
+       setters right now. */
+    MeshVisualizerGL2D::Configuration a;
+    a.setFlags(MeshVisualizerGL2D::Flag::NoGeometryShader);
+    a.setExtraSource("// hello\n"_s);
+    CORRADE_COMPARE(a.flags(), MeshVisualizerGL2D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(a.extraSource(), "// hello\n");
+    CORRADE_COMPARE(a.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    MeshVisualizerGL2D::Configuration b = Utility::move(a);
+    CORRADE_COMPARE(b.flags(), MeshVisualizerGL2D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(b.extraSource(), "// hello\n");
+    CORRADE_COMPARE(b.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    MeshVisualizerGL2D::Configuration c;
+    c.setExtraSource("// hi\n"_s);
+    c = Utility::move(b);
+    CORRADE_COMPARE(c.flags(), MeshVisualizerGL2D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(c.extraSource(), "// hello\n");
+    CORRADE_COMPARE(c.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+}
+
+void MeshVisualizerGL_Test::configurationConstructMove3D() {
+    /* The copy is implicitly generated so just verify it propagates to the
+       ConfigurationBaseGL constructor and does what's expected for other
+       members */
+
+    /* Not using method chaining because it returns & instead of && and so a
+       copy would happen when forming `a`, losing the Global flag. Due to SSO
+       the copy isn't such a big deal that it'd need && overloads for all
+       setters right now. */
+    MeshVisualizerGL3D::Configuration a;
+    a.setFlags(MeshVisualizerGL3D::Flag::NoGeometryShader);
+    a.setExtraSource("// hello\n"_s);
+    CORRADE_COMPARE(a.flags(), MeshVisualizerGL3D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(a.extraSource(), "// hello\n");
+    CORRADE_COMPARE(a.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    MeshVisualizerGL3D::Configuration b = Utility::move(a);
+    CORRADE_COMPARE(b.flags(), MeshVisualizerGL3D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(b.extraSource(), "// hello\n");
+    CORRADE_COMPARE(b.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    MeshVisualizerGL3D::Configuration c;
+    c.setExtraSource("// hi\n"_s);
+    c = Utility::move(b);
+    CORRADE_COMPARE(c.flags(), MeshVisualizerGL3D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(c.extraSource(), "// hello\n");
+    CORRADE_COMPARE(c.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+}
+
 void MeshVisualizerGL_Test::configurationSetters2D() {
+    /* Chaining the setters to verify they all return a meaningful reference.
+       The chaining returns & instead of && and so a copy happens, losing any
+       potential Global flag on the string. That's tested below instead. Due to
+       SSO the copy isn't such a big deal that it'd need && overloads for all
+       setters right now. */
     MeshVisualizerGL2D::Configuration configuration = MeshVisualizerGL2D::Configuration{}
         .setFlags(MeshVisualizerGL2D::Flag::NoGeometryShader)
         #ifndef MAGNUM_TARGET_GLES2
@@ -273,7 +400,7 @@ void MeshVisualizerGL_Test::configurationSetters2D() {
         .setMaterialCount(17)
         .setDrawCount(266)
         #endif
-        ;
+        .setExtraSource("// raw C string\n");
     CORRADE_COMPARE(configuration.flags(), MeshVisualizerGL2D::Flag::NoGeometryShader);
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(configuration.jointCount(), 6);
@@ -282,9 +409,26 @@ void MeshVisualizerGL_Test::configurationSetters2D() {
     CORRADE_COMPARE(configuration.materialCount(), 17);
     CORRADE_COMPARE(configuration.drawCount(), 266);
     #endif
+    CORRADE_COMPARE(configuration.extraSource(), "// raw C string\n");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+
+    /* Verify also that the other setExtraSource() overloads delegate
+       properly */
+    configuration.setExtraSource("// hello\n"_s);
+    CORRADE_COMPARE(configuration.extraSource(), "// hello\n");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    configuration.setExtraSource(Containers::String::nullTerminatedGlobalView("// r-value global string\n"_s));
+    CORRADE_COMPARE(configuration.extraSource(), "// r-value global string\n");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
 }
 
 void MeshVisualizerGL_Test::configurationSetters3D() {
+    /* Chaining the setters to verify they all return a meaningful reference.
+       The chaining returns & instead of && and so a copy happens, losing any
+       potential Global flag on the string. That's tested below instead. Due to
+       SSO the copy isn't such a big deal that it'd need && overloads for all
+       setters right now. */
     MeshVisualizerGL3D::Configuration configuration = MeshVisualizerGL3D::Configuration{}
         .setFlags(MeshVisualizerGL3D::Flag::NoGeometryShader)
         #ifndef MAGNUM_TARGET_GLES2
@@ -292,7 +436,7 @@ void MeshVisualizerGL_Test::configurationSetters3D() {
         .setMaterialCount(17)
         .setDrawCount(266)
         #endif
-        ;
+        .setExtraSource("// raw C string\n");
     CORRADE_COMPARE(configuration.flags(), MeshVisualizerGL3D::Flag::NoGeometryShader);
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(configuration.jointCount(), 6);
@@ -301,6 +445,18 @@ void MeshVisualizerGL_Test::configurationSetters3D() {
     CORRADE_COMPARE(configuration.materialCount(), 17);
     CORRADE_COMPARE(configuration.drawCount(), 266);
     #endif
+    CORRADE_COMPARE(configuration.extraSource(), "// raw C string\n");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+
+    /* Verify also that the other setExtraSource() overloads delegate
+       properly */
+    configuration.setExtraSource("// hello\n"_s);
+    CORRADE_COMPARE(configuration.extraSource(), "// hello\n");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    configuration.setExtraSource(Containers::String::nullTerminatedGlobalView("// r-value global string\n"_s));
+    CORRADE_COMPARE(configuration.extraSource(), "// r-value global string\n");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
 }
 
 #ifndef MAGNUM_TARGET_GLES2

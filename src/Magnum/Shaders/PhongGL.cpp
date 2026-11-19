@@ -436,6 +436,7 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
     }
     #endif
     vert.addSource(rs.getString("generic.glsl"_s))
+        .addSource(configuration.extraSource())
         .addSource(rs.getString("Phong.vert"_s))
         .submitCompile();
 
@@ -512,6 +513,7 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
         frag.addSource(Utility::move(lightInitializer));
     #endif
     frag.addSource(rs.getString("generic.glsl"_s))
+        .addSource(configuration.extraSource())
         .addSource(rs.getString("Phong.frag"_s))
         .submitCompile();
 
@@ -1445,5 +1447,14 @@ PhongGL::Configuration& PhongGL::Configuration::setJointCount(UnsignedInt count,
     return *this;
 }
 #endif
+
+Containers::StringView PhongGL::Configuration::extraSource() const {
+    return Implementation::ConfigurationBaseGL::extraSource();
+}
+
+PhongGL::Configuration& PhongGL::Configuration::setExtraSource(Containers::StringView source) {
+    Implementation::ConfigurationBaseGL::setExtraSource(source);
+    return *this;
+}
 
 }}

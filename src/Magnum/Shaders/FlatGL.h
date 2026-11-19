@@ -273,6 +273,24 @@ doesn't need to vary per draw.
 @requires_webgl_extension Extension @webgl_extension{ANGLE,multi_draw} for
     multidraw.
 
+@section Shaders-FlatGL-extending Extending with custom code
+
+The shader provides means to extend its interface with custom uniforms, inputs
+or outputs, and exposes multiple insertion points for extra shader code. See
+@ref shaders-extending for an introduction covering all builtin shaders.
+
+The custom code is supplied using @ref Configuration::setExtraSource(), and the
+following macros are recognized:
+
+-   `VERTEX_SHADER_INTERFACE_EXTRA`, `VERTEX_SHADER_BEGIN_EXTRA` and
+    `VERTEX_SHADER_END_EXTRA` for the vertex shader, with behavior as described
+    in the introduction and no special cases for this particular shader
+-   `FRAGMENT_SHADER_INTERFACE_EXTRA`, `FRAGMENT_SHADER_BEGIN_EXTRA` and
+    `FRAGMENT_SHADER_END_EXTRA` for the fragment shader, with behavior as
+    described in the introduction. If @ref Flag::AlphaMask is enabled, the
+    fragment shader may call @glsl discard @ce before
+    `FRAGMENT_SHADER_END_EXTRA` is reached.
+
 @see @ref shaders, @ref FlatGL2D, @ref FlatGL3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::AbstractShaderProgram {
@@ -1401,7 +1419,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
 
 @see @ref FlatGL(const Configuration&), @ref compile(const Configuration&)
 */
-template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL<dimensions>::Configuration {
+template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL<dimensions>::Configuration: private Implementation::ConfigurationBaseGL {
     public:
         explicit Configuration() = default;
 
@@ -1561,6 +1579,51 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL<dimensions>:
         }
         #endif
 
+        /**
+         * @brief Extra source to use for extending shader behavior
+         *
+         * The returned view is
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated},
+         * @relativeref{Corrade,Containers::StringViewFlag::Global} is set if a
+         * global null-terminated view was passed to @ref setExtraSource().
+         */
+        Containers::StringView extraSource() const;
+
+        /**
+         * @brief Set an extra source to use for extending shader behavior
+         * @return Reference to self (for method chaining)
+         *
+         * If the string is not empty, uses it along with other builtin shader
+         * sources. Macros defined in the file are then used to modify or
+         * extend shader behavior, see @ref shaders-extending for an
+         * introduction and @ref Shaders-FlatGL-extending for a list of
+         * extension points for the @ref FlatGL shader itself.
+         *
+         * Calling this function multiple times replaces the previous source,
+         * doesn't add to it. Call the function with an empty string to remove
+         * any previously set extra source. By default there is no extra shader
+         * source added.
+         *
+         * If the view is both
+         * @relativeref{Corrade,Containers::StringViewFlag::Global} and
+         * @relativeref{Corrade::Containers::StringViewFlag,NullTerminated},
+         * it's directly referenced, otherwise a copy is made internally. For
+         * dynamic strings prefer to use the @ref setExtraSource(Containers::String&&)
+         * overload to avoid copies.
+         */
+        Configuration& setExtraSource(Containers::StringView source);
+        /** @overload */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Configuration& setExtraSource(Containers::String&& source);
+        #else
+        /* Otherwise passing a char* is ambiguous between this and the
+           StringView overload. Sigh, C++. */
+        template<class U, typename std::enable_if<std::is_same<U&&, Containers::String&&>::value, int>::type = 0> Configuration& setExtraSource(U&& source) {
+            Implementation::ConfigurationBaseGL::setExtraSource(Utility::move(source));
+            return *this;
+        }
+        #endif
+
     private:
         Flags _flags;
         #ifndef MAGNUM_TARGET_GLES2
@@ -1579,7 +1642,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL<dimensions>:
 Returned by @ref compile(). See @ref shaders-async for more information.
 */
 template<UnsignedInt dimensions> class FlatGL<dimensions>::CompileState: public FlatGL<dimensions> {
-    /* Everything deliberately private except for the inheritance */
+    /* Everything deliberately private except for the inheritance and the
+       publicized APIs for extending the shader */
+    _MAGNUM_SHADERS_COMPILESTATE_PUBLICIZED_APIS()
     friend class FlatGL;
 
     explicit CompileState(NoCreateT): FlatGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}

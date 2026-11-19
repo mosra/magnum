@@ -24,6 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Magnum.h"
@@ -34,13 +35,120 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct BaseGL_Test: TestSuite::Tester {
     explicit BaseGL_Test();
 
+    void configurationConstruct();
+    void configurationConstructCopy();
+    void configurationConstructMove();
+    void configurationSetters();
+
     void shaderWrapperConstructNoCreate();
     void shaderWrapperConstructCopy();
 };
 
+using namespace Containers::Literals;
+
 BaseGL_Test::BaseGL_Test() {
-    addTests({&BaseGL_Test::shaderWrapperConstructNoCreate,
+    addTests({&BaseGL_Test::configurationConstruct,
+              &BaseGL_Test::configurationConstructCopy,
+              &BaseGL_Test::configurationConstructMove,
+              &BaseGL_Test::configurationSetters,
+
+              &BaseGL_Test::shaderWrapperConstructNoCreate,
               &BaseGL_Test::shaderWrapperConstructCopy});
+}
+
+void BaseGL_Test::configurationConstruct() {
+    Implementation::ConfigurationBaseGL configuration;
+    CORRADE_COMPARE(configuration.extraSource(), "");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+}
+
+void BaseGL_Test::configurationConstructCopy() {
+    Implementation::ConfigurationBaseGL a;
+    a.setExtraSource("// hello\n"_s);
+    CORRADE_COMPARE(a.extraSource(), "// hello\n");
+    CORRADE_COMPARE(a.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    Implementation::ConfigurationBaseGL b = a;
+    CORRADE_COMPARE(b.extraSource(), "// hello\n");
+    /* Copying invokes a copy constructor on the string, so the Global flag
+       gets lost */
+    CORRADE_COMPARE(b.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+
+    Implementation::ConfigurationBaseGL c;
+    c.setExtraSource("// hi\n"_s);
+    c = a;
+    CORRADE_COMPARE(c.extraSource(), "// hello\n");
+    /* Same here */
+    CORRADE_COMPARE(c.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+}
+
+void BaseGL_Test::configurationConstructMove() {
+    Implementation::ConfigurationBaseGL a;
+    a.setExtraSource("// hello\n"_s);
+
+    Implementation::ConfigurationBaseGL b = Utility::move(a);
+    CORRADE_COMPARE(b.extraSource(), "// hello\n");
+    CORRADE_COMPARE(b.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    Implementation::ConfigurationBaseGL c;
+    c.setExtraSource("// hi\n"_s);
+    c = Utility::move(b);
+    CORRADE_COMPARE(c.extraSource(), "// hello\n");
+    CORRADE_COMPARE(c.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+}
+
+void BaseGL_Test::configurationSetters() {
+    Implementation::ConfigurationBaseGL configuration;
+    configuration.setExtraSource("// hello\n"_s);
+    CORRADE_COMPARE(configuration.extraSource(), "// hello\n");
+    CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+
+    /* Setting a global non-null-terminated string makes a copy */
+    {
+        Containers::StringView source = "// non-null-terminated\n!"_s.exceptSuffix(1);
+        configuration.setExtraSource(source);
+        CORRADE_COMPARE(configuration.extraSource(), source);
+        CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+        CORRADE_VERIFY(configuration.extraSource().data() != source.data());
+
+    /* Setting a local null-terminated string makes a copy */
+    } {
+        Containers::StringView source = "// local, null-terminated\n";
+        configuration.setExtraSource(source);
+        CORRADE_COMPARE(configuration.extraSource(), source);
+        CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+        CORRADE_VERIFY(configuration.extraSource().data() != source.data());
+
+    /* Setting a local non-null-terminated string makes a copy */
+    } {
+        Containers::StringView source = Containers::StringView{"// non-null-terminated\n!"}.exceptSuffix(1);
+        configuration.setExtraSource(source);
+        CORRADE_COMPARE(configuration.extraSource(), source);
+        CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+        CORRADE_VERIFY(configuration.extraSource().data() != source.data());
+
+    /* Setting a r-value global string view keeps the Global flag */
+    } {
+        Containers::StringView source = "// r-value String\n"_s;
+        configuration.setExtraSource(Containers::String::nullTerminatedGlobalView(source));
+        CORRADE_COMPARE(configuration.extraSource(), source);
+        CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+        CORRADE_COMPARE(configuration.extraSource().data(), static_cast<const void*>(source.data()));
+
+    /* Setting a r-value acquires ownership of the local string */
+    } {
+        const char* source = "// r-value String\n";
+        configuration.setExtraSource(Containers::String{source, [](char*, std::size_t) {}});
+        CORRADE_COMPARE(configuration.extraSource(), source);
+        CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+        CORRADE_COMPARE(configuration.extraSource().data(), static_cast<const void*>(source));
+
+    /* Setting an empty string resets back to default */
+    } {
+        configuration.setExtraSource(Containers::StringView{});
+        CORRADE_COMPARE(configuration.extraSource(), "");
+        CORRADE_COMPARE(configuration.extraSource().flags(), Containers::StringViewFlag::NullTerminated);
+    }
 }
 
 void BaseGL_Test::shaderWrapperConstructNoCreate() {

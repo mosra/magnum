@@ -473,6 +473,9 @@ See also:
     @ref shaders-async "async compilation and linking" (see
     [mosra/magnum534](https://github.com/mosra/magnum/issues/534) and
     [mosra/magnum#576](https://github.com/mosra/magnum/pull/576))
+-   All builtin shaders now have an ability to
+    @ref shaders-extending "extend their functionality with custom code" (see
+    [mosra/magnum#569](https://github.com/mosra/magnum/issues/569)).
 -   @ref Shaders::FlatGL and @ref Shaders::PhongGL now support texture arrays,
     available also in multi-draw and instanced scenarios
 -   @ref Shaders::FlatGL and @ref Shaders::PhongGL now support object ID

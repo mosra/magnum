@@ -443,6 +443,170 @@ Shaders::MeshVisualizerGL3D meshVisualizer{std::move(meshVisualizerState)};
 }
 
 {
+/* [shaders-extending-brightness] */
+struct BrightnessPhongGL: Shaders::PhongGL {
+    explicit BrightnessPhongGL(): Shaders::PhongGL{Configuration{}
+        .setExtraSource(R"(
+#define FRAGMENT_SHADER_INTERFACE_EXTRA                                     \
+    layout(location = 101) uniform float brightness = 1.0;
+#define FRAGMENT_SHADER_END_EXTRA                                           \
+    fragmentColor.rgb *= brightness;
+)")} {}
+
+    BrightnessPhongGL& setBrightness(Float brightness) {
+        setUniform(101, brightness);
+        return *this;
+    }
+};
+/* [shaders-extending-brightness] */
+}
+
+{
+/* [shaders-extending-extension] */
+struct EffectShader: Shaders::FlatGL2D {
+    explicit EffectShader(): Shaders::FlatGL2D{Configuration{}
+        .setExtraSource(R"(
+#extension GL_ARB_fragment_coord_conventions: require
+
+#define FRAGMENT_SHADER_INTERFACE_EXTRA                                     \
+    layout(pixel_center_integer) in vec4 gl_FragCoord;
+…
+)")} {}
+
+    DOXYGEN_ELLIPSIS()
+};
+/* [shaders-extending-extension] */
+}
+
+{
+/* [shaders-extending-helpers-wrong] */
+struct EffectShader: Shaders::FlatGL2D {
+    explicit EffectShader(): Shaders::FlatGL2D{Configuration{}
+        /* Don't do this, please */
+        .setExtraSource(R"(
+layout(binding = 7) uniform sampler2D noiseTexture;
+float noiseFactor() {
+    #ifndef NEW_GLSL
+    return texture2D(noiseTexture, gl_FragCoord.xy*0.001).r;
+    #else
+    return texture(noiseTexture, gl_FragCoord.xy*0.001).r;
+    #endif
+}
+
+#define FRAGMENT_SHADER_END_EXTRA                                           \
+    fragmentColor.rgb *= noiseFactor();
+)")} {}
+
+    DOXYGEN_ELLIPSIS()
+};
+/* [shaders-extending-helpers-wrong] */
+}
+
+{
+/* [shaders-extending-helpers] */
+struct EffectShader: Shaders::FlatGL2D {
+    explicit EffectShader(): Shaders::FlatGL2D{Configuration{}
+        .setExtraSource(R"(
+#ifndef NEW_GLSL
+#define TEXTURE_QUERY texture2D
+#else
+#define TEXTURE_QUERY texture
+#endif
+
+#define FRAGMENT_SHADER_INTERFACE_EXTRA                                     \
+    layout(binding = 7) uniform sampler2D noiseTexture;                     \
+    float noiseFactor() {                                                   \
+        return TEXTURE_QUERY(noiseTexture, gl_FragCoord.xy*0.001).r;        \
+    }
+#define FRAGMENT_SHADER_END_EXTRA                                           \
+    fragmentColor.rgb *= noiseFactor();
+)")} {}
+
+    DOXYGEN_ELLIPSIS()
+};
+/* [shaders-extending-helpers] */
+}
+
+{
+/* [shaders-extending-brightness-uniform-location] */
+struct BrightnessPhongGL: Shaders::PhongGL {
+    explicit BrightnessPhongGL(): Shaders::PhongGL{Configuration{}
+        .setExtraSource(R"(
+#define FRAGMENT_SHADER_INTERFACE_EXTRA                                     \
+    uniform float brightness;
+#define FRAGMENT_SHADER_END_EXTRA                                           \
+    fragmentColor.rgb *= brightness;
+)")
+    } {
+        _brightnessUniform = uniformLocation("brightness");
+        setBrightness(1.0f);
+    }
+
+    BrightnessPhongGL& setBrightness(Float brightness) {
+        setUniform(_brightnessUniform, brightness);
+        return *this;
+    }
+
+    private:
+        Int _brightnessUniform;
+};
+/* [shaders-extending-brightness-uniform-location] */
+}
+
+{
+/* [shaders-extending-brightness-attribute] */
+struct BrightnessPhongGL: Shaders::PhongGL {
+    typedef GL::Attribute<7, Float> Brightness;
+
+    explicit BrightnessPhongGL(): Shaders::PhongGL{Configuration{}
+        .setExtraSource(R"(
+#define VERTEX_SHADER_INTERFACE_EXTRA                                       \
+    layout(location = 7) in float brightness;                               \
+    out float interpolatedBrightness;
+#define VERTEX_SHADER_BEGIN_EXTRA                                           \
+    interpolatedBrightness = brightness;
+#define FRAGMENT_SHADER_INTERFACE_EXTRA                                     \
+    in float interpolatedBrightness;
+#define FRAGMENT_SHADER_END_EXTRA                                           \
+    fragmentColor *= interpolatedBrightness;
+)")} {}
+};
+/* [shaders-extending-brightness-attribute] */
+Int location = BrightnessPhongGL::Brightness::Location;
+static_cast<void>(location);
+}
+
+{
+/* [shaders-extending-brightness-attribute-binding] */
+struct BrightnessPhongGL: Shaders::PhongGL {
+    typedef GL::Attribute<7, Float> Brightness;
+
+    explicit BrightnessPhongGL(): Shaders::PhongGL{NoCreate} {
+        CompileState compiled = compile(Configuration{}
+            .setExtraSource(R"(
+#define VERTEX_SHADER_INTERFACE_EXTRA                                       \
+    in float brightness;                                                    \
+    out float interpolatedBrightness;
+#define VERTEX_SHADER_BEGIN_EXTRA                                           \
+    interpolatedBrightness = brightness;
+#define FRAGMENT_SHADER_INTERFACE_EXTRA                                     \
+    in float interpolatedBrightness;
+#define FRAGMENT_SHADER_END_EXTRA                                           \
+    fragmentColor *= interpolatedBrightness;
+)"));
+
+        /* Bind the location and relink */
+        compiled.bindAttributeLocation(Brightness::Location, "brightness");
+        compiled.submitLink();
+
+        /* Finish the setup by replacing the underlying instance */
+        static_cast<Shaders::PhongGL&>(*this) = Shaders::PhongGL{std::move(compiled)};
+    }
+};
+/* [shaders-extending-brightness-attribute-binding] */
+}
+
+{
 /* [DistanceFieldVectorGL-usage1] */
 struct {
     Vector2 position;

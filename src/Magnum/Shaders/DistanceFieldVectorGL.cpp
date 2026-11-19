@@ -215,6 +215,7 @@ template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::Com
     }
     #endif
     vert.addSource(rs.getString("generic.glsl"_s))
+        .addSource(configuration.extraSource())
         .addSource(rs.getString("Vector.vert"_s))
         .submitCompile();
 
@@ -247,6 +248,7 @@ template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::Com
     }
     #endif
     frag.addSource(rs.getString("generic.glsl"_s))
+        .addSource(configuration.extraSource())
         .addSource(rs.getString("DistanceFieldVector.frag"_s))
         .submitCompile();
 
@@ -592,6 +594,15 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFiel
     return *this;
 }
 #endif
+
+template<UnsignedInt dimensions> Containers::StringView DistanceFieldVectorGL<dimensions>::Configuration::extraSource() const {
+    return Implementation::ConfigurationBaseGL::extraSource();
+}
+
+template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::Configuration& DistanceFieldVectorGL<dimensions>::Configuration::setExtraSource(Containers::StringView source) {
+    Implementation::ConfigurationBaseGL::setExtraSource(source);
+    return *this;
+}
 
 template class MAGNUM_SHADERS_EXPORT DistanceFieldVectorGL<2>;
 template class MAGNUM_SHADERS_EXPORT DistanceFieldVectorGL<3>;

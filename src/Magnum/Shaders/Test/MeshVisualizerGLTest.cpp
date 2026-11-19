@@ -211,6 +211,14 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     void renderMultiSkinningWireframe3D();
     #endif
 
+    template<UnsignedInt dimensions> void renderExtraMacros();
+    template<UnsignedInt dimensions> void renderExtraMacrosGeometryShader();
+    template<UnsignedInt dimensions> void renderExtraExtensionEnable();
+    template<UnsignedInt dimensions> void renderExtra();
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    template<UnsignedInt dimensions> void renderExtraGeometryShader();
+    #endif
+
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
         Containers::String _testDir;
@@ -1441,6 +1449,36 @@ const struct {
 };
 #endif
 
+const struct {
+    const char* name;
+} RenderExtraMacrosData[]{
+    {"VERTEX_SHADER_INTERFACE_EXTRA"},
+    {"FRAGMENT_SHADER_INTERFACE_EXTRA"},
+    {"VERTEX_SHADER_BEGIN_EXTRA"},
+    {"VERTEX_SHADER_END_EXTRA"},
+    {"FRAGMENT_SHADER_BEGIN_EXTRA"},
+    {"FRAGMENT_SHADER_END_EXTRA"},
+};
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+const struct {
+    const char* name;
+} RenderExtraMacrosGeometryShaderData[]{
+    /* All others are tested as well to catch cases like
+        #ifdef FRAGMENT_SHADER_INTERFACE_EXTRA
+        GEOMETRY_SHADER_INTERFACE_EXTRA
+        #endif */
+    {"VERTEX_SHADER_INTERFACE_EXTRA"},
+    {"GEOMETRY_SHADER_INTERFACE_EXTRA"},
+    {"FRAGMENT_SHADER_INTERFACE_EXTRA"},
+    {"VERTEX_SHADER_BEGIN_EXTRA"},
+    {"VERTEX_SHADER_END_EXTRA"},
+    {"GEOMETRY_SHADER_BEGIN_EXTRA"},
+    {"FRAGMENT_SHADER_BEGIN_EXTRA"},
+    {"FRAGMENT_SHADER_END_EXTRA"},
+};
+#endif
+
 MeshVisualizerGLTest::MeshVisualizerGLTest() {
     addInstancedTests({&MeshVisualizerGLTest::construct2D},
         Containers::arraySize(ConstructData2D));
@@ -1772,6 +1810,31 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
     #endif
+
+    addInstancedTests({&MeshVisualizerGLTest::renderExtraMacros<2>,
+                       &MeshVisualizerGLTest::renderExtraMacros<3>},
+        Containers::arraySize(RenderExtraMacrosData),
+        &MeshVisualizerGLTest::renderSetup,
+        &MeshVisualizerGLTest::renderTeardown);
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    addInstancedTests({&MeshVisualizerGLTest::renderExtraMacrosGeometryShader<2>,
+                       &MeshVisualizerGLTest::renderExtraMacrosGeometryShader<3>},
+        Containers::arraySize(RenderExtraMacrosGeometryShaderData),
+        &MeshVisualizerGLTest::renderSetup,
+        &MeshVisualizerGLTest::renderTeardown);
+    #endif
+
+    addTests({&MeshVisualizerGLTest::renderExtraExtensionEnable<2>,
+              &MeshVisualizerGLTest::renderExtraExtensionEnable<3>,
+              &MeshVisualizerGLTest::renderExtra<2>,
+              &MeshVisualizerGLTest::renderExtra<3>,
+              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+              &MeshVisualizerGLTest::renderExtraGeometryShader<2>,
+              &MeshVisualizerGLTest::renderExtraGeometryShader<3>
+              #endif
+    }, &MeshVisualizerGLTest::renderSetup,
+       &MeshVisualizerGLTest::renderTeardown);
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -8025,6 +8088,418 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe3D() {
         _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, "MeshVisualizerTestFiles/skinning-multi.tga"),
         (DebugTools::CompareImageToFile{_manager}));
+}
+#endif
+
+template<UnsignedInt dimensions> struct ShaderTraits;
+template<> struct ShaderTraits<2> {
+    typedef MeshVisualizerGL2D Type;
+    static void setTransformationProjectionMatrix(MeshVisualizerGL2D& shader, const Matrix3& matrix) {
+        shader.setTransformationProjectionMatrix(matrix);
+    }
+};
+template<> struct ShaderTraits<3> {
+    typedef MeshVisualizerGL3D Type;
+    static void setTransformationProjectionMatrix(MeshVisualizerGL3D& shader, const Matrix3& matrix) {
+        shader.setProjectionMatrix(Matrix4{matrix});
+    }
+};
+
+template<UnsignedInt dimensions> void MeshVisualizerGLTest::renderExtraMacros() {
+    auto&& data = RenderExtraMacrosData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* Tests that defining a single macro doesn't fail compilation, for
+       example due to copypaste errors such as this:
+        #ifdef STUFF_EXTRA
+        OTHER_STUFF_EXTRA
+        #endif
+       Since the macros are empty, they should not affect the output at all.
+       The same mesh is drawn for 2D and 3D as that doesn't really matter. */
+
+    /* Duplicate the vertices. The circle primitive is a triangle fan, so we
+       first need to turn it into indexed triangles. */
+    const Trade::MeshData circleDataIndexed =
+        MeshTools::generateIndices(Primitives::circle2DSolid(16));
+    GL::Mesh circle = MeshTools::compile(MeshTools::duplicate(circleDataIndexed));
+
+    /* Supply also the vertex ID, if needed */
+    #ifndef MAGNUM_TARGET_GLES2
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+    #endif
+    {
+        /* On ES2 UnsignedInt isn't available as an attribute type, so
+           interpret the buffer as shorts with 2-byte padding in between */
+        circle.addVertexBuffer(
+            GL::Buffer{MeshTools::generateTrivialIndices(circleDataIndexed.indexCount())}, 0,
+            #ifdef CORRADE_TARGET_BIG_ENDIAN
+            2,
+            #endif
+            MeshVisualizerGL2D::VertexIndex{MeshVisualizerGL2D::VertexIndex::DataType::UnsignedShort}
+            #ifndef CORRADE_TARGET_BIG_ENDIAN
+            , 2
+            #endif
+            );
+    }
+
+    typename ShaderTraits<dimensions>::Type shader{typename ShaderTraits<dimensions>::Type::Configuration{}
+        .setFlags(ShaderTraits<dimensions>::Type::Flag::Wireframe|
+                  ShaderTraits<dimensions>::Type::Flag::NoGeometryShader)
+        .setExtraSource(Utility::format("#define {}\n", data.name))};
+    shader.draw(circle);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe-nogeo2D.tga"),
+        /* SwiftShader has rounding errors, mostly around the edges */
+        (DebugTools::CompareImageToFile{_manager, 17.0f, 0.317f}));
+}
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+template<UnsignedInt dimensions> void MeshVisualizerGLTest::renderExtraMacrosGeometryShader() {
+    auto&& data = RenderExtraMacrosGeometryShaderData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* Like above, just testing two more macros for a geometry shader */
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
+    #endif
+
+    #ifdef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
+        CORRADE_INFO("Using" << GL::Extensions::NV::shader_noperspective_interpolation::string());
+    #endif
+
+    typename ShaderTraits<dimensions>::Type shader{typename ShaderTraits<dimensions>::Type::Configuration{}
+        .setFlags(ShaderTraits<dimensions>::Type::Flag::Wireframe)
+        .setExtraSource(Utility::format("#define {}\n", data.name))};
+    shader
+        .setViewportSize(Vector2{RenderSize})
+        .draw(MeshTools::compile(Primitives::circle2DSolid(16)));
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe2D.tga"),
+        /* AMD has off-by-one errors on edges compared to Intel */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.082f}));
+}
+#endif
+
+template<UnsignedInt dimensions> void MeshVisualizerGLTest::renderExtraExtensionEnable() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* Verifies that the extra source is put early enough to allow #extension
+       statements (i.e., before any other non-macro definition). Not verifying
+       rendering output as no output-affecting macros are defined. */
+
+    /* Picking extensions that are the most likely to be present */
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>())
+        CORRADE_SKIP(GL::Extensions::ARB::explicit_attrib_location::string() << "not supported, cannot test");
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::OES::standard_derivatives>())
+        CORRADE_SKIP(GL::Extensions::OES::standard_derivatives::string() << "not supported, cannot test");
+    #elif defined(MAGNUM_TARGET_WEBGL)
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "not supported, cannot test");
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+        CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "not supported, cannot test");
+    #endif
+
+    /* Disable GS if not available, otherwise test the extensions there as
+       well */
+    typename ShaderTraits<dimensions>::Type::Flags flags = ShaderTraits<dimensions>::Type::Flag::Wireframe;
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+    #endif
+    #endif
+    {
+        flags |= ShaderTraits<dimensions>::Type::Flag::NoGeometryShader;
+    }
+
+    typename ShaderTraits<dimensions>::Type shader{typename ShaderTraits<dimensions>::Type::Configuration{}
+        .setFlags(flags)
+        .setExtraSource(
+            #ifndef MAGNUM_TARGET_GLES
+            "#extension GL_ARB_explicit_attrib_location: require\n"
+            #elif defined(MAGNUM_TARGET_GLES2)
+            "#extension GL_OES_standard_derivatives: require\n"
+            #else
+            /* covers both ES3 and WebGL */
+            "#extension GL_ANGLE_multi_draw: require\n"
+            #endif
+        )};
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+template<UnsignedInt dimensions> void MeshVisualizerGLTest::renderExtra() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* Verifying the full set of macros and both attributes and uniforms, bound
+       and queried instead of having explicit locations, to ensure the feature
+       makes sense as a whole. The same mesh is again drawn for 2D and 3D as
+       that doesn't really matter. */
+
+    /* The renderExtraExtensionEnable() above tested that the extra source is
+       added early enough, the #ifndef POSITION_ATTRIBUTE_LOCATION below tests
+       that it's added only after all definitions we might want to rely on */
+    struct Shader: ShaderTraits<dimensions>::Type {
+        explicit Shader(): ShaderTraits<dimensions>::Type{NoCreate} {
+            typename ShaderTraits<dimensions>::Type::CompileState state = ShaderTraits<dimensions>::Type::compile(typename ShaderTraits<dimensions>::Type::Configuration{}
+                .setFlags(ShaderTraits<dimensions>::Type::Flag::Wireframe|
+                          ShaderTraits<dimensions>::Type::Flag::NoGeometryShader)
+                .setExtraSource(R"(
+#ifndef POSITION_ATTRIBUTE_LOCATION
+#error extra source inserted too early
+#endif
+#ifndef NEW_GLSL
+#define VERTEX_SHADER_INTERFACE_EXTRA                                       \
+    attribute lowp float colorR;                                            \
+    uniform lowp float colorB;                                              \
+    varying lowp vec3 interpolatedColorRgb;
+#define FRAGMENT_SHADER_INTERFACE_EXTRA                                     \
+    varying lowp vec3 interpolatedColorRgb;
+#else
+#define VERTEX_SHADER_INTERFACE_EXTRA                                       \
+    in lowp float colorR;                                                   \
+    uniform lowp float colorB;                                              \
+    out lowp vec3 interpolatedColorRgb;
+#define FRAGMENT_SHADER_INTERFACE_EXTRA                                     \
+    in lowp vec3 interpolatedColorRgb;
+#endif
+#define VERTEX_SHADER_BEGIN_EXTRA                                           \
+    interpolatedColorRgb = vec3(colorR, 0.5, colorB);
+#define VERTEX_SHADER_END_EXTRA                                             \
+    interpolatedColorRgb.g += 0.5;
+#define FRAGMENT_SHADER_BEGIN_EXTRA                                         \
+    lowp vec3 extraColor = interpolatedColorRgb;                            \
+    extraColor.r += 0.5;
+#define FRAGMENT_SHADER_END_EXTRA                                           \
+    fragmentColor.rgb *= extraColor;
+)"));
+            /* Attribute location can be bound only before linking, so submit a
+               relink after. This also has to be done before the finalization
+               as otherwise the uniform defaults would be lost on GLES and the
+               *= above would result in a wrong output. */
+            state.bindAttributeLocation(7, "colorR");
+            state.submitLink();
+
+            /* Finish the setup by replacing the underlying instance */
+            static_cast<typename ShaderTraits<dimensions>::Type&>(*this) = typename ShaderTraits<dimensions>::Type{Utility::move(state)};
+
+            /* Query the uniform location once linking succeeded */
+            _colorBUniform = ShaderTraits<dimensions>::Type::uniformLocation("colorB");
+        }
+
+        Shader& setColorB(Float blue) {
+            ShaderTraits<dimensions>::Type::setUniform(_colorBUniform, blue);
+            return *this;
+        }
+
+        private:
+            Int _colorBUniform;
+    } shader;
+
+    /* Duplicate the vertices. The circle primitive is a triangle fan, so we
+       first need to turn it into indexed triangles. */
+    const Trade::MeshData circleDataIndexed =
+        MeshTools::generateIndices(Primitives::circle2DSolid(16));
+    GL::Mesh circle = MeshTools::compile(MeshTools::duplicate(circleDataIndexed));
+    CORRADE_VERIFY(!circle.isIndexed());
+    circle.addVertexBuffer(
+        GL::Buffer{Containers::Array<Float>{DirectInit, std::size_t(circle.count()), 0.5f}},
+        0, GL::Attribute<7, Float>{});
+
+    /* Supply also the vertex ID, if needed */
+    #ifndef MAGNUM_TARGET_GLES2
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+    #endif
+    {
+        /* On ES2 UnsignedInt isn't available as an attribute type, so
+           interpret the buffer as shorts with 2-byte padding in between */
+        circle.addVertexBuffer(
+            GL::Buffer{MeshTools::generateTrivialIndices(circleDataIndexed.indexCount())}, 0,
+            #ifdef CORRADE_TARGET_BIG_ENDIAN
+            2,
+            #endif
+            MeshVisualizerGL2D::VertexIndex{MeshVisualizerGL2D::VertexIndex::DataType::UnsignedShort}
+            #ifndef CORRADE_TARGET_BIG_ENDIAN
+            , 2
+            #endif
+            );
+    }
+
+    /* Same as in renderWireframe2D(). Using a trait struct because
+       MeshVisualizerGL3D has separate transformation and projection so the API
+       is named different */
+    ShaderTraits<dimensions>::setTransformationProjectionMatrix(shader, Matrix3::projection({2.1f, 2.1f}));
+
+    shader
+        .setColorB(0.6f)
+        /* Color left at the default 0xffffff_rgbf, is multiplied along with
+           wireframe color with the extra supplied attribute and uniform to be
+           0xffff99_rgbf */
+        .setWireframeColor(0x9999ff_rgbf/0xffff99_rgbf)
+        .draw(circle);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has differently rasterized edges on four pixels. Apple
+        A8 on more. */
+    const Float maxThreshold = 170.0f, meanThreshold = 0.330f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 170.0f, meanThreshold = 2.077f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/wireframe-nogeo2D.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+template<UnsignedInt dimensions> void MeshVisualizerGLTest::renderExtraGeometryShader() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    /* Like above, just testing two more macros for the geometry shader */
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
+    #endif
+
+    #ifdef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
+        CORRADE_INFO("Using" << GL::Extensions::NV::shader_noperspective_interpolation::string());
+    #endif
+    #endif
+
+    /* Compared to renderExtra(), the GS doesn't get generic.glsl included so
+       we don't test for POSITION_ATTRIBUTE_LOCATION here */
+    struct Shader: ShaderTraits<dimensions>::Type {
+        explicit Shader(): ShaderTraits<dimensions>::Type{NoCreate} {
+            typename ShaderTraits<dimensions>::Type::CompileState state = ShaderTraits<dimensions>::Type::compile(typename ShaderTraits<dimensions>::Type::Configuration{}
+                .setFlags(ShaderTraits<dimensions>::Type::Flag::Wireframe)
+                .setExtraSource(R"(
+#define VERTEX_SHADER_INTERFACE_EXTRA                                       \
+    in lowp float colorR;                                                   \
+    uniform lowp float colorB;                                              \
+    out lowp vec3 interpolatedVsColorRgb;
+#define VERTEX_SHADER_BEGIN_EXTRA                                           \
+    interpolatedVsColorRgb = vec3(colorR, 0.0, colorB);
+#define VERTEX_SHADER_END_EXTRA                                             \
+    interpolatedVsColorRgb.g += 0.5;
+#define GEOMETRY_SHADER_INTERFACE_EXTRA                                     \
+    in lowp vec3 interpolatedVsColorRgb[];                                  \
+    out lowp vec3 interpolatedColorRgb;
+#define GEOMETRY_SHADER_BEGIN_EXTRA                                         \
+    interpolatedColorRgb = interpolatedVsColorRgb[0];                       \
+    interpolatedColorRgb.g += 0.5;
+#define FRAGMENT_SHADER_INTERFACE_EXTRA                                     \
+    in lowp vec3 interpolatedColorRgb;
+#define FRAGMENT_SHADER_BEGIN_EXTRA                                         \
+    lowp vec3 extraColor = interpolatedColorRgb;                            \
+    extraColor.r += 0.5;
+#define FRAGMENT_SHADER_END_EXTRA                                           \
+    fragmentColor.rgb *= extraColor;
+)"));
+            /* Attribute location can be bound only before linking, so submit a
+               relink after. This also has to be done before the finalization
+               as otherwise the uniform defaults would be lost on GLES and the
+               *= above would result in a wrong output. */
+            state.bindAttributeLocation(7, "colorR");
+            state.submitLink();
+
+            /* Finish the setup by replacing the underlying instance */
+            static_cast<typename ShaderTraits<dimensions>::Type&>(*this) = typename ShaderTraits<dimensions>::Type{Utility::move(state)};
+
+            /* Query the uniform location once linking succeeded */
+            _colorBUniform = ShaderTraits<dimensions>::Type::uniformLocation("colorB");
+        }
+
+        Shader& setColorB(Float blue) {
+            ShaderTraits<dimensions>::Type::setUniform(_colorBUniform, blue);
+            return *this;
+        }
+
+        private:
+            Int _colorBUniform;
+    } shader;
+
+    GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(16));
+    CORRADE_VERIFY(!circle.isIndexed());
+    circle.addVertexBuffer(
+        GL::Buffer{Containers::Array<Float>{DirectInit, std::size_t(circle.count()), 0.5f}},
+        0, GL::Attribute<7, Float>{});
+
+    /* Same as in renderWireframe2D(). Using a trait struct because
+       MeshVisualizerGL3D has separate transformation and projection so the API
+       is named different */
+    ShaderTraits<dimensions>::setTransformationProjectionMatrix(shader, Matrix3::projection({2.1f, 2.1f}));
+
+    shader
+        .setColorB(0.6f)
+        /* Color left at the default 0xffffff_rgbf, is multiplied along with
+           wireframe color with the extra supplied attribute and uniform */
+        .setWireframeColor(0x9999ff_rgbf/0xffff99_rgbf)
+        .setSmoothness(2.0f)
+        .setViewportSize(Vector2{RenderSize})
+        .draw(circle);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has differently rasterized edges on four pixels */
+    const Float maxThreshold = 170.0f, meanThreshold = 0.327f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 170.0f, meanThreshold = 1.699f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/wireframe2D.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 #endif
 

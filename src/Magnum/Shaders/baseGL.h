@@ -26,11 +26,37 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Containers.h>
+
+#include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
 #include "Magnum/GL/GL.h"
 #include "Magnum/Shaders/visibility.h"
 
 namespace Magnum { namespace Shaders { namespace Implementation {
+
+/* Used as a base for *GL::Configuration classes, stores a Containers::String
+   in a way that doesn't require including it. Inherited privately, the
+   extraSource() and setExtraSource() is then exposed and documented separately
+   in each. */
+class MAGNUM_SHADERS_EXPORT ConfigurationBaseGL {
+    public:
+        explicit ConfigurationBaseGL();
+        ConfigurationBaseGL(const ConfigurationBaseGL& other);
+        ConfigurationBaseGL(ConfigurationBaseGL&& other) noexcept;
+
+        ~ConfigurationBaseGL();
+
+        ConfigurationBaseGL& operator=(const ConfigurationBaseGL& other);
+        ConfigurationBaseGL& operator=(ConfigurationBaseGL&& other) noexcept;
+
+        Containers::StringView extraSource() const;
+        void setExtraSource(Containers::StringView source);
+        void setExtraSource(Containers::String&& source);
+
+    private:
+        std::size_t _extraSource[3];
+};
 
 /* A lightweight alternative to GL::Shader that holds just the type and ID,
    used by CompileState instances of all shaders. There it's used just to
@@ -53,6 +79,29 @@ struct MAGNUM_SHADERS_EXPORT GLShaderWrapper {
     GLenum type;
     GLuint id;
 };
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#define _MAGNUM_SHADERS_COMPILESTATE_PUBLICIZED_APIS_ES3                    \
+    using AbstractShaderProgram::bindFragmentDataLocationIndexed;           \
+    using AbstractShaderProgram::bindFragmentDataLocation;
+#else
+#define _MAGNUM_SHADERS_COMPILESTATE_PUBLICIZED_APIS_ES3
+#endif
+#ifndef MAGNUM_TARGET_GLES2
+#define _MAGNUM_SHADERS_COMPILESTATE_PUBLICIZED_APIS_ES3_WEBGL2             \
+    using AbstractShaderProgram::setTransformFeedbackOutputs;
+#else
+#define _MAGNUM_SHADERS_COMPILESTATE_PUBLICIZED_APIS_ES3_WEBGL2
+#endif
+
+#define _MAGNUM_SHADERS_COMPILESTATE_PUBLICIZED_APIS()                      \
+    public:                                                                 \
+        using AbstractShaderProgram::bindAttributeLocation;                 \
+        _MAGNUM_SHADERS_COMPILESTATE_PUBLICIZED_APIS_ES3                    \
+        _MAGNUM_SHADERS_COMPILESTATE_PUBLICIZED_APIS_ES3_WEBGL2             \
+        using AbstractShaderProgram::submitLink;                            \
+        using AbstractShaderProgram::link;                                  \
+    private:
 
 }}}
 
