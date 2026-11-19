@@ -700,18 +700,12 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::renderDefa
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-    /* SwiftShader has differently rasterized edges on eight pixels */
-    const Float maxThreshold = 238.0f, meanThreshold = 0.298f;
-    #else
-    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
-    const Float maxThreshold = 238.0f, meanThreshold = 0.298f;
-    #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, "FlatTestFiles/defaults.tga"),
-        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+        /* SwiftShader has 8 different pixels on the edges */
+        (DebugTools::CompareImageToFile{_manager, 238.0f, 0.298f}));
 }
 
 template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::renderDefaults3D() {
@@ -781,18 +775,12 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::renderDefa
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-    /* SwiftShader has differently rasterized edges on eight pixels */
-    const Float maxThreshold = 238.0f, meanThreshold = 0.298f;
-    #else
-    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
-    const Float maxThreshold = 238.0f, meanThreshold = 0.298f;
-    #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join(_testDir, "FlatTestFiles/defaults.tga"),
-        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+        /* SwiftShader has 8 different pixels on the edges */
+        (DebugTools::CompareImageToFile{_manager, 238.0f, 0.298f}));
 }
 
 template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::render2D() {
