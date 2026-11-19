@@ -205,6 +205,8 @@ if(MAGNUM_TARGET_GL)
                 MeshVisualizerTestFiles/defaults-vertexid3D.tga
                 MeshVisualizerTestFiles/defaults-wireframe2D.tga
                 MeshVisualizerTestFiles/defaults-wireframe3D.tga
+                MeshVisualizerTestFiles/defaults-wireframe-nogeo2D.tga
+                MeshVisualizerTestFiles/defaults-wireframe-nogeo3D.tga
                 MeshVisualizerTestFiles/instancedobjectid2D.tga
                 MeshVisualizerTestFiles/instancedobjectid3D.tga
                 MeshVisualizerTestFiles/objectid-tn.tga
