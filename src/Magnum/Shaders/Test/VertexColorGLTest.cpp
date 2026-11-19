@@ -667,14 +667,11 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::renderDefa
 
     Trade::MeshData circleData = Primitives::circle2DSolid(32,
         Primitives::Circle2DFlag::TextureCoordinates);
-
-    /* All a single color */
-    Containers::Array<T> colorData{DirectInit, circleData.vertexCount(), 0xffffff_rgbf};
-
-    GL::Buffer colors;
-    colors.setData(colorData);
     GL::Mesh circle = MeshTools::compile(circleData);
-    circle.addVertexBuffer(colors, 0, GL::Attribute<VertexColorGL2D::Color3::Location, T>{});
+    /* All a single color */
+    circle.addVertexBuffer(
+        GL::Buffer{Containers::Array<T>{DirectInit, circleData.vertexCount(), 0xffffff_rgbf}}, 0,
+        GL::Attribute<VertexColorGL2D::Color3::Location, T>{});
 
     VertexColorGL2D shader{VertexColorGL2D::Configuration{}
         .setFlags(flag)};
@@ -756,14 +753,11 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::renderDefa
 
     Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates);
-
-    /* All a single color */
-    Containers::Array<T> colorData{DirectInit, sphereData.vertexCount(), 0xffffff_rgbf};
-
-    GL::Buffer colors;
-    colors.setData(colorData);
     GL::Mesh sphere = MeshTools::compile(sphereData);
-    sphere.addVertexBuffer(colors, 0, GL::Attribute<VertexColorGL3D::Color4::Location, T>{});
+    /* All a single color */
+    sphere.addVertexBuffer(
+        GL::Buffer{Containers::Array<T>{DirectInit, sphereData.vertexCount(), 0xffffff_rgbf}}, 0,
+        GL::Attribute<VertexColorGL2D::Color4::Location, T>{});
 
     VertexColorGL3D shader{VertexColorGL3D::Configuration{}
         .setFlags(flag)};
@@ -843,10 +837,9 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::render2D()
     for(std::size_t i = 8; i != 16; ++i)
         colorData[i + 1] = 0xffff99_rgbf;
 
-    GL::Buffer colors;
-    colors.setData(colorData);
     GL::Mesh circle = MeshTools::compile(circleData);
-    circle.addVertexBuffer(colors, 0, GL::Attribute<VertexColorGL2D::Color3::Location, T>{});
+    circle.addVertexBuffer(GL::Buffer{colorData}, 0,
+        GL::Attribute<VertexColorGL2D::Color3::Location, T>{});
 
     VertexColorGL2D shader{VertexColorGL2D::Configuration{}
         .setFlags(flag)};
@@ -933,10 +926,9 @@ template<class T, VertexColorGL3D::Flag flag> void VertexColorGLTest::render3D()
     for(std::size_t i = 6*33; i != 9*33; ++i)
         colorData[i + 1] = 0xffff99_rgbf;
 
-    GL::Buffer colors;
-    colors.setData(colorData);
     GL::Mesh sphere = MeshTools::compile(sphereData);
-    sphere.addVertexBuffer(colors, 0, GL::Attribute<VertexColorGL3D::Color4::Location, T>{});
+    sphere.addVertexBuffer(GL::Buffer{colorData}, 0,
+        GL::Attribute<VertexColorGL3D::Color4::Location, T>{});
 
     VertexColorGL3D shader{VertexColorGL3D::Configuration{}
         .setFlags(flag)};

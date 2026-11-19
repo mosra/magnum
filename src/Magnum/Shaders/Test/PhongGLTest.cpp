@@ -3309,10 +3309,9 @@ template<class T, PhongGL::Flag flag> void PhongGLTest::renderVertexColor() {
     for(std::size_t i = 6*33; i != 9*33; ++i)
         colorData[i + 1] = 0xffff99_rgbf*1.5f;
 
-    GL::Buffer colors;
-    colors.setData(colorData);
     GL::Mesh sphere = MeshTools::compile(sphereData);
-    sphere.addVertexBuffer(colors, 0, GL::Attribute<Shaders::PhongGL::Color3::Location, T>{});
+    sphere.addVertexBuffer(GL::Buffer{colorData}, 0,
+        GL::Attribute<Shaders::PhongGL::Color3::Location, T>{});
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);

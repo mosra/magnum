@@ -2802,10 +2802,9 @@ template<class T, FlatGL2D::Flag flag> void FlatGLTest::renderVertexColor2D() {
     for(std::size_t i = 8; i != 16; ++i)
         colorData[i + 1] = 0xffff99_rgbf*1.5f;
 
-    GL::Buffer colors;
-    colors.setData(colorData);
     GL::Mesh circle = MeshTools::compile(circleData);
-    circle.addVertexBuffer(colors, 0, GL::Attribute<Shaders::FlatGL2D::Color3::Location, T>{});
+    circle.addVertexBuffer(GL::Buffer{colorData}, 0,
+        GL::Attribute<Shaders::FlatGL2D::Color3::Location, T>{});
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
@@ -2914,10 +2913,9 @@ template<class T, FlatGL2D::Flag flag> void FlatGLTest::renderVertexColor3D() {
     for(std::size_t i = 6*33; i != 9*33; ++i)
         colorData[i + 1] = 0xffff99_rgbf*1.5f;
 
-    GL::Buffer colors;
-    colors.setData(colorData);
     GL::Mesh sphere = MeshTools::compile(sphereData);
-    sphere.addVertexBuffer(colors, 0, GL::Attribute<Shaders::FlatGL3D::Color4::Location, T>{});
+    sphere.addVertexBuffer(GL::Buffer{colorData}, 0,
+        GL::Attribute<Shaders::FlatGL3D::Color4::Location, T>{});
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
