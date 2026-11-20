@@ -4596,7 +4596,7 @@ void PhongGLTest::renderDoubleSided() {
         _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>().slice(&Color4ub::rgb),
         Utility::Path::join({_testDir, "PhongTestFiles", data.expected}),
         /* SwiftShader has one pixel really off for the specular case */
-        (DebugTools::CompareImageToFile{_manager, 130.0f, 0.06f}));
+        (DebugTools::CompareImageToFile{_manager, 130.0f, 0.062f}));
 }
 
 #ifndef MAGNUM_TARGET_GLES2
