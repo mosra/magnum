@@ -357,9 +357,9 @@ layout(std140, binding = 1) uniform material {
 
 If you don't have the required version/extension, declare the uniform blocks
 without the @glsl layout() @ce qualifier, get uniform block index using
-@ref uniformBlockIndex() and then map it to the uniform buffer binding using
-@ref setUniformBlockBinding(). Note that additional syntax changes may be
-needed for GLSL ES.
+@ref uniformBlockIndex() *after* linking stage and then map it to the uniform
+buffer binding using @ref setUniformBlockBinding(). Note that additional syntax
+changes may be needed for GLSL ES.
 
 @code{.glsl}
 layout(std140) uniform matrices {
@@ -456,8 +456,9 @@ layout(xfb_buffer = 1) out vec3 velocity;
 @endcode
 
 If you don't have the required version/extension, declare the uniforms without
-the `xfb_*` qualifier and set the binding points using @ref setTransformFeedbackOutputs().
-Equivalent setup for the previous code would be the following:
+the `xfb_*` qualifier and set the binding points using
+@ref setTransformFeedbackOutputs() between attaching the shaders and linking
+the program. Equivalent setup for the previous code would be the following:
 
 @code{.glsl}
 out block {
