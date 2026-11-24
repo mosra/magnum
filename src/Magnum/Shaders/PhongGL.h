@@ -389,6 +389,10 @@ following macros are recognized:
     described in the introduction. If @ref Flag::AlphaMask is enabled, the
     fragment shader may call @glsl discard @ce before
     `FRAGMENT_SHADER_END_EXTRA` is reached.
+-   `FRAGMENT_SHADER_PER_LIGHT_BEGIN_EXTRA` --- extra code to insert at the
+    very beginning of the per-light loop in the fragment shader
+-   `FRAGMENT_SHADER_PER_LIGHT_END_EXTRA` --- extra code to insert at the very
+    end of the per-light loop in the fragment shader
 
 @see @ref shaders
 */

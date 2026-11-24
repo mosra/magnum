@@ -1264,6 +1264,8 @@ const struct {
     {"VERTEX_SHADER_END_EXTRA"},
     {"FRAGMENT_SHADER_BEGIN_EXTRA"},
     {"FRAGMENT_SHADER_END_EXTRA"},
+    {"FRAGMENT_SHADER_PER_LIGHT_BEGIN_EXTRA"},
+    {"FRAGMENT_SHADER_PER_LIGHT_END_EXTRA"},
 };
 
 PhongGLTest::PhongGLTest() {
@@ -6172,9 +6174,13 @@ void PhongGLTest::renderExtra() {
 #define VERTEX_SHADER_BEGIN_EXTRA                                           \
     interpolatedColorRgb = vec3(colorR, 0.0, colorB);
 #define VERTEX_SHADER_END_EXTRA                                             \
-    interpolatedColorRgb.b += 0.1;
+    interpolatedColorRgb.b += 0.05;
 #define FRAGMENT_SHADER_BEGIN_EXTRA                                         \
     lowp vec3 extraColor = interpolatedColorRgb;
+#define FRAGMENT_SHADER_PER_LIGHT_BEGIN_EXTRA                               \
+    extraColor.b += 0.0125;
+#define FRAGMENT_SHADER_PER_LIGHT_END_EXTRA                                 \
+    extraColor.b += 0.0125;
 #define FRAGMENT_SHADER_END_EXTRA                                           \
     fragmentColor.rgb += extraColor;
 )"));

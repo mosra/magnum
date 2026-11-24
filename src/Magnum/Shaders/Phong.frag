@@ -485,6 +485,10 @@ void main() {
     for(uint i = 0u, actualLightCount = min(uint(PER_DRAW_LIGHT_COUNT), lightCount); i < actualLightCount; ++i)
     #endif
     {
+        #ifdef FRAGMENT_SHADER_PER_LIGHT_BEGIN_EXTRA
+        FRAGMENT_SHADER_PER_LIGHT_BEGIN_EXTRA
+        #endif
+
         lowp const vec3 lightColor =
             #ifndef UNIFORM_BUFFERS
             lightColors[i]
@@ -557,6 +561,10 @@ void main() {
             mediump float specularity = clamp(pow(max(0.0, dot(cameraDirection, reflection)), shininess), 0.0, 1.0)*attenuation;
             fragmentColor += vec4(finalSpecularColor.rgb*lightSpecularColor.rgb*specularity, finalSpecularColor.a);
         }
+        #endif
+
+        #ifdef FRAGMENT_SHADER_PER_LIGHT_END_EXTRA
+        FRAGMENT_SHADER_PER_LIGHT_END_EXTRA
         #endif
     }
 
