@@ -528,7 +528,8 @@ void AbstractFramebuffer::invalidateImplementationDefault(AbstractFramebuffer& s
 
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractFramebuffer::invalidateImplementationNVidiaDrawFramebuffer(AbstractFramebuffer& self, const GLsizei count, const GLenum* const attachments) {
-    /* See the "nv-framebuffer-invalidation-wants-draw-binding" workaround for
+    /* See the "nv-framebuffer-invalidation-wants-draw-binding" workaround and
+       FramebufferGLTest::invalidateAffectsDrawFramebufferNvidia() for
        details */
     self.bindInternal(FramebufferTarget::Draw);
     #ifndef MAGNUM_TARGET_GLES2
@@ -555,7 +556,8 @@ void AbstractFramebuffer::invalidateImplementationDefault(AbstractFramebuffer& s
 
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractFramebuffer::invalidateImplementationNVidiaDrawFramebuffer(AbstractFramebuffer& self, const GLsizei count, const GLenum* const attachments, const Range2Di& rectangle) {
-    /* See the "nv-framebuffer-invalidation-wants-draw-binding" workaround for
+    /* See the "nv-framebuffer-invalidation-wants-draw-binding" workaround and
+       FramebufferGLTest::invalidateAffectsDrawFramebufferNvidia() for
        details */
     self.bindInternal(FramebufferTarget::Draw);
     glInvalidateSubFramebuffer(GL_DRAW_FRAMEBUFFER, count, attachments, rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());

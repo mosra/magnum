@@ -240,10 +240,11 @@ constexpr Containers::StringView KnownWorkarounds[]{
 
 #ifndef MAGNUM_TARGET_WEBGL
 /* On NV drivers (reproducible on both Linux and Windows and versions 570, 537,
-   so likely any version), a call to DSA glInvalidateNamedFramebufferData()
-   invalidates the currently bound *draw* framebuffer instead of the one
-   specified, but only if the framebuffer to be invalidated is currently bound
-   *read* framebuffer (how?! why there is such a weird interaction??).
+   so likely any version, still reproducible on version 615), a call to DSA
+   glInvalidateNamedFramebufferData() invalidates the currently bound *draw*
+   framebuffer instead of the one specified, but only if the framebuffer to be
+   invalidated is currently bound *read* framebuffer (how?! why there is such a
+   weird interaction??).
 
    In a non-DSA code path, if glInvalidateFramebufferData() is called with
    GL_READ_FRAMEBUFFER, it still clears the GL_DRAW_FRAMEBUFFER instead. The
