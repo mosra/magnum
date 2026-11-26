@@ -146,7 +146,7 @@ FramebufferState::FramebufferState(Context& context, Containers::StaticArrayView
     }
 
     /* DSA/non-DSA implementation for cubemaps, because Intel Windows drivers
-       have to be broken in a special way. Also reusing this branch for and AMD
+       have to be broken in a special way. Also reusing this branch for an AMD
        workaround for cubemap copy. */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
