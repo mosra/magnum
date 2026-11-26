@@ -1357,9 +1357,6 @@ void PlayerTest::runFor100YearsFloat() {
        because it fails right after five minutes otherwise. */
     player.advance(data.offsetFloat + 2.6666666666667f);
 
-    if(data.failsFloat || data.failsFuzzyFloat)
-        Debug{} << "Calculated value:" << value;
-
     CORRADE_COMPARE(player.state(), State::Playing);
     {
         /* Asm.js uses doubles for all floating-point calculations, so we don't
@@ -1367,7 +1364,7 @@ void PlayerTest::runFor100YearsFloat() {
            there. Unfortunately it's not possible to detect if this is asm.js
            so the XFAIL is done like this. */
         #ifndef CORRADE_TARGET_EMSCRIPTEN
-        CORRADE_EXPECT_FAIL_IF(data.failsFuzzyFloat, "Imprecision larger than 2.5e-4f.");
+        CORRADE_EXPECT_FAIL_IF(data.failsFuzzyFloat, "Imprecision of calculated value" << value << "larger than 2.5e-4f.");
         #else
         CORRADE_EXPECT_FAIL_IF(data.failsFuzzyFloat && !Math::TypeTraits<Float>::equals(value, 3.0f), "Imprecision larger than 2.5e-4f.");
         #endif
@@ -1375,7 +1372,7 @@ void PlayerTest::runFor100YearsFloat() {
     }
     if(!data.failsFuzzyFloat) {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
-        CORRADE_EXPECT_FAIL_IF(data.failsFloat, "Imprecision larger than 1e-6f.");
+        CORRADE_EXPECT_FAIL_IF(data.failsFloat, "Imprecision of calculated value" << value << "larger than 1e-6f.");
         #else
         CORRADE_EXPECT_FAIL_IF(data.failsFloat && !Math::TypeTraits<Float>::equals(value, 3.0f), "Imprecision larger than 2.5e-4f.");
         #endif
