@@ -285,7 +285,7 @@ struct EmscriptenApplicationTest: Platform::Application {
     explicit EmscriptenApplicationTest(const Arguments& arguments);
 
     void drawEvent() override {
-        Debug() << "draw event";
+        Debug{} << "draw event";
         #ifdef MAGNUM_TARGET_GL
         if(!_contextless) {
             #ifdef CUSTOM_CLEAR_COLOR
