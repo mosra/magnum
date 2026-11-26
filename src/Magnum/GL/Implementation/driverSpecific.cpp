@@ -553,134 +553,6 @@ Containers::StringView findWorkaround(Containers::StringView workaround) {
 
 }
 
-auto Context::detectedDriver() -> DetectedDrivers {
-    /* ~DetectedDrivers{} means the value is not initialized yet */
-    if(_detectedDrivers != ~DetectedDrivers{})
-        return _detectedDrivers;
-
-    _detectedDrivers = DetectedDrivers{};
-
-    #if !defined(CORRADE_TARGET_APPLE) || defined(MAGNUM_TARGET_GLES)
-    const Containers::StringView renderer =
-        #ifndef MAGNUM_TARGET_WEBGL
-        rendererString()
-        #else
-        rendererStringUnmasked()
-        #endif
-        ;
-    #endif
-    #ifndef CORRADE_TARGET_APPLE
-    const Containers::StringView vendor =
-        #ifndef MAGNUM_TARGET_WEBGL
-        vendorString()
-        #else
-        vendorStringUnmasked()
-        #endif
-        ;
-    #endif
-    #if !defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_WEBGL)
-    const Containers::StringView version = versionString();
-    #endif
-
-    /* In some cases we can have a combination of drivers (e.g. ANGLE running
-       on top of Mesa, Mesa Zink running on top of NVidia drivers...) so the
-       detection has no early returns. */
-
-    /* Apple has its own drivers */
-    /** @todo when Zink on Apple is a thing, this needs an update */
-    #ifndef CORRADE_TARGET_APPLE
-    /* AMD binary desktop drivers */
-    if(vendor.contains("ATI Technologies Inc."_s))
-        _detectedDrivers |= DetectedDriver::Amd;
-
-    #ifdef CORRADE_TARGET_WINDOWS
-    /* Intel Windows drivers */
-    if(vendor.contains("Intel"_s))
-        _detectedDrivers |= DetectedDriver::IntelWindows;
-    #endif
-
-    /* Mesa drivers.
-        -   Intel GL/GLES drivers contain Mesa both in renderer and version
-            string
-        -   AMD GL/GLES drivers have Mesa only in the version string
-        -   On WebGL the version string is useless, always saying just
-            "WebGL X.Y (Chromium)" or "WebGL X.Y"
-        -   Mesa is in renderer string in Chromium and nowhere in Firefox for
-            some reason
-
-       To avoid misdetecting the driver, simply test both where it makes
-       sense. */
-    if(renderer.contains("Mesa"_s)
-        #ifndef MAGNUM_TARGET_WEBGL
-        || version.contains("Mesa"_s)
-        #endif
-    ) {
-        _detectedDrivers |= DetectedDriver::Mesa;
-
-        if(renderer.contains("SVGA3D"_s))
-            _detectedDrivers |= DetectedDriver::Svga3D;
-    }
-
-    if(vendor.contains("NVIDIA Corporation"_s))
-        _detectedDrivers |= DetectedDriver::NVidia;
-    #endif
-
-    #ifdef MAGNUM_TARGET_GLES
-    /* ANGLE. On WebGL only if we are so lucky and have access to the unmasked
-       renderer string. */
-    if(renderer.contains("ANGLE"_s))
-        _detectedDrivers |= DetectedDriver::Angle;
-    #ifdef MAGNUM_TARGET_WEBGL
-    /* If the unmasked renderer string is not available, try other means */
-    /** @todo this (and below) incorrectly detects ANGLE on FF 92+, as it has
-        the WEBGL_debug_renderer_info disabled */
-    else if(!isExtensionSupported<Extensions::WEBGL::debug_renderer_info>()) {
-        /* Otherwise assume ANGLE is present if the ANGLE_instanced_arrays is
-           present on WebGL 1. Although e.g. Firefox exposes it even though it
-           renders directly through GL drivers on Linux, so this may catch more
-           drivers than just ANGLE. */
-        #ifdef MAGNUM_TARGET_GLES2
-        if(isExtensionSupported<Extensions::ANGLE::instanced_arrays>())
-        /* Or if WEBGL_multi_draw (which is based on ANGLE_multi_draw) is
-           present on WebGL 2. This extension is rather recent (appearing in
-           browsers in late 2020) so it may not catch all ANGLE
-           implementations. */
-        #else
-        if(isExtensionSupported<Extensions::WEBGL::multi_draw>())
-        #endif
-            _detectedDrivers |= DetectedDriver::Angle;
-        /* Otherwise try to detect a D3D ANGLE backend by querying line width.
-           It's always exactly just 1 on D3D, usually (but not always) more on
-           GL, not sure about Metal. So this is not a 100% match. Sources:
-           https://stackoverflow.com/a/20149090 and https://webglreport.com */
-        else {
-            Range1Di range;
-            glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range.data());
-            if(range.min() == 1 && range.max() == 1 && vendor != "Internet Explorer"_s) {
-                _detectedDrivers |= DetectedDriver::Angle;
-            }
-        }
-    }
-    #endif
-
-    /* SwiftShader */
-    if(renderer.contains("SwiftShader"_s))
-        _detectedDrivers |= DetectedDriver::SwiftShader;
-    #endif
-
-    #ifdef CORRADE_TARGET_ANDROID
-    if(vendor.contains("ARM"_s) && renderer.contains("Mali"_s))
-        _detectedDrivers |= DetectedDriver::ArmMali;
-    #endif
-
-    #if defined(MAGNUM_TARGET_GLES) && !defined(CORRADE_TARGET_APPLE)
-    if(vendor.contains("Qualcomm"_s) && renderer.contains("Adreno"_s))
-        _detectedDrivers |= DetectedDriver::QualcommAdreno;
-    #endif
-
-    return _detectedDrivers;
-}
-
 void Context::disableDriverWorkaround(const Containers::StringView workaround) {
     /* Find the workaround. Note that we'll add the found view to the array
        and not the passed view, as the found view is guaranteed to stay in
@@ -759,7 +631,7 @@ void Context::setupDriverWorkarounds() {
 
     /* WEBGL_debug_renderer_info needs to be explicitly requested,
        independently of whether Emscripten was told to implicitly request
-       extensions or not. Has to be done before any call to detectedDriver(),
+       extensions or not. Has to be done before the _detectedDrivers detection,
        which relies on this extension, but only after all other workarounds
        that disable it! */
     #if defined(MAGNUM_TARGET_WEBGL) && defined(CORRADE_TARGET_EMSCRIPTEN)
@@ -767,6 +639,131 @@ void Context::setupDriverWorkarounds() {
         CORRADE_INTERNAL_ASSERT_OUTPUT(emscripten_webgl_enable_extension(emscripten_webgl_get_current_context(), "WEBGL_debug_renderer_info"));
     }
     #endif
+
+    /* Driver detection. Since most of workaround setup below relies on this,
+       trying to lazy-load this would only add extra pain and we wouldn't be
+       able to reuse queried strings and other stuff */
+    #ifndef CORRADE_TARGET_APPLE
+    const Containers::StringView vendor =
+        #ifndef MAGNUM_TARGET_WEBGL
+        vendorString()
+        #else
+        vendorStringUnmasked()
+        #endif
+        ;
+    #endif
+    {
+        #if !defined(CORRADE_TARGET_APPLE) || defined(MAGNUM_TARGET_GLES)
+        const Containers::StringView renderer =
+            #ifndef MAGNUM_TARGET_WEBGL
+            rendererString()
+            #else
+            rendererStringUnmasked()
+            #endif
+            ;
+        #endif
+        #if !defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_WEBGL)
+        const Containers::StringView version = versionString();
+        #endif
+
+        /* In some cases we can have a combination of drivers (e.g. ANGLE
+           running on top of Mesa, Mesa Zink running on top of NVidia
+           drivers...) so the detection just continues further even if
+           something was found already. */
+
+        /* Apple has its own drivers */
+        /** @todo when Zink on Apple is a thing, this needs an update */
+        #ifndef CORRADE_TARGET_APPLE
+        /* AMD binary desktop drivers */
+        if(vendor.contains("ATI Technologies Inc."_s))
+            _detectedDrivers |= DetectedDriver::Amd;
+
+        #ifdef CORRADE_TARGET_WINDOWS
+        /* Intel Windows drivers */
+        if(vendor.contains("Intel"_s))
+            _detectedDrivers |= DetectedDriver::IntelWindows;
+        #endif
+
+        /* Mesa drivers.
+            -   Intel GL/GLES drivers contain Mesa both in renderer and version
+                string
+            -   AMD GL/GLES drivers have Mesa only in the version string
+            -   On WebGL the version string is useless, always saying just
+                "WebGL X.Y (Chromium)" or "WebGL X.Y"
+            -   Mesa is in renderer string in Chromium and nowhere in Firefox
+                for some reason
+
+           To avoid misdetecting the driver, simply test both where it makes
+           sense. */
+        if(renderer.contains("Mesa"_s)
+            #ifndef MAGNUM_TARGET_WEBGL
+            || version.contains("Mesa"_s)
+            #endif
+        ) {
+            _detectedDrivers |= DetectedDriver::Mesa;
+
+            if(renderer.contains("SVGA3D"_s))
+                _detectedDrivers |= DetectedDriver::Svga3D;
+        }
+
+        if(vendor.contains("NVIDIA Corporation"_s))
+            _detectedDrivers |= DetectedDriver::NVidia;
+        #endif
+
+        #ifdef MAGNUM_TARGET_GLES
+        /* ANGLE. On WebGL only if we are so lucky and have access to the
+           unmasked renderer string. */
+        if(renderer.contains("ANGLE"_s))
+            _detectedDrivers |= DetectedDriver::Angle;
+        #ifdef MAGNUM_TARGET_WEBGL
+        /* If the unmasked renderer string is not available, try other means */
+        /** @todo this (and below) incorrectly detects ANGLE on FF 92+, as it
+            has the WEBGL_debug_renderer_info disabled */
+        else if(!isExtensionSupported<Extensions::WEBGL::debug_renderer_info>()) {
+            /* Otherwise assume ANGLE is present if the ANGLE_instanced_arrays
+               is present on WebGL 1. Although e.g. Firefox exposes it even
+               though it renders directly through GL drivers on Linux, so this
+               may catch more drivers than just ANGLE. */
+            #ifdef MAGNUM_TARGET_GLES2
+            if(isExtensionSupported<Extensions::ANGLE::instanced_arrays>())
+            /* Or if WEBGL_multi_draw (which is based on ANGLE_multi_draw) is
+               present on WebGL 2. This extension is rather recent (appearing
+               in browsers in late 2020) so it may not catch all ANGLE
+               implementations. */
+            #else
+            if(isExtensionSupported<Extensions::WEBGL::multi_draw>())
+            #endif
+                _detectedDrivers |= DetectedDriver::Angle;
+            /* Otherwise try to detect a D3D ANGLE backend by querying line
+               width. It's always exactly just 1 on D3D, usually (but not
+               always) more on GL, not sure about Metal. So this is not a 100%
+               match. Sources: https://stackoverflow.com/a/20149090 and
+               https://webglreport.com */
+            else {
+                Range1Di range;
+                glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range.data());
+                if(range.min() == 1 && range.max() == 1 && vendor != "Internet Explorer"_s) {
+                    _detectedDrivers |= DetectedDriver::Angle;
+                }
+            }
+        }
+        #endif
+
+        /* SwiftShader */
+        if(renderer.contains("SwiftShader"_s))
+            _detectedDrivers |= DetectedDriver::SwiftShader;
+        #endif
+
+        #ifdef CORRADE_TARGET_ANDROID
+        if(vendor.contains("ARM"_s) && renderer.contains("Mali"_s))
+            _detectedDrivers |= DetectedDriver::ArmMali;
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(CORRADE_TARGET_APPLE)
+        if(vendor.contains("Qualcomm"_s) && renderer.contains("Adreno"_s))
+            _detectedDrivers |= DetectedDriver::QualcommAdreno;
+        #endif
+    }
 
     #ifndef MAGNUM_TARGET_GLES
     if(!isDriverWorkaroundDisabled("no-layout-qualifiers-on-old-glsl"_s)) {
@@ -776,24 +773,24 @@ void Context::setupDriverWorkarounds() {
     }
 
     #ifdef CORRADE_TARGET_WINDOWS
-    if((detectedDriver() & DetectedDriver::IntelWindows) && !isExtensionSupported<Extensions::ARB::shading_language_420pack>() && !isDriverWorkaroundDisabled("intel-windows-glsl-exposes-unsupported-shading-language-420pack"_s))
+    if(_detectedDrivers >= DetectedDriver::IntelWindows && !isExtensionSupported<Extensions::ARB::shading_language_420pack>() && !isDriverWorkaroundDisabled("intel-windows-glsl-exposes-unsupported-shading-language-420pack"_s))
         _setRequiredVersion(ARB::shading_language_420pack, None);
 
-    if((detectedDriver() & DetectedDriver::IntelWindows) && isExtensionSupported<Extensions::ARB::explicit_uniform_location>() && !isDriverWorkaroundDisabled("intel-windows-explicit-uniform-location-is-less-explicit-than-you-hoped"_s)) {
+    if(_detectedDrivers >= DetectedDriver::IntelWindows && isExtensionSupported<Extensions::ARB::explicit_uniform_location>() && !isDriverWorkaroundDisabled("intel-windows-explicit-uniform-location-is-less-explicit-than-you-hoped"_s)) {
         _setRequiredVersion(ARB::explicit_uniform_location, None);
     }
     #endif
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if((detectedDriver() & DetectedDriver::Svga3D) &&
+    if(_detectedDrivers >= DetectedDriver::Svga3D &&
        isExtensionSupported<Extensions::ARB::get_texture_sub_image>() &&
        !isDriverWorkaroundDisabled("svga3d-gettexsubimage-oob-write"_s))
         _setRequiredVersion(ARB::get_texture_sub_image, None);
     #endif
 
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(detectedDriver() & Context::DetectedDriver::SwiftShader) {
+    if(_detectedDrivers >= Context::DetectedDriver::SwiftShader) {
         if((isExtensionSupported<Extensions::ANGLE::instanced_arrays>() ||
             isExtensionSupported<Extensions::EXT::instanced_arrays>()) &&
            !isDriverWorkaroundDisabled("swiftshader-no-es2-draw-instanced-entrypoints"_s)) {
@@ -808,13 +805,13 @@ void Context::setupDriverWorkarounds() {
     #endif
 
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if((detectedDriver() & Context::DetectedDriver::SwiftShader) &&
+    if(_detectedDrivers >= Context::DetectedDriver::SwiftShader &&
        !isDriverWorkaroundDisabled("swiftshader-broken-shader-vertex-id"_s))
         _setRequiredVersion(MAGNUM::shader_vertex_id, None);
     #endif
 
     #if defined(CORRADE_TARGET_ANDROID) && defined(MAGNUM_TARGET_GLES)
-    if((detectedDriver() & Context::DetectedDriver::ArmMali) &&
+    if(_detectedDrivers >= Context::DetectedDriver::ArmMali &&
         std::getenv("SHELL") && !isDriverWorkaroundDisabled("arm-mali-timer-queries-oom-in-shell"_s))
         _setRequiredVersion(EXT::disjoint_timer_query, None);
     #endif
@@ -943,7 +940,7 @@ void Context::setupDriverWorkarounds() {
        startup log), but possibly in relation with WEBGL_debug_renderer_info
        being deprecated in FF 92+ this changed and now Mozilla is only in
        vendorString() and rendererString() is the actual system GPU. */
-    if(vendorString() == "Mozilla"_s) {
+    if(vendor == "Mozilla"_s) {
         for(const auto& extension: extensionStrings()) {
             if(extension == "GL_EXT_disjoint_timer_query"_s && !isDriverWorkaroundDisabled("firefox-fake-disjoint-timer-query-webgl2"_s)) {
                 _extensionStatus.set(Extensions::EXT::disjoint_timer_query_webgl2::Index, true);

@@ -871,7 +871,7 @@ class MAGNUM_GL_EXPORT Context {
          * result in repeated GL calls. Used primarily for enabling
          * driver-specific workarounds.
          */
-        DetectedDrivers detectedDriver();
+        DetectedDrivers detectedDriver() { return _detectedDrivers; }
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
@@ -932,8 +932,7 @@ class MAGNUM_GL_EXPORT Context {
         Containers::ArrayTuple _stateData;
         Implementation::State* _state;
 
-        /* ~DetectedDrivers{} means the value is not initialized yet */
-        DetectedDrivers _detectedDrivers = ~DetectedDrivers{};
+        DetectedDrivers _detectedDrivers;
 
         /** @todo these are all needed only until the state gets created and
             then can be discarded -- what to do? we could avoid including
