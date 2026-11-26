@@ -593,37 +593,41 @@ void Context::setupDriverWorkarounds() {
         if(_extensionRequiredVersion[Extensions::extension::Index] < Version::version) \
             _extensionRequiredVersion[Extensions::extension::Index] = Version::version
 
+    /* Detect if we're running on Firefox under WebGL. Used for
+       WEBGL_debug_renderer_info disabling below as well as ANGLE detection
+       later, the variable being 0 means this is not Firefox. */
+    #if defined(MAGNUM_TARGET_WEBGL) && defined(CORRADE_TARGET_EMSCRIPTEN)
+    /* Unlike other EM_ASM() macros, this one isn't put into a JS library as it
+       neither has any dependencies nor has code that may benefit from
+       settings-based preprocessing done for minification */
+    #pragma GCC diagnostic push
+    /* The damn thing moved the warning to another group in some version. Not
+       sure if it happened in Clang 10 already, but -Wc++20-extensions is new
+       in Clang 10, so just ignore both. HOWEVER, Emscripten often uses a
+       prerelease Clang, so if it reports version 10, it's likely version 9. So
+       check for versions _above_ 10 instead. */
+    #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+    #if __clang_major__ > 10
+    #pragma GCC diagnostic ignored "-Wc++20-extensions"
+    #endif
+    const Int firefoxVersion = EM_ASM_INT({
+        var match = navigator.userAgent.match(/Firefox\\\\/(\\\\d+)/);
+        if(match)
+            return match[1]|0; /* coerce to an int (remember asm.js?) */
+        return 0;
+    });
+    #pragma GCC diagnostic pop
+    #endif
+
     /* Using WEBGL_debug_renderer_info results in deprecation warnings on
        Firefox 92+, Firefox 92+ exposes the unmasked renderer and vendor string
        through the usual APIs. Needs to be above the code that explicitly
        enables the extension! */
     #if defined(MAGNUM_TARGET_WEBGL) && defined(CORRADE_TARGET_EMSCRIPTEN)
-    /* Assuming the extension gets eventually removed, check for Firefox
-       version only if the extension is actually present. Then first detect the
-       version and only then ask if the workaround is disabled in order to
-       avoid having the workaround listed as used on older versions or other
-       browsers */
+    /* First check the version and only then ask if the workaround is disabled
+       in order to avoid having the workaround listed as used on older versions
+       or other browsers */
     if(isExtensionSupported<Extensions::WEBGL::debug_renderer_info>()) {
-        /* Unlike other EM_ASM() macros, this one isn't put into a JS library
-           as it neither has any dependencies nor has code that may benefit
-           from settings-based preprocessing done for minification */
-        #pragma GCC diagnostic push
-        /* The damn thing moved the warning to another group in some version.
-           Not sure if it happened in Clang 10 already, but -Wc++20-extensions
-           is new in Clang 10, so just ignore both. HOWEVER, Emscripten often
-           uses a prerelease Clang, so if it reports version 10, it's likely
-           version 9. So check for versions _above_ 10 instead. */
-        #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
-        #if __clang_major__ > 10
-        #pragma GCC diagnostic ignored "-Wc++20-extensions"
-        #endif
-        const Int firefoxVersion = EM_ASM_INT({
-            var match = navigator.userAgent.match(/Firefox\\\\/(\\\\d+)/);
-            if(match)
-                return match[1]|0; /* coerce to an int (remember asm.js?) */
-            return 0;
-        });
-        #pragma GCC diagnostic pop
         if(firefoxVersion >= 92 && !isDriverWorkaroundDisabled("firefox-deprecated-debug-renderer-info"_s))
             _setRequiredVersion(WEBGL::debug_renderer_info, None);
     }
@@ -712,14 +716,15 @@ void Context::setupDriverWorkarounds() {
 
         #ifdef MAGNUM_TARGET_GLES
         /* ANGLE. On WebGL only if we are so lucky and have access to the
-           unmasked renderer string. */
+           unmasked renderer string (or are on Firefox which reports that in
+           the masked string too, at least on Windows). */
         if(renderer.contains("ANGLE"_s))
             _detectedDrivers |= DetectedDriver::Angle;
         #ifdef MAGNUM_TARGET_WEBGL
-        /* If the unmasked renderer string is not available, try other means */
-        /** @todo this (and below) incorrectly detects ANGLE on FF 92+, as it
-            has the WEBGL_debug_renderer_info disabled */
-        else if(!isExtensionSupported<Extensions::WEBGL::debug_renderer_info>()) {
+        /* If the unmasked renderer string is not available (and we're not on
+           Firefox which deprecated this extension because the masked string
+           contains the same info), try other means */
+        else if(!isExtensionSupported<Extensions::WEBGL::debug_renderer_info>() && !firefoxVersion) {
             /* Otherwise assume ANGLE is present if the ANGLE_instanced_arrays
                is present on WebGL 1. Although e.g. Firefox exposes it even
                though it renders directly through GL drivers on Linux, so this
