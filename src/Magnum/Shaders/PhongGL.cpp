@@ -544,8 +544,8 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
             out.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates"_s);
         #ifndef MAGNUM_TARGET_GLES2
         if(configuration.flags() & Flag::ObjectId) {
-            out.bindFragmentDataLocation(ColorOutput, "color"_s);
-            out.bindFragmentDataLocation(ObjectIdOutput, "objectId"_s);
+            out.bindFragmentDataLocation(ColorOutput, "fragmentColor"_s);
+            out.bindFragmentDataLocation(ObjectIdOutput, "fragmentObjectId"_s);
         }
         if(configuration.flags() >= Flag::InstancedObjectId)
             out.bindAttributeLocation(ObjectId::Location, "instanceObjectId"_s);

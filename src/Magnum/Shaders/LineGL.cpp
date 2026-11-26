@@ -291,8 +291,8 @@ template<UnsignedInt dimensions> typename LineGL<dimensions>::CompileState LineG
         if(configuration.flags() & Flag::VertexColor)
             out.bindAttributeLocation(Color3::Location, "vertexColor"_s); /* Color4 is the same */
         if(configuration.flags() & Flag::ObjectId) {
-            out.bindFragmentDataLocation(ColorOutput, "color"_s);
-            out.bindFragmentDataLocation(ObjectIdOutput, "objectId"_s);
+            out.bindFragmentDataLocation(ColorOutput, "fragmentColor"_s);
+            out.bindFragmentDataLocation(ObjectIdOutput, "fragmentObjectId"_s);
         }
         if(configuration.flags() >= Flag::InstancedObjectId)
             out.bindAttributeLocation(ObjectId::Location, "instanceObjectId"_s);
