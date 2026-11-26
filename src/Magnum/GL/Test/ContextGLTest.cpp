@@ -434,15 +434,16 @@ void ContextGLTest::multithreaded() {
 
     CORRADE_VERIFY(otherThreadHasCurrent);
 
-    Debug{} << "CORRADE_BUILD_MULTITHREADED defined:" <<
-        #ifdef CORRADE_BUILD_MULTITHREADED
-        true
-        #else
-        false
-        #endif
-        ;
+    #ifdef CORRADE_BUILD_MULTITHREADED
+    CORRADE_INFO("CORRADE_BUILD_MULTITHREADED defined");
+    #else
+    CORRADE_INFO("CORRADE_BUILD_MULTITHREADED not defined");
+    #endif
 
-    Debug{} << "Current context visible in another thread:" << *otherThreadHasCurrent;
+    if(*otherThreadHasCurrent)
+        CORRADE_WARN("Current context visible in another thread");
+    else
+        CORRADE_INFO("Current context not visible in another thread");
 
     #ifdef CORRADE_BUILD_MULTITHREADED
     CORRADE_VERIFY(!*otherThreadHasCurrent);

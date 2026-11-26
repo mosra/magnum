@@ -185,7 +185,7 @@ void TimeQueryGLTest::queryTime() {
     q1.end();
     const auto result1 = q1.result<UnsignedLong>();
     MAGNUM_VERIFY_NO_GL_ERROR();
-    Debug{} << "Doing nothing took" << result1/1.0e6f << "ms";
+    CORRADE_INFO("Doing nothing took" << result1/1.0e6f << "ms");
     CORRADE_COMPARE_AS(result1, 0, TestSuite::Compare::GreaterOrEqual);
 
     /* A query with a clear inside should be nonzero and larger than nothing */
@@ -195,7 +195,7 @@ void TimeQueryGLTest::queryTime() {
     q2.end();
     const auto result2 = q2.result<UnsignedLong>();
     MAGNUM_VERIFY_NO_GL_ERROR();
-    Debug{} << "Clear took" << result2/1.0e6f << "ms";
+    CORRADE_INFO("Clear took" << result2/1.0e6f << "ms");
     CORRADE_VERIFY(result2);
     CORRADE_COMPARE_AS(result2, result1, TestSuite::Compare::Greater);
 }
@@ -241,8 +241,8 @@ void TimeQueryGLTest::queryTimestamp() {
     const auto result2 = q2.result<UnsignedLong>();
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Debug{} << "Clear took" << result/1.0e6f << "ms, timestamp difference is"
-        << (result2 - result1)/1.0e6f << "ms";
+    CORRADE_INFO("Clear took" << result/1.0e6f << "ms, timestamp difference is"
+        << (result2 - result1)/1.0e6f << "ms");
 
     /* The timestamps should be monotonically increasing and the difference
        slightly larger than the elapsed time because these are outside of it */

@@ -523,7 +523,7 @@ void FramebufferGLTest::attachRenderbuffer() {
     #endif
     {
         #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        Debug() << "Using" << Extensions::OES::packed_depth_stencil::string();
+        CORRADE_INFO("Using" << Extensions::OES::packed_depth_stencil::string());
         #endif
         depthStencil.setStorage(
             #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
@@ -648,7 +648,7 @@ void FramebufferGLTest::attachTexture2D() {
     #endif
     {
         #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        Debug() << "Using" << Extensions::OES::packed_depth_stencil::string();
+        CORRADE_INFO("Using" << Extensions::OES::packed_depth_stencil::string());
         #endif
 
         /** @todo Is there any better way to select proper sized/unsized format on ES2? */
@@ -671,7 +671,7 @@ void FramebufferGLTest::attachTexture2D() {
 
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     else if(Context::current().isExtensionSupported<Extensions::OES::depth_texture>()) {
-        Debug() << "Using" << Extensions::OES::depth_texture::string();
+        CORRADE_INFO("Using" << Extensions::OES::depth_texture::string());
 
         Texture2D depth;
         depth.setStorage(1, TextureFormat::DepthComponent16, Vector2i(128));
@@ -872,7 +872,7 @@ void FramebufferGLTest::attachCubeMapTexture() {
     #endif
     {
         #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        Debug() << "Using" << Extensions::OES::packed_depth_stencil::string();
+        CORRADE_INFO("Using" << Extensions::OES::packed_depth_stencil::string());
         #endif
 
         #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
@@ -893,7 +893,7 @@ void FramebufferGLTest::attachCubeMapTexture() {
 
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     else if(Context::current().isExtensionSupported<Extensions::OES::depth_texture>()) {
-        Debug() << "Using" << Extensions::OES::depth_texture::string();
+        CORRADE_INFO("Using" << Extensions::OES::depth_texture::string());
 
         depthStencil.setStorage(1, TextureFormat::DepthComponent16, Vector2i(128));
         framebuffer.attachCubeMapTexture(Framebuffer::BufferAttachment::Depth, depthStencil, CubeMapCoordinate::NegativeZ, 0);
@@ -1167,7 +1167,7 @@ void FramebufferGLTest::multipleColorOutputs() {
     #endif
     {
         #ifdef MAGNUM_TARGET_GLES2
-        Debug() << "Using" << Extensions::NV::read_buffer::string();
+        CORRADE_INFO("Using" << Extensions::NV::read_buffer::string());
         #endif
         framebuffer.mapForRead(Framebuffer::ColorAttachment(1));
     }
@@ -1238,7 +1238,7 @@ void FramebufferGLTest::clear() {
     #endif
     {
         #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        Debug() << "Using" << Extensions::OES::packed_depth_stencil::string();
+        CORRADE_INFO("Using" << Extensions::OES::packed_depth_stencil::string());
         #endif
         depthStencil.setStorage(
             #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
@@ -1385,7 +1385,7 @@ void FramebufferGLTest::clearDepth() {
     #endif
     {
         #ifdef MAGNUM_TARGET_GLES
-        Debug() << "Using" << Extensions::NV::read_depth::string();
+        CORRADE_INFO("Using" << Extensions::NV::read_depth::string());
         #endif
 
         Image2D depthImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::DepthComponent, PixelType::UnsignedShort});
@@ -1426,7 +1426,7 @@ void FramebufferGLTest::clearStencil() {
     #endif
     {
         #ifdef MAGNUM_TARGET_GLES
-        Debug() << "Using" << Extensions::NV::read_stencil::string();
+        CORRADE_INFO("Using" << Extensions::NV::read_stencil::string());
         #endif
 
         Image2D stencilImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::StencilIndex, PixelType::UnsignedByte});
@@ -1475,7 +1475,7 @@ void FramebufferGLTest::clearDepthStencil() {
     #endif
     {
         #ifdef MAGNUM_TARGET_GLES
-        Debug() << "Using" << Extensions::NV::read_depth_stencil::string();
+        CORRADE_INFO("Using" << Extensions::NV::read_depth_stencil::string());
         #endif
 
         Image2D depthStencilImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::DepthStencil, PixelType::UnsignedInt248});
@@ -1742,7 +1742,7 @@ void FramebufferGLTest::read() {
     #endif
     {
         #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        Debug() << "Using" << Extensions::OES::packed_depth_stencil::string();
+        CORRADE_INFO("Using" << Extensions::OES::packed_depth_stencil::string());
         #endif
         depthStencil.setStorage(
             #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
@@ -1801,7 +1801,7 @@ void FramebufferGLTest::read() {
     #endif
     {
         #ifdef MAGNUM_TARGET_GLES
-        Debug() << "Using" << Extensions::NV::read_depth::string();
+        CORRADE_INFO("Using" << Extensions::NV::read_depth::string());
         #endif
 
         Image2D depthImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::DepthComponent, PixelType::UnsignedShort});
@@ -1815,7 +1815,7 @@ void FramebufferGLTest::read() {
     #endif
     {
         #ifdef MAGNUM_TARGET_GLES
-        Debug() << "Using" << Extensions::NV::read_stencil::string();
+        CORRADE_INFO("Using" << Extensions::NV::read_stencil::string());
         #endif
 
         Image2D stencilImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::StencilIndex, PixelType::UnsignedByte});
@@ -1837,7 +1837,7 @@ void FramebufferGLTest::read() {
     #endif
     {
         #ifdef MAGNUM_TARGET_GLES
-        Debug() << "Using" << Extensions::NV::read_depth_stencil::string();
+        CORRADE_INFO("Using" << Extensions::NV::read_depth_stencil::string());
         #endif
 
         Image2D depthStencilImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::DepthStencil, PixelType::UnsignedInt248});

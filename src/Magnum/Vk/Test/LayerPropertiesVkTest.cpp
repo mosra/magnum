@@ -78,7 +78,7 @@ void LayerPropertiesVkTest::enumerate() {
         CORRADE_SKIP("The driver reported no instance layers, can't test.");
 
     CORRADE_COMPARE(properties.count(), properties.names().size());
-    Debug{} << "Available instance layers:" << properties.names();
+    CORRADE_INFO("Available instance layers:" << properties.names());
 
     Containers::ArrayView<const Containers::StringView> names = properties.names();
     CORRADE_COMPARE_AS(names.size(), 0, TestSuite::Compare::Greater);

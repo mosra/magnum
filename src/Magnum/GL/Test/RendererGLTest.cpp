@@ -127,16 +127,16 @@ RendererGLTest::RendererGLTest() {
 
 void RendererGLTest::maxLineWidth() {
     #ifndef MAGNUM_TARGET_GLES
-    Debug{} << "Core profile:" << Context::current().isCoreProfile();
+    CORRADE_INFO("Core profile:" << Context::current().isCoreProfile());
     #endif
     #ifndef MAGNUM_TARGET_WEBGL
-    Debug{} << "Context flags:" << Context::current().flags();
+    CORRADE_INFO("Context flags:" << Context::current().flags());
     #endif
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     Range1D lineWidthRange = Renderer::lineWidthRange();
-    Debug{} << "Line width range:" << lineWidthRange;
+    CORRADE_INFO("Line width range:" << lineWidthRange);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 

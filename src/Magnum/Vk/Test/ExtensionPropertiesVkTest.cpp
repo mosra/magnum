@@ -88,7 +88,7 @@ void ExtensionPropertiesVkTest::constructMove() {
 
 void ExtensionPropertiesVkTest::enumerateInstance() {
     InstanceExtensionProperties properties = enumerateInstanceExtensionProperties();
-    Debug{} << "Available instance extension count:" << properties.names().size();
+    CORRADE_INFO("Available instance extension count:" << properties.names().size());
 
     CORRADE_COMPARE_AS(properties.count(), 0, TestSuite::Compare::Greater);
     for(std::size_t i = 0; i != properties.count(); ++i) {

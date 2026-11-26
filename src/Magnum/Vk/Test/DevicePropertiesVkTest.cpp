@@ -153,7 +153,7 @@ DevicePropertiesVkTest::DevicePropertiesVkTest(): VulkanTester{NoCreate} {
 
 void DevicePropertiesVkTest::enumerate() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
-    Debug{} << "Found" << devices.size() << "devices";
+    CORRADE_INFO("Found" << devices.size() << "devices");
     CORRADE_VERIFY(!devices.isEmpty());
 
     for(DeviceProperties& device: devices) {
@@ -214,7 +214,7 @@ void DevicePropertiesVkTest::driverProperties() {
     Containers::Optional<DeviceProperties> device = tryPickDevice(instance());
     CORRADE_VERIFY(device);
 
-    Debug{} << "Driver ID:" << device->driver();
+    CORRADE_INFO("Driver ID:" << device->driver());
 
     if(device->driver() == DeviceDriver::Unknown) {
         CORRADE_COMPARE(device->driverName(), "");
@@ -239,7 +239,7 @@ void DevicePropertiesVkTest::features() {
         popcount += Math::popcount(device->features().data()[i]);
     }
 
-    Debug{} << "Available feature count:" << popcount;
+    CORRADE_INFO("Available feature count:" << popcount);
     CORRADE_VERIFY(popcount);
 
     /* These (and others) are guaranteed to be always present by the spec, so
@@ -283,7 +283,7 @@ void DevicePropertiesVkTest::featuresPortability() {
     if(!device->enumerateExtensionProperties().isSupported<Extensions::KHR::portability_subset>())
         CORRADE_SKIP("KHR_portability_subset not supported, can't test");
 
-    Debug{} << "Supported portability subset:" << (device->features() & Implementation::deviceFeaturesPortabilitySubset());
+    CORRADE_INFO("Supported portability subset:" << (device->features() & Implementation::deviceFeaturesPortabilitySubset()));
 
     /* Not all features should be marked as supported */
     CORRADE_VERIFY((device->features() & Implementation::deviceFeaturesPortabilitySubset()) != Implementation::deviceFeaturesPortabilitySubset());
@@ -324,7 +324,7 @@ void DevicePropertiesVkTest::enumerateExtensions() {
     CORRADE_VERIFY(!devices.isEmpty());
 
     ExtensionProperties properties = devices[0].enumerateExtensionProperties();
-    Debug{} << "Available device extension count:" << properties.names().size();
+    CORRADE_INFO("Available device extension count:" << properties.names().size());
 
     CORRADE_COMPARE_AS(properties.count(), 0, TestSuite::Compare::Greater);
 
@@ -442,7 +442,7 @@ void DevicePropertiesVkTest::queueFamilies() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_VERIFY(!devices.isEmpty());
 
-    Debug{} << "Available queue family count:" << devices[0].queueFamilyCount();
+    CORRADE_INFO("Available queue family count:" << devices[0].queueFamilyCount());
 
     CORRADE_COMPARE_AS(devices[0].queueFamilyCount(), 0,
         TestSuite::Compare::Greater);
@@ -505,7 +505,7 @@ void DevicePropertiesVkTest::memoryHeaps() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_VERIFY(!devices.isEmpty());
 
-    Debug{} << "Available memory heap count:" << devices[0].memoryHeapCount();
+    CORRADE_INFO("Available memory heap count:" << devices[0].memoryHeapCount());
 
     CORRADE_COMPARE_AS(devices[0].memoryHeapCount(), 0,
         TestSuite::Compare::Greater);
@@ -548,7 +548,7 @@ void DevicePropertiesVkTest::memoryTypes() {
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_VERIFY(!devices.isEmpty());
 
-    Debug{} << "Available memory type count:" << devices[0].memoryCount();
+    CORRADE_INFO("Available memory type count:" << devices[0].memoryCount());
 
     CORRADE_COMPARE_AS(devices[0].memoryCount(), 0,
         TestSuite::Compare::Greater);

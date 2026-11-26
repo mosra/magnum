@@ -43,7 +43,7 @@ VersionVkTest::VersionVkTest() {
 
 void VersionVkTest::enumerate() {
     Version version = enumerateInstanceVersion();
-    Debug{} << "Available version:" << version;
+    CORRADE_INFO("Available version:" << version);
     CORRADE_COMPARE_AS(version, Version::Vk10, TestSuite::Compare::GreaterOrEqual);
 }
 
