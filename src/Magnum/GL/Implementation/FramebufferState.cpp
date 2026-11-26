@@ -49,7 +49,7 @@ FramebufferState::FramebufferState(Context& context, Containers::StaticArrayView
     #endif
     viewport{DisengagedViewport}
 {
-    /* Create implementation */
+    /* DSA/non-DSA implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
         extensions[Extensions::ARB::direct_state_access::Index] =
@@ -57,19 +57,6 @@ FramebufferState::FramebufferState(Context& context, Containers::StaticArrayView
 
         createImplementation = &Framebuffer::createImplementationDSA;
         createRenderbufferImplementation = &Renderbuffer::createImplementationDSA;
-
-    } else
-    #endif
-    {
-        createImplementation = &Framebuffer::createImplementationDefault;
-        createRenderbufferImplementation = &Renderbuffer::createImplementationDefault;
-    }
-
-    /* DSA/non-DSA implementation */
-    #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
-        extensions[Extensions::ARB::direct_state_access::Index] =
-                   Extensions::ARB::direct_state_access::string();
 
         checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDSA;
 
@@ -95,6 +82,9 @@ FramebufferState::FramebufferState(Context& context, Containers::StaticArrayView
     } else
     #endif
     {
+        createImplementation = &Framebuffer::createImplementationDefault;
+        createRenderbufferImplementation = &Renderbuffer::createImplementationDefault;
+
         checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDefault;
 
         #ifndef MAGNUM_TARGET_GLES2

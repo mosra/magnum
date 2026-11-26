@@ -78,19 +78,6 @@ TextureState::TextureState(Context& context,
     , imageBindings{imageBindings}
     #endif
 {
-    /* Create implementation */
-    #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
-        extensions[Extensions::ARB::direct_state_access::Index] =
-                   Extensions::ARB::direct_state_access::string();
-        createImplementation = &AbstractTexture::createImplementationDSA;
-
-    } else
-    #endif
-    {
-        createImplementation = &AbstractTexture::createImplementationDefault;
-    }
-
     /* Single bind implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
@@ -144,6 +131,8 @@ TextureState::TextureState(Context& context,
         extensions[Extensions::ARB::direct_state_access::Index] =
                    Extensions::ARB::direct_state_access::string();
 
+        createImplementation = &AbstractTexture::createImplementationDSA;
+
         parameteriImplementation = &AbstractTexture::parameterImplementationDSA;
         parameterfImplementation = &AbstractTexture::parameterImplementationDSA;
         parameterivImplementation = &AbstractTexture::parameterImplementationDSA;
@@ -165,6 +154,8 @@ TextureState::TextureState(Context& context,
     } else
     #endif
     {
+        createImplementation = &AbstractTexture::createImplementationDefault;
+
         parameteriImplementation = &AbstractTexture::parameterImplementationDefault;
         parameterfImplementation = &AbstractTexture::parameterImplementationDefault;
         #ifndef MAGNUM_TARGET_GLES2
