@@ -414,7 +414,6 @@ void Framebuffer::renderbufferImplementationDSA(Framebuffer& self, const BufferA
 void Framebuffer::texture1DImplementationDefault(Framebuffer& self, BufferAttachment attachment, GLuint textureId, GLint mipLevel) {
     glFramebufferTexture1D(GLenum(self.bindInternal()), GLenum(attachment), GL_TEXTURE_1D, textureId, mipLevel);
 }
-
 #endif
 
 void Framebuffer::texture2DImplementationDefault(Framebuffer& self, BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint mipLevel) {
