@@ -1074,6 +1074,9 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_GL_LOCAL renderbufferImplementationDSA(Framebuffer& self, BufferAttachment attachment, GLuint renderbufferId);
         #endif
+        #if defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+        static void MAGNUM_GL_LOCAL renderbufferImplementationAngleDrawFramebuffer(Framebuffer& self, BufferAttachment attachment, GLuint renderbufferId);
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_GL_LOCAL texture1DImplementationDefault(Framebuffer& self, BufferAttachment attachment, GLuint textureId, GLint level);
@@ -1083,6 +1086,9 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_GL_LOCAL texture2DImplementationDSA(Framebuffer& self, BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         static void MAGNUM_GL_LOCAL textureCubeMapImplementationDSA(Framebuffer& self, BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
+        #endif
+        #if defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+        static void MAGNUM_GL_LOCAL texture2DImplementationAngleDrawFramebuffer(Framebuffer& self, BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         #endif
 
         #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
@@ -1100,6 +1106,9 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
         #endif
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_GL_LOCAL textureLayerImplementationDSA(Framebuffer& self, BufferAttachment attachment, GLuint textureId, GLint level, GLint layer);
+        #endif
+        #if defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+        static void MAGNUM_GL_LOCAL textureLayerImplementationAngleDrawFramebuffer(Framebuffer& self, BufferAttachment attachment, GLuint textureId, GLint level, GLint layer);
         #endif
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)

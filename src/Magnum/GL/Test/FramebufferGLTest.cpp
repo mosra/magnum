@@ -33,6 +33,7 @@
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Context.h"
@@ -114,6 +115,9 @@ struct FramebufferGLTest: OpenGLTester {
     void attachLayeredCubeMapTextureArray();
     void attachLayeredTexture2DMultisampleArray();
     #endif
+    #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
+    void attachOnReadBindingIgnoresClearAngle();
+    #endif
     void detach();
 
     void multipleColorOutputs();
@@ -194,6 +198,53 @@ struct FramebufferGLTest: OpenGLTester {
         TextureFormat rgbaFormatES2, depthStencilFormatES2;
     #endif
 };
+
+#if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
+enum class AttachmentType {
+    Renderbuffer,
+    Texture2D,
+    #ifndef MAGNUM_TARGET_GLES2
+    Texture2DArray,
+    #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    MultisampleTexture2D,
+    MultisampleTexture2DArray,
+    #endif
+    Texture3D,
+    CubeMapTexture,
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    CubeMapTextureArray,
+    #endif
+};
+
+const struct {
+    const char* name;
+    AttachmentType type;
+} AttachOnReadBindingIgnoresClearAngleData[]{
+    {"renderbuffer",
+        AttachmentType::Renderbuffer},
+    {"2D texture",
+        AttachmentType::Texture2D},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"2D array texture",
+        AttachmentType::Texture2DArray},
+    #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    {"multisample 2D texture",
+        AttachmentType::MultisampleTexture2D},
+    {"multisample 2D array texture",
+        AttachmentType::MultisampleTexture2DArray},
+    #endif
+    {"3D texture",
+        AttachmentType::Texture3D},
+    {"cube map texture",
+        AttachmentType::CubeMapTexture},
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    {"cube map array texture",
+        AttachmentType::CubeMapTextureArray},
+    #endif
+};
+#endif
 
 #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 const struct {
@@ -282,7 +333,14 @@ FramebufferGLTest::FramebufferGLTest() {
               &FramebufferGLTest::attachLayeredCubeMapTextureArray,
               &FramebufferGLTest::attachLayeredTexture2DMultisampleArray,
               #endif
-              &FramebufferGLTest::detach,
+              });
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    addInstancedTests({&FramebufferGLTest::attachOnReadBindingIgnoresClearAngle},
+        Containers::arraySize(AttachOnReadBindingIgnoresClearAngleData));
+    #endif
+
+    addTests({&FramebufferGLTest::detach,
 
               &FramebufferGLTest::multipleColorOutputs,
 
@@ -1093,6 +1151,186 @@ void FramebufferGLTest::attachLayeredTexture2DMultisampleArray() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
+}
+#endif
+
+#if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
+void FramebufferGLTest::attachOnReadBindingIgnoresClearAngle() {
+    auto&& data = AttachOnReadBindingIgnoresClearAngleData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() << "is not supported.");
+    #endif
+    #ifdef MAGNUM_TARGET_GLES2
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::framebuffer_blit>() &&
+       !Context::current().isExtensionSupported<Extensions::APPLE::framebuffer_multisample>() &&
+       !Context::current().isExtensionSupported<Extensions::NV::framebuffer_blit>() &&
+       !Context::current().isExtensionSupported<Extensions::NV::framebuffer_multisample>())
+        CORRADE_SKIP("None of" << Extensions::ANGLE::framebuffer_blit::string() << Debug::nospace << "," << Extensions::APPLE::framebuffer_multisample::string() << Debug::nospace << "," << Extensions::NV::framebuffer_blit::string() << "or" << Extensions::NV::framebuffer_multisample::string() << "providing separate read and draw binding available, nothing to test");
+    #endif
+
+    /* Tests the "angle-framebuffer-attachment-wants-draw-binding" workaround,
+       see its description for details. */
+
+    /* Main framebuffer with a texture attached to a non-zero color attachment
+       that'll get subsequently cleared to a different value */
+    Texture2D texture;
+    texture
+        .setStorage(1, TextureFormat::RGBA8, {1, 1})
+        .setSubImage(0, {}, ImageView2D{Magnum::PixelFormat::RGBA8Unorm, {1, 1}, "\x13\x37\x13\x37"});
+    Framebuffer framebuffer{{{}, {1, 1}}};
+    framebuffer
+        .attachTexture(Framebuffer::ColorAttachment{1}, texture, 0)
+        .mapForDraw({{1, Framebuffer::ColorAttachment{1}}});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Another framebuffer that explicitly uses a zero color attachment for
+       drawing. Without the mapForDraw() call the bug wouldn't trigger. */
+    Framebuffer anotherFramebuffer{{{}, {1, 1}}};
+    anotherFramebuffer.mapForDraw(Framebuffer::ColorAttachment{0});
+
+    /* With the above, the GL_DRAW_FRAMEBUFFER binding is set to
+       `anotherFramebuffer`. Bind `framebuffer` back there instead. Without
+       this the bug wouldn't trigger either. */
+    framebuffer.bind();
+
+    /* Attach a renderbuffer or a texture to the other framebuffer. This by
+       default uses GL_READ_FRAMEBUFFER binding, thus `framebuffer` stays bound
+       to GL_DRAW_FRAMEBUFFER. Object creation and setStorage() calls have no
+       effect on the bug, they're localized here for simplicity but could be
+       above the framebuffer creation as well with no behavior change.
+       Verifying all possible attachment types as the bug triggers on any of
+       these. */
+    Renderbuffer renderbuffer{NoCreate};
+    Texture2D texture2D{NoCreate};
+    #ifndef MAGNUM_TARGET_GLES2
+    Texture2DArray texture2DArray{NoCreate};
+    #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    MultisampleTexture2D multisampleTexture2D{NoCreate};
+    MultisampleTexture2DArray multisampleTexture2DArray{NoCreate};
+    #endif
+    Texture3D texture3D{NoCreate};
+    CubeMapTexture cubeMapTexture{NoCreate};
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    CubeMapTextureArray cubeMapTextureArray{NoCreate};
+    #endif
+    if(data.type == AttachmentType::Renderbuffer) {
+        renderbuffer = Renderbuffer{};
+        renderbuffer.setStorage(RenderbufferFormat::RGBA8, {1, 1});
+        /* In this case there's no other way to initialize the contents than
+           using clear(), and for that to work mapForDraw() has to be called
+           already. For textures the early mapForDraw() affects nothing. */
+        anotherFramebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, renderbuffer);
+    } else if(data.type == AttachmentType::Texture2D) {
+        texture2D = Texture2D{};
+        texture2D.setStorage(1, TextureFormat::RGBA8, {1, 1});
+        anotherFramebuffer.attachTexture(Framebuffer::ColorAttachment{0}, texture2D, 0);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(data.type == AttachmentType::Texture2DArray) {
+        texture2DArray = Texture2DArray{};
+        texture2DArray.setStorage(1, TextureFormat::RGBA8, {1, 1, 1});
+        anotherFramebuffer.attachTextureLayer(Framebuffer::ColorAttachment{0}, texture2DArray, 0, 0);
+    }
+    #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    else if(data.type == AttachmentType::MultisampleTexture2D) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
+            CORRADE_SKIP(Extensions::ARB::texture_multisample::string() << "is not supported.");
+        #else
+        if(!Context::current().isVersionSupported(Version::GLES310))
+            CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
+        #endif
+
+        multisampleTexture2D = MultisampleTexture2D{};
+        multisampleTexture2D.setStorage(1, TextureFormat::RGBA8, {1, 1});
+        anotherFramebuffer.attachTexture(Framebuffer::ColorAttachment{0}, multisampleTexture2D);
+    } else if(data.type == AttachmentType::MultisampleTexture2DArray) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
+            CORRADE_SKIP(Extensions::ARB::texture_multisample::string() << "is not supported.");
+        #else
+        if(!Context::current().isExtensionSupported<Extensions::OES::texture_storage_multisample_2d_array>())
+            CORRADE_SKIP(Extensions::OES::texture_storage_multisample_2d_array::string() << "is not supported.");
+        #endif
+
+        multisampleTexture2DArray = MultisampleTexture2DArray{};
+        multisampleTexture2DArray.setStorage(1, TextureFormat::RGBA8, {1, 1, 1});
+        anotherFramebuffer.attachTextureLayer(Framebuffer::ColorAttachment{0}, multisampleTexture2DArray, 0);
+    }
+    #endif
+    else if(data.type == AttachmentType::Texture3D) {
+        #ifdef MAGNUM_TARGET_GLES2
+        if(!Context::current().isExtensionSupported<Extensions::OES::texture_3D>())
+            CORRADE_SKIP(Extensions::OES::texture_3D::string() << "is not supported.");
+        #endif
+
+        texture3D = Texture3D{};
+        texture3D.setStorage(1, TextureFormat::RGBA8, {1, 1, 1});
+        anotherFramebuffer.attachTextureLayer(Framebuffer::ColorAttachment{0}, texture3D, 0, 0);
+    } else if(data.type == AttachmentType::CubeMapTexture) {
+        cubeMapTexture = CubeMapTexture{};
+        cubeMapTexture.setStorage(1, TextureFormat::RGBA8, {1, 1});
+        anotherFramebuffer.attachCubeMapTexture(Framebuffer::ColorAttachment{0}, cubeMapTexture, CubeMapCoordinate::PositiveX, 0);
+    }
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    else if(data.type == AttachmentType::CubeMapTextureArray) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
+            CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
+        #else
+        if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
+            CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
+        #endif
+
+        cubeMapTextureArray = CubeMapTextureArray{};
+        cubeMapTextureArray.setStorage(1, TextureFormat::RGBA8, {1, 1, 6});
+        anotherFramebuffer.attachTextureLayer(Framebuffer::ColorAttachment{0}, cubeMapTextureArray, 0, 0);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Uncommenting this makes the bug go away as well */
+    #if 0
+    framebuffer.mapForDraw({{1, Framebuffer::ColorAttachment{1}}});
+    #endif
+
+    /* Clear the color attachment 1 on the original framebuffer to a specific
+       value */
+    Renderer::setClearColor(0xfeedbeef_rgbaf);
+    framebuffer.clear(FramebufferClear::Color);
+
+    /* Map color attachment 1 for reading. On ES2 this is only possible with
+       NV_read_buffer, if that extension is not available do it by binding the
+       texture we just cleared to attachment 0 as well. As that's done after
+       the clear it shouldn't have any effect on reproducibility of the bug. */
+    #ifdef MAGNUM_TARGET_GLES2
+    if(Context::current().isExtensionSupported<Extensions::NV::read_buffer>())
+    #endif
+    {
+        #ifdef MAGNUM_TARGET_GLES2
+        CORRADE_INFO("Using" << Extensions::NV::read_buffer::string());
+        #endif
+        framebuffer.mapForRead(Framebuffer::ColorAttachment{1});
+    }
+    #ifdef MAGNUM_TARGET_GLES2
+    else framebuffer.attachTexture(Framebuffer::ColorAttachment{0}, texture, 0);
+    #endif
+
+    Color4ub color = framebuffer.read({{}, {1, 1}}, Magnum::PixelFormat::RGBA8Unorm).pixels<Color4ub>()[0][0];
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* With the bug present, the clear is ignored with no GL error, resulting
+       in #13371337 being read here instead of #feedbeef */
+    CORRADE_COMPARE(color, 0xfeedbeef_rgba);
 }
 #endif
 

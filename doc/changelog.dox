@@ -274,6 +274,11 @@ See also:
     workaround for yet another broken case with compressed formats used in
     @ref GL::CubeMapTexture on NVidia. See @ref opengl-workarounds for more
     information.
+-   A new @cpp "angle-framebuffer-attachment-wants-draw-binding" @ce workaround
+    where read binding of @ref GL::Framebuffer may cause attachments to be
+    ignored on WebGL 2 and ANGLE. See @ref opengl-workarounds and
+    [mosra/magnum#701](https://github.com/mosra/magnum/issues/701) for more
+    information.
 
 @subsubsection changelog-latest-new-math Math library
 

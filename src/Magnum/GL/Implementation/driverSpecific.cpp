@@ -79,6 +79,25 @@ constexpr Containers::StringView KnownWorkarounds[]{
 "angle-instanced-attributes-always-draw-instanced"_s,
 #endif
 
+#if defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+/* On ANGLE, if a framebuffer attachment is done on a GL_READ_FRAMEBUFFER
+   binding, it causes clears on previously set up GL_DRAW_FRAMEBUFFER non-zero
+   color attachments to be silently ignored unless mapForDraw() is called for
+   that framebuffer again. A workaround is to do attachments exclusively on the
+   GL_DRAW_FRAMEBUFFER binding there.
+
+   Discovered on WebGL 2 in Chrome, however not reproducible in Firefox (which
+   might or might not use ANGLE, I don't know) and neither on native ANGLE GLES
+   builds (at least with versions 2.1.28521 from June 2026 and newer) so this
+   is only detected and enabled on WebGL 2. WebGL 1 doesn't have separate
+   read/draw binding points so this bug doesn't apply to it. Fully commented
+   repro case is in  FramebufferGLTest::attachOnReadBindingIgnoresClearAngle(),
+   and that one is available everywhere except for WebGL 1, including code
+   paths for cube map arrays or multisample textures that ANGLE doesn't
+   implement to ensure the workaround isn't needed anywhere else. */
+"angle-framebuffer-attachment-wants-draw-binding"_s,
+#endif
+
 #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
 /* Calling glBufferData(), glMapBuffer(), glMapBufferRange() or glUnmapBuffer()
    on ANY buffer when ANY buffer is attached to a currently bound

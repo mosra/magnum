@@ -416,6 +416,15 @@ void Framebuffer::texture1DImplementationDefault(Framebuffer& self, BufferAttach
 }
 #endif
 
+#if defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+void Framebuffer::renderbufferImplementationAngleDrawFramebuffer(Framebuffer& self, const BufferAttachment attachment, const GLuint renderbufferId) {
+    /* See the "angle-framebuffer-attachment-wants-draw-binding" workaround and
+       FramebufferGLTest::attachOnReadBindingIgnoresClearAngle() for details */
+    self.bindInternal(FramebufferTarget::Draw);
+    glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GLenum(attachment), GL_RENDERBUFFER, renderbufferId);
+}
+#endif
+
 void Framebuffer::texture2DImplementationDefault(Framebuffer& self, BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint mipLevel) {
     glFramebufferTexture2D(GLenum(self.bindInternal()), GLenum(attachment), textureTarget, textureId, mipLevel);
 }
@@ -427,6 +436,15 @@ void Framebuffer::texture2DImplementationDSA(Framebuffer& self, const BufferAtta
 
 void Framebuffer::textureCubeMapImplementationDSA(Framebuffer& self, const BufferAttachment attachment, const GLenum textureTarget, const GLuint textureId, const GLint mipLevel) {
     glNamedFramebufferTextureLayer(self._id, GLenum(attachment), textureId, mipLevel, textureTarget - GL_TEXTURE_CUBE_MAP_POSITIVE_X);
+}
+#endif
+
+#if defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+void Framebuffer::texture2DImplementationAngleDrawFramebuffer(Framebuffer& self, BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint mipLevel) {
+    /* See the "angle-framebuffer-attachment-wants-draw-binding" workaround and
+       FramebufferGLTest::attachOnReadBindingIgnoresClearAngle() for details */
+    self.bindInternal(FramebufferTarget::Draw);
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GLenum(attachment), textureTarget, textureId, mipLevel);
 }
 #endif
 
@@ -461,6 +479,15 @@ void Framebuffer::textureLayerImplementationDefault(Framebuffer& self, BufferAtt
 #ifndef MAGNUM_TARGET_GLES
 void Framebuffer::textureLayerImplementationDSA(Framebuffer& self, const BufferAttachment attachment, const GLuint textureId, const GLint mipLevel, const GLint layer) {
     glNamedFramebufferTextureLayer(self._id, GLenum(attachment), textureId, mipLevel, layer);
+}
+#endif
+
+#if defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+void Framebuffer::textureLayerImplementationAngleDrawFramebuffer(Framebuffer& self, BufferAttachment attachment, GLuint textureId, GLint mipLevel, GLint layer) {
+    /* See the "angle-framebuffer-attachment-wants-draw-binding" workaround and
+       FramebufferGLTest::attachOnReadBindingIgnoresClearAngle() for details */
+    self.bindInternal(FramebufferTarget::Draw);
+    glFramebufferTextureLayer(GL_DRAW_FRAMEBUFFER, GLenum(attachment), textureId, mipLevel, layer);
 }
 #endif
 

@@ -49,7 +49,8 @@ FramebufferState::FramebufferState(Context& context, Containers::StaticArrayView
     #endif
     viewport{DisengagedViewport}
 {
-    /* DSA/non-DSA implementation */
+    /* DSA/non-DSA implementation except for everything that's special-cased
+       below */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
         extensions[Extensions::ARB::direct_state_access::Index] =
@@ -68,13 +69,6 @@ FramebufferState::FramebufferState(Context& context, Containers::StaticArrayView
         copySub2DImplementation = &AbstractFramebuffer::copySub2DImplementationDSA;
         copySub3DImplementation = &AbstractFramebuffer::copySub3DImplementationDSA;
 
-        renderbufferImplementation = &Framebuffer::renderbufferImplementationDSA;
-        /* The 1D implementation uses the same function as the layered attachment */
-        texture1DImplementation = &Framebuffer::textureImplementationDSA;
-        /* DSA doesn't have texture target parameter so we need to use different
-           function to specify cube map face */
-        texture2DImplementation = &Framebuffer::texture2DImplementationDSA;
-        textureLayerImplementation = &Framebuffer::textureLayerImplementationDSA;
         renderbufferStorageImplementation = &Renderbuffer::storageImplementationDSA;
 
     } else
@@ -103,17 +97,52 @@ FramebufferState::FramebufferState(Context& context, Containers::StaticArrayView
         copySub3DImplementation = &AbstractFramebuffer::copySub3DImplementationDefault;
         #endif
 
-        renderbufferImplementation = &Framebuffer::renderbufferImplementationDefault;
+        renderbufferStorageImplementation = &Renderbuffer::storageImplementationDefault;
+    }
+
+    /* DSA/non-DSA implementation for attachments, as on ES and WebGL this
+       needs a workaround for ANGLE */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
+        extensions[Extensions::ARB::direct_state_access::Index] =
+                   Extensions::ARB::direct_state_access::string();
+
+        renderbufferImplementation = &Framebuffer::renderbufferImplementationDSA;
+        /* The 1D implementation uses the same function as the layered
+           attachment */
+        texture1DImplementation = &Framebuffer::textureImplementationDSA;
+        /* DSA doesn't have texture target parameter so we need to use a
+           different function to specify cube map face */
+        texture2DImplementation = &Framebuffer::texture2DImplementationDSA;
+        textureLayerImplementation = &Framebuffer::textureLayerImplementationDSA;
+
+    } else
+    #endif
+    {
+        #if defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+        if(context.detectedDriver() >= Context::DetectedDriver::Angle && !context.isDriverWorkaroundDisabled("angle-framebuffer-attachment-wants-draw-binding"_s)) {
+            renderbufferImplementation = &Framebuffer::renderbufferImplementationAngleDrawFramebuffer;
+            texture2DImplementation = &Framebuffer::texture2DImplementationAngleDrawFramebuffer;
+            #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+            textureLayerImplementation = &Framebuffer::textureLayerImplementationAngleDrawFramebuffer;
+            #endif
+        } else
+        #endif
+        {
+            renderbufferImplementation = &Framebuffer::renderbufferImplementationDefault;
+            /* The default implementation is the same for both 2D and cube map
+               textures */
+            texture2DImplementation = &Framebuffer::texture2DImplementationDefault;
+            #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+            textureLayerImplementation = &Framebuffer::textureLayerImplementationDefault;
+            #endif
+        }
+
+        /* 1D textures are not available in ES so they're not subject to the
+           ANGLE workaround */
         #ifndef MAGNUM_TARGET_GLES
         texture1DImplementation = &Framebuffer::texture1DImplementationDefault;
         #endif
-        /* The default implementation is the same for both 2D and cube map textures */
-        texture2DImplementation = &Framebuffer::texture2DImplementationDefault;
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        textureLayerImplementation = &Framebuffer::textureLayerImplementationDefault;
-        #endif
-
-        renderbufferStorageImplementation = &Renderbuffer::storageImplementationDefault;
     }
 
     /* DSA/non-DSA implementation for cubemaps, because Intel Windows drivers
@@ -141,8 +170,16 @@ FramebufferState::FramebufferState(Context& context, Containers::StaticArrayView
     } else
     #endif
     {
+        #if defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+        if(context.detectedDriver() >= Context::DetectedDriver::Angle && !context.isDriverWorkaroundDisabled("angle-framebuffer-attachment-wants-draw-binding"_s)) {
+            textureCubeMapImplementation = &Framebuffer::texture2DImplementationAngleDrawFramebuffer;
+        } else
+        #endif
+        {
+            textureCubeMapImplementation = &Framebuffer::texture2DImplementationDefault;
+        }
+
         copySubCubeMapImplementation = &AbstractFramebuffer::copySub2DImplementationDefault;
-        textureCubeMapImplementation = &Framebuffer::texture2DImplementationDefault;
     }
 
     #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
