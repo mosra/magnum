@@ -74,9 +74,7 @@ FramebufferState::FramebufferState(Context& context, Containers::StaticArrayView
         /* DSA doesn't have texture target parameter so we need to use different
            function to specify cube map face */
         texture2DImplementation = &Framebuffer::texture2DImplementationDSA;
-        textureImplementation = &Framebuffer::textureImplementationDSA;
         textureLayerImplementation = &Framebuffer::textureLayerImplementationDSA;
-
         renderbufferStorageImplementation = &Renderbuffer::storageImplementationDSA;
 
     } else
@@ -111,9 +109,6 @@ FramebufferState::FramebufferState(Context& context, Containers::StaticArrayView
         #endif
         /* The default implementation is the same for both 2D and cube map textures */
         texture2DImplementation = &Framebuffer::texture2DImplementationDefault;
-        #ifndef MAGNUM_TARGET_GLES
-        textureImplementation = &Framebuffer::textureImplementationDefault;
-        #endif
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         textureLayerImplementation = &Framebuffer::textureLayerImplementationDefault;
         #endif
@@ -201,8 +196,17 @@ FramebufferState::FramebufferState(Context& context, Containers::StaticArrayView
         #endif
     }
 
-    /* Framebuffer texture attachment on ES3 */
-    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+    /* Layered framebuffer texture attachment */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
+        extensions[Extensions::ARB::direct_state_access::Index] =
+                   Extensions::ARB::direct_state_access::string();
+
+        textureImplementation = &Framebuffer::textureImplementationDSA;
+    } else {
+        textureImplementation = &Framebuffer::textureImplementationDefault;
+    }
+    #elif !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
     if(context.isVersionSupported(Version::GLES320)) {
         textureImplementation = &Framebuffer::textureImplementationDefault;
     } else if(context.isExtensionSupported<Extensions::EXT::geometry_shader>()) {
